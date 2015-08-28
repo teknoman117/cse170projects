@@ -73,15 +73,15 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 {
+    struct MovingPoint p;
+
     switch ( key )
     {
     case ' ':
         // Add a projectile
-        _ptinstances.push_back(
-        {
-            .position = _mark,
-            .velocity = GsVec2(0.0, 1.25),
-        });
+        p.position = _mark;
+        p.velocity = GsVec2(0.0, 1.25);
+        _ptinstances.push_back(p);
         break;
 
     // Esc was pressed
@@ -319,36 +319,34 @@ void AppWindow::buildObjects(double frameTime, double frameDelta)
 
     // Always update points (always changing)
     {
-        _ptcoords.clear(); 
+        _ptcoords.clear();
         _ptcolors.clear();
 
         // Create new points every 1/4 of a second of simulation time
         static double lastUpdate = frameTime;
-        if((frameTime - lastUpdate) > 0.25)
+        if ((frameTime - lastUpdate) > 0.25)
         {
             // Generate random amount
-            int count = 16; 
-            for(int i = 0; i < count; i++)
+            int count = 16;
+            for (int i = 0; i < count; i++)
             {
                 double x = (2 * (static_cast<double>(rand()) / static_cast<double>(RAND_MAX))) - 1.0;
-                struct MovingPoint p = 
-                {
-                    .position = GsVec2(x, 1.0),
-                    .velocity = GsVec2(0.0, -0.33),
-                };
+                struct MovingPoint p;
+                p.position = GsVec2(x, 1.0);
+                p.velocity = GsVec2(0.0, -0.33);
                 _ptinstances.push_back(p);
             }
             lastUpdate = frameTime;
         }
 
         // Erase point which have traveled off of the screen
-        _ptinstances.erase(std::remove_if(_ptinstances.begin(), _ptinstances.end(), [=] (MovingPoint p)
+        _ptinstances.erase(std::remove_if(_ptinstances.begin(), _ptinstances.end(), [=](MovingPoint p)
         {
             return (std::abs(p.position.x) > 1.0 || std::abs(p.position.y) > 1.0);
         }), _ptinstances.end());
 
         // Update position of points and add to GPU buffer
-        for(std::vector<MovingPoint>::iterator point = _ptinstances.begin(); point != _ptinstances.end(); point++)
+        for (std::vector<MovingPoint>::iterator point = _ptinstances.begin(); point != _ptinstances.end(); point++)
         {
             point->position += point->velocity * frameDelta * multiplier;
 
@@ -358,10 +356,24 @@ void AppWindow::buildObjects(double frameTime, double frameDelta)
 
         // send data to OpenGL buffers:
         glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[0]);
-        glBufferData(GL_ARRAY_BUFFER, _ptcoords.size() * 3 * sizeof(float), &_ptcoords[0], GL_DYNAMIC_DRAW);
+        if (_ptcoords.size() > 0)
+        {
+            glBufferData(GL_ARRAY_BUFFER, _ptcoords.size() * 3 * sizeof(float), &_ptcoords[0], GL_DYNAMIC_DRAW);
+        }
+        else
+        {
+            glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
+        }
 
         glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[1]);
-        glBufferData(GL_ARRAY_BUFFER, _ptcolors.size() * 4 * sizeof(gsbyte), &_ptcolors[0], GL_DYNAMIC_DRAW);
+        if (_ptcolors.size() > 0)
+        {
+            glBufferData(GL_ARRAY_BUFFER, _ptcolors.size() * 4 * sizeof(gsbyte), &_ptcolors[0], GL_DYNAMIC_DRAW);
+        }
+        else
+        {
+            glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
+        }
     }
 }
 

@@ -8,7 +8,7 @@
 //==========================================================================
 int main ( int argc, char** argv )
  {
-   // Init freeglut library:
+   // Init freeglut library (use OpenGL 3.3 core profile because thats all this lab required)
    glutInit ( &argc, argv );
    glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
    glutInitContextVersion (3, 3);
