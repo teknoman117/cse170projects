@@ -3,16 +3,15 @@
 #ifndef APP_WINDOW_H
 #define APP_WINDOW_H
 
-# include <vector>
-# include <gsim/gs_color.h>
-# include <gsim/gs_vec.h>
-# include "ogl_tools.h"
-# include "glut_window.h"
+#include <vector>
+#include <gsim/gs_color.h>
+#include <gsim/gs_vec.h>
+#include "ogl_tools.h"
+#include "glut_window.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
- { private : // My OGL Data
-
+{
     struct MovingPoint
     {
         GsVec2 position;
@@ -22,7 +21,8 @@ class AppWindow : public GlutWindow
     GlShader _vertexsh, _fragsh;
     GlProgram _prog;
     GlObjects _tris, _pts, _lines;
-	std::vector<GsVec>   _tricoords;
+    
+    std::vector<GsVec>   _tricoords;
     std::vector<GsColor> _tricolors;
     std::vector<MovingPoint> _ptinstances;
     std::vector<GsVec>   _ptcoords;
@@ -30,20 +30,19 @@ class AppWindow : public GlutWindow
     std::vector<GsVec>   _linecoords;
     std::vector<GsColor> _linecolors;
 
-   private : // App Data
     enum MenuEv { evOption0, evOption1 };
     GsColor _markc;
     GsVec2 _mark;
     int _w, _h;
     double multiplier;
 
-   public :
+public:
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();
-	void buildObjects (double frameTime, double frameDelta);
+    void buildObjects (double frameTime, double frameDelta);
     GsVec2 windowToScene ( const GsVec2& v );
 
-   private : // functions derived from the base class
+private: // functions derived from the base class
     virtual void glutMenu ( int m );
     virtual void glutKeyboard ( unsigned char key, int x, int y );
     virtual void glutSpecial ( int key, int x, int y );
@@ -51,7 +50,7 @@ class AppWindow : public GlutWindow
     virtual void glutMotion ( int x, int y );
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
-	virtual void glutIdle();
- };
+    virtual void glutIdle();
+};
 
 #endif // APP_WINDOW_H
