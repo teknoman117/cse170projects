@@ -12,11 +12,19 @@
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
  { private : // My OGL Data
+
+    struct MovingPoint
+    {
+        GsVec2 position;
+        GsVec2 velocity;
+    };
+
     GlShader _vertexsh, _fragsh;
     GlProgram _prog;
     GlObjects _tris, _pts, _lines;
 	std::vector<GsVec>   _tricoords;
     std::vector<GsColor> _tricolors;
+    std::vector<MovingPoint> _ptinstances;
     std::vector<GsVec>   _ptcoords;
     std::vector<GsColor> _ptcolors;
     std::vector<GsVec>   _linecoords;
@@ -27,11 +35,12 @@ class AppWindow : public GlutWindow
     GsColor _markc;
     GsVec2 _mark;
     int _w, _h;
+    double multiplier;
 
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();
-	void buildObjects ();
+	void buildObjects (double frameTime, double frameDelta);
     GsVec2 windowToScene ( const GsVec2& v );
 
    private : // functions derived from the base class

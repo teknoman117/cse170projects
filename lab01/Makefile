@@ -9,8 +9,8 @@ PROGRAM = lab01
 
 #######################################################################
 
-# OPTFLAGS = -g  # for debug
-OPTFLAGS =  -O3 -s
+OPTFLAGS = -g  # for debug
+#OPTFLAGS =  -O3 -s
 CC       = g++
 CFLAGS   = -Wall -Wno-format $(OPTFLAGS) -I./ -std=c++11
 

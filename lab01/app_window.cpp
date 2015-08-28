@@ -6,14 +6,16 @@
 #include <ctime>
 #include <ratio>
 #include <chrono>
+#include <algorithm>
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-          :GlutWindow ( label, x, y, w, h )
+          :GlutWindow ( label, x, y, w, h ), multiplier(1.0)
  {
    initPrograms ();
    addMenuEntry ( "Option 0", evOption0 );
    addMenuEntry ( "Option 1", evOption1 );
    _markc = GsColor::yellow;
+   _mark.set(0.0, -0.9);
    _w=w; _h=h;
  }
 
@@ -37,7 +39,7 @@ void AppWindow::initPrograms ()
      o.uniform_locations ( 2 );
      o.uniform_location ( 0, "vTransf" );
      o.uniform_location ( 1, "vProj" );
-     o.uniform_location ( 2, "vTime" );
+     o.uniform_location ( 2, "fTime" );
    }
 
    // Define buffers needed for each of your OpenGL objects:
@@ -76,9 +78,14 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
    switch ( key )
     { case ' ': // space bar
-	   std::cout << "Space pressed.\n";
-       _mark.set ( 1.5, 1.5 );
-       redraw();
+	   // Add a projectile
+       _ptinstances.push_back(
+       {
+           .position = _mark,
+           .velocity = GsVec2(0.0, 1.25),
+       });
+
+       //redraw();
 	   break;
 
 	  case 27: // Esc was pressed
@@ -92,16 +99,19 @@ void AppWindow::glutSpecial ( int key, int x, int y )
    const float incx=0.02f;
    const float incy=0.02f;
    switch ( key )
-    { case GLUT_KEY_LEFT:  _mark.x-=incx; break;
-      case GLUT_KEY_RIGHT: _mark.x+=incx; break;
-      case GLUT_KEY_UP:    _mark.y+=incy; break;
-      case GLUT_KEY_DOWN:  _mark.y-=incy; break;
+    { case GLUT_KEY_LEFT:  _mark.x-=incx * multiplier; break;
+      case GLUT_KEY_RIGHT: _mark.x+=incx * multiplier; break;
+      case GLUT_KEY_UP:    multiplier+=0.5; break;
+      case GLUT_KEY_DOWN: 
+      	multiplier = ((multiplier - 0.5) < 0.5) ? 0.5 : multiplier - 0.5; 
+      	break;
+
       default: rd=false; // no redraw
 	}
 
    if (rd) 
     { _lines.changed = 1; // mark that new lines have to be generated
-      redraw(); // ask the window to be rendered when possible
+      //redraw(); // ask the window to be rendered when possible
     }
  }
 
@@ -113,7 +123,7 @@ void AppWindow::glutMouse ( int b, int s, int x, int y )
    // note: a better design would be to only change the geometry when really needed so
    // that we minimize overhead with buffer definition and transfer, for example here
    // we could just send a transformation to our shader and keep the geometry the same.
-   redraw();
+   //redraw();
  }
 
 void AppWindow::glutMotion ( int x, int y )
@@ -121,7 +131,7 @@ void AppWindow::glutMotion ( int x, int y )
    _markc = GsColor::red;
    _mark = windowToScene ( GsVec2(x,y) );
    _lines.changed = 1; // mark that new lines have to be generated
-   redraw();
+   //redraw();
  }
 
 void AppWindow::glutMenu ( int m )
@@ -137,7 +147,7 @@ void AppWindow::glutReshape ( int w, int h )
  }
 
 // here we will redraw the scene according to the current state of the application.
-void AppWindow::buildObjects()
+void AppWindow::buildObjects(double frameTime, double frameDelta)
 {
 	// Clear the rendering window
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -146,12 +156,15 @@ void AppWindow::buildObjects()
 	if (_lines.changed) // needs update
 	{
 		_linecoords.clear(); _linecolors.clear();
-		// Encode our lines in buffers according to _mark position, _markc color and size s:
-		const float s = 0.05f;
-		_linecoords.push_back(GsVec(_mark.x - s, _mark.y, 0)); _linecolors.push_back(_markc);
-		_linecoords.push_back(GsVec(_mark.x + s, _mark.y, 0)); _linecolors.push_back(_markc);
-		_linecoords.push_back(GsVec(_mark.x, _mark.y - s, 0)); _linecolors.push_back(_markc);
-		_linecoords.push_back(GsVec(_mark.x, _mark.y + s, 0)); _linecolors.push_back(_markc);
+
+		_linecoords.push_back(GsVec(_mark.x - 0.075, _mark.y - 0.05, 0.0)); _linecolors.push_back(_markc);	
+		_linecoords.push_back(GsVec(_mark.x + 0.075, _mark.y - 0.05, 0.0)); _linecolors.push_back(_markc);	
+
+		_linecoords.push_back(GsVec(_mark.x + 0.0, _mark.y + 0.00, 0.0));   _linecolors.push_back(_markc);	
+		_linecoords.push_back(GsVec(_mark.x + 0.075, _mark.y - 0.05, 0.0)); _linecolors.push_back(_markc);
+		_linecoords.push_back(GsVec(_mark.x + 0.0, _mark.y + 0.00, 0.0));   _linecolors.push_back(_markc);		
+		_linecoords.push_back(GsVec(_mark.x - 0.075, _mark.y - 0.05, 0.0)); _linecolors.push_back(_markc);
+
 		// send data to OpenGL buffers:
 		glBindBuffer(GL_ARRAY_BUFFER, _lines.buf[0]);
 		glBufferData(GL_ARRAY_BUFFER, _linecoords.size() * 3 * sizeof(float), &_linecoords[0], GL_STATIC_DRAW);
@@ -159,24 +172,6 @@ void AppWindow::buildObjects()
 		glBufferData(GL_ARRAY_BUFFER, _linecolors.size() * 4 * sizeof(gsbyte), &_linecolors[0], GL_STATIC_DRAW);
 		// mark that data does not need more changes:
 		_lines.changed = 0;
-	}
-
-	// Define some white points:
-	if (_pts.changed) // needs update
-	{
-		_ptcoords.clear(); _ptcolors.clear();
-		// Encode some white points in buffers:
-		_ptcoords.push_back(GsVec(0.5, 0.5, 0.0)); _ptcolors.push_back(GsColor::white);
-		_ptcoords.push_back(GsVec(-0.5, -0.5, 0.0)); _ptcolors.push_back(GsColor::white);
-		_ptcoords.push_back(GsVec(0.5, -0.5, 0.0)); _ptcolors.push_back(GsColor::white);
-		_ptcoords.push_back(GsVec(-0.5, 0.5, 0.0)); _ptcolors.push_back(GsColor::white);
-		// send data to OpenGL buffers:
-		glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[0]);
-		glBufferData(GL_ARRAY_BUFFER, _ptcoords.size() * 3 * sizeof(float), &_ptcoords[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[1]);
-		glBufferData(GL_ARRAY_BUFFER, _ptcolors.size() * 4 * sizeof(gsbyte), &_ptcolors[0], GL_STATIC_DRAW);
-		// mark that data does not need more changes:
-		_pts.changed = 0;
 	}
 
 	// Define some triangles:
@@ -325,9 +320,56 @@ void AppWindow::buildObjects()
 		// mark that data does not need more changes:
 		_tris.changed = 0;
 	}
+
+	// Always update points (always changing)
+	{
+		_ptcoords.clear(); 
+		_ptcolors.clear();
+
+		static double lastUpdate = frameTime;
+		if((frameTime - lastUpdate) > 0.25)
+		{
+			// Generate random amount
+			int count = 16; 
+			for(int i = 0; i < count; i++)
+			{
+				double x = (2 * (static_cast<double>(rand()) / static_cast<double>(RAND_MAX))) - 1.0;
+				struct MovingPoint p = 
+				{
+					.position = GsVec2(x, 1.0),
+					.velocity = GsVec2(0.0, -0.33),
+				};
+				_ptinstances.push_back(p);
+			}
+			lastUpdate = frameTime;
+		}
+
+		// Erase invisible points
+		_ptinstances.erase(std::remove_if(_ptinstances.begin(), _ptinstances.end(), [=] (MovingPoint p)
+		{
+			return (std::abs(p.position.x) > 1.0 || std::abs(p.position.y) > 1.0);
+		}), _ptinstances.end());
+
+		// Update position of points and add to GPU buffer
+		for(std::vector<MovingPoint>::iterator point = _ptinstances.begin(); point != _ptinstances.end(); point++)
+		{
+			point->position += point->velocity * frameDelta * multiplier;
+
+			_ptcoords.push_back(point->position);
+			_ptcolors.push_back(GsColor::white);
+		}
+
+		// send data to OpenGL buffers:
+		glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[0]);
+		glBufferData(GL_ARRAY_BUFFER, _ptcoords.size() * 3 * sizeof(float), &_ptcoords[0], GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[1]);
+		glBufferData(GL_ARRAY_BUFFER, _ptcolors.size() * 4 * sizeof(gsbyte), &_ptcolors[0], GL_DYNAMIC_DRAW);
+	}
  }
 
- void AppWindow::glutIdle()
+ // Use the idle function to redraw the window, note - i've enabled vsync so it doesnt kill performance 
+void AppWindow::glutIdle()
  {
    redraw();
  }
@@ -335,16 +377,22 @@ void AppWindow::buildObjects()
 void AppWindow::glutDisplay ()
  { 
    // Frame delta
-   static std::chrono::high_resolution_clock::time_point previousTime = std::chrono::high_resolution_clock::now();
-   std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
-   std::chrono::duration<double> frameDelta = std::chrono::duration_cast<std::chrono::duration<double>>(now - previousTime);
-   //previousTime = now;
+   using namespace std::chrono;
+
+   static high_resolution_clock::time_point previousTime = high_resolution_clock::now();
+   static double frameTime = 0.0;
+
+   high_resolution_clock::time_point now = high_resolution_clock::now();
+   duration<double> frameDelta = duration_cast<duration<double>>(now - previousTime);
+   previousTime = now;
+   frameTime += frameDelta.count() * multiplier;
+
 
    // Clear the rendering window
    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
    // Update objects if needed:
-   buildObjects();
+   buildObjects(frameTime, frameDelta.count());
 
    // Define some identity transformations; our shaders require them but in this
    // example support code we do not need to use them, so just let them be GsMat::id:
@@ -399,7 +447,7 @@ void AppWindow::glutDisplay ()
 
    glUniformMatrix4fv ( _tris.uniloc[0], 1, GL_FALSE, vtransf.e );
    glUniformMatrix4fv ( _tris.uniloc[1], 1, GL_FALSE, vproj.e );
-   glUniform1f ( _tris.uniloc[2], frameDelta.count() * 17.5);
+   glUniform1f ( _tris.uniloc[2], frameTime * 17.5);
 
    glDrawArrays ( GL_TRIANGLES, 0, _tricoords.size() );
 
