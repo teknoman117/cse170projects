@@ -10,7 +10,7 @@
 #include "glut_window.h"
 
 #if !(defined WIN32)
-#include <GL/glx.h>
+#include <GL/glxew.h>
 #endif
 
 //===== static members =====
@@ -40,8 +40,31 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
 
 // Setup vertical synchronization on Linux
 #if !(defined WIN32)
-   void (*glXSwapIntervalMESA)(int) = (void (*)(int)) glXGetProcAddress((const GLubyte *) "glXSwapIntervalMESA");
-   glXSwapIntervalMESA(1);
+   // Do we support GLX_EXT_swap_control (Custom Desktop w/ GeForce GTX 770, Nvidia 352.30 driver, OpenGL whatever version you want)
+   if(GLXEW_EXT_swap_control)
+   {
+      // Turn on vertical synchronization
+      Display *dpy = glXGetCurrentDisplay();
+      GLXDrawable drawable = glXGetCurrentDrawable();
+      unsigned int swap, maxSwap;
+    
+      if (drawable) 
+      {
+         glXQueryDrawable(dpy, drawable, GLX_SWAP_INTERVAL_EXT, &swap);
+         glXQueryDrawable(dpy, drawable, GLX_MAX_SWAP_INTERVAL_EXT, &maxSwap);
+    
+         std::cout << "Enabling vertical synchronization using GLX_EXT_swap_control" << std::endl;
+         glXSwapIntervalEXT(dpy, drawable, swap);
+      }
+   }
+
+   // Do we support GLX_MESA_swap_control (Macbook Air 2011, OpenGL 3.3 core profile)
+   else if(GLXEW_MESA_swap_control)
+   {
+      // Turn on vertical synchronization
+      std::cout << "Enabling vertical synchronization using GLX_MESA_swap_control" << std::endl;
+      glXSwapIntervalMESA(1);
+   }
 #endif
 
    // Initialize OpenGL settings as we want
