@@ -1,0 +1,4 @@
+# C++ compilation intermediates
+*.o
+*.d
+
