@@ -8,10 +8,15 @@
 //==========================================================================
 int main ( int argc, char** argv )
  {
-   // Init freeglut library (use OpenGL 3.3 core profile because thats all this lab required)
+   // Init freeglut library
    glutInit ( &argc, argv );
    glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+
+// Fallback to OpenGL 3.3 on Linux (fine for this lab)
+#if !(defined WIN32)   
    glutInitContextVersion (3, 3);
+#endif
+
    glutInitContextProfile ( GLUT_CORE_PROFILE );
  
    // Now create the window of your application:

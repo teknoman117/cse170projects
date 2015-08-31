@@ -4,15 +4,19 @@
 #include <iostream>
 #include <ctime>
 #include <ratio>
-#include <chrono>
 #include <algorithm>
+#include <functional>
+
+using namespace std::chrono;
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h ), _markc(GsColor::yellow), _mark(0.0, -0.9), _w(w), _h(h), multiplier(1.0)
+    : GlutWindow ( label, x, y, w, h ), _markc(GsColor::yellow), _mark(0.0, -0.9), _w(w), _h(h), multiplier(1.0), frameTime(0.0), pointsLastUpdate(0.0)
 {
     initPrograms();
     addMenuEntry( "Option 0", evOption0 );
     addMenuEntry( "Option 1", evOption1 );
+
+    previousTime = high_resolution_clock::now();
 }
 
 void AppWindow::initPrograms()
@@ -323,8 +327,7 @@ void AppWindow::buildObjects(double frameTime, double frameDelta)
         _ptcolors.clear();
 
         // Create new points every 1/4 of a second of simulation time
-        static double lastUpdate = frameTime;
-        if ((frameTime - lastUpdate) > 0.25)
+        if ((frameTime - pointsLastUpdate) > 0.25)
         {
             // Generate random amount
             int count = 16;
@@ -336,19 +339,21 @@ void AppWindow::buildObjects(double frameTime, double frameDelta)
                 p.velocity = GsVec2(0.0, -0.33);
                 _ptinstances.push_back(p);
             }
-            lastUpdate = frameTime;
+            pointsLastUpdate = frameTime;
         }
 
         // Erase point which have traveled off of the screen
-        _ptinstances.erase(std::remove_if(_ptinstances.begin(), _ptinstances.end(), [=](MovingPoint p)
+        const std::function<bool (MovingPoint)> predicate = [] (MovingPoint p)
         {
             return (std::abs(p.position.x) > 1.0 || std::abs(p.position.y) > 1.0);
-        }), _ptinstances.end());
+        };
+
+        _ptinstances.erase(std::remove_if(_ptinstances.begin(), _ptinstances.end(), predicate), _ptinstances.end());
 
         // Update position of points and add to GPU buffer
         for (std::vector<MovingPoint>::iterator point = _ptinstances.begin(); point != _ptinstances.end(); point++)
         {
-            point->position += point->velocity * frameDelta * multiplier;
+            point->position += point->velocity * frameDelta;
 
             _ptcoords.push_back(point->position);
             _ptcolors.push_back(GsColor::white);
@@ -385,23 +390,19 @@ void AppWindow::glutIdle()
 
 void AppWindow::glutDisplay ()
 { 
-    // Frame delta
-    using namespace std::chrono;
-
-    static high_resolution_clock::time_point previousTime = high_resolution_clock::now();
-    static double frameTime = 0.0;
-
+    // Frame delta/time
     high_resolution_clock::time_point now = high_resolution_clock::now();
-    duration<double> frameDelta = duration_cast<duration<double>>(now - previousTime);
+    duration<double> frameDeltaRaw = duration_cast<duration<double>>(now - previousTime);
     previousTime = now;
-    frameTime += frameDelta.count() * multiplier;
-
+    
+    double frameDelta = frameDeltaRaw.count() * multiplier;
+    frameTime += frameDelta;
 
     // Clear the rendering window
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     // Update objects if needed:
-    buildObjects(frameTime, frameDelta.count());
+    buildObjects(frameTime, frameDelta);
 
     // Define some identity transformations; our shaders require them but in this
     // example support code we do not need to use them, so just let them be GsMat::id:

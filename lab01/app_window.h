@@ -9,6 +9,8 @@
 #include "ogl_tools.h"
 #include "glut_window.h"
 
+#include <chrono>
+
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
 {
@@ -35,6 +37,10 @@ class AppWindow : public GlutWindow
     GsVec2 _mark;
     int _w, _h;
     double multiplier;
+
+    std::chrono::high_resolution_clock::time_point previousTime;
+    double frameTime;
+    double pointsLastUpdate;
 
 public:
     AppWindow ( const char* label, int x, int y, int w, int h );
