@@ -25,6 +25,10 @@ class AppWindow : public GlutWindow
     float _rotx, _roty, _fovy;
     bool  _viewaxis;
     int _w, _h;
+     
+     float topRadius;
+     float bottomRadius;
+     int numFaces;
 
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );

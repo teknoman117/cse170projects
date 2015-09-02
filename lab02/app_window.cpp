@@ -14,6 +14,9 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _rotx = _roty = 0;
    _w = w;
    _h = h;
+     topRadius = 0.5f;
+     bottomRadius = 0.5f;
+     numFaces = 10;
  }
 
 void AppWindow::initPrograms ()
@@ -40,10 +43,21 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
+   bool modified = true;
    switch ( key )
     { case ' ': _viewaxis = !_viewaxis; redraw(); break;
 	  case 27 : exit(1); // Esc was pressed
-	}
+            
+        case 'q': numFaces += 1; redraw(); break;
+        case 'a': numFaces = ((numFaces > 3) ? (numFaces - 1) : 3); redraw(); break;
+        case 'w': topRadius += 0.05f; redraw(); break;
+        case 's': topRadius = ((topRadius > 0.05) ? (topRadius - 0.05f) : 0.05f); redraw(); break;
+        case 'e': bottomRadius += 0.05f; redraw(); break;
+        case 'd': bottomRadius = ((bottomRadius > 0.05) ? (bottomRadius - 0.05f) : 0.05f); redraw(); break;
+        default: modified = false;
+    }
+     
+     if(modified) _capsule.changed = 1;
  }
 
 void AppWindow::glutSpecial ( int key, int x, int y )
@@ -95,11 +109,14 @@ void AppWindow::glutDisplay ()
 
    // Build a cross with some lines (if not built yet):
    if ( _axis.changed ) // needs update
-    { _axis.build(1.0f); // axis has radius 1.0
-    }
+   {
+       _axis.build(1.0f); // axis has radius 1.0
+   }
+   if ( _capsule.changed ) // needs update
+   {
+       _capsule.build(1.0f, topRadius, bottomRadius, numFaces);
+   }
      
-     _capsule.build(1.0f, 0.5f, 0.5f, 10);
-
    // Define our scene transformation:
    GsMat rx, ry, stransf;
    rx.rotx ( _rotx );

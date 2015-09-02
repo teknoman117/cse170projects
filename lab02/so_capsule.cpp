@@ -83,6 +83,7 @@ void SoCapsule::build ( float len, float rt, float rb, int nfaces )
     
     // free non-needed memory:
     P.resize(0); C.resize(0);
+    changed = 0;
 }
 
 void SoCapsule::draw ( GsMat& tr, GsMat& pr )
