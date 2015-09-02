@@ -22,6 +22,7 @@
 		F1190EFE1B97A5AA002C4607 /* libGLEWmx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */; };
 		F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
 		F1190F021B97A5EF002C4607 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190F011B97A5EF002C4607 /* GLUT.framework */; };
+		F1190F051B97AAF8002C4607 /* so_capsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190F031B97AAF8002C4607 /* so_capsule.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +64,8 @@
 		F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEWmx.a; sourceTree = "<group>"; };
 		F1190EFF1B97A5EA002C4607 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		F1190F031B97AAF8002C4607 /* so_capsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_capsule.cpp; sourceTree = SOURCE_ROOT; };
+		F1190F041B97AAF8002C4607 /* so_capsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_capsule.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +113,8 @@
 				F1190EEC1B97A598002C4607 /* ogl_tools.h */,
 				F1190EED1B97A598002C4607 /* so_axis.cpp */,
 				F1190EEE1B97A598002C4607 /* so_axis.h */,
+				F1190F031B97AAF8002C4607 /* so_capsule.cpp */,
+				F1190F041B97AAF8002C4607 /* so_capsule.h */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -202,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */,
+				F1190F051B97AAF8002C4607 /* so_capsule.cpp in Sources */,
 				F1190EF91B97A598002C4607 /* so_axis.cpp in Sources */,
 				F1190EF31B97A598002C4607 /* gs_color.cpp in Sources */,
 				F1190EF61B97A598002C4607 /* gs_vec.cpp in Sources */,
@@ -338,6 +344,7 @@
 				F1190ED81B97A549002C4607 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

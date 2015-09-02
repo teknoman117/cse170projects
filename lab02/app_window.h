@@ -8,6 +8,7 @@
 # include "ogl_tools.h"
 # include "glut_window.h"
 # include "so_axis.h"
+# include "so_capsule.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -17,6 +18,8 @@ class AppWindow : public GlutWindow
     GlProgram _prog;
     // My scene objects:
     SoAxis _axis;
+    SoCapsule _capsule;
+     
     // App data:
     enum MenuEv { evOption0, evOption1 };
     float _rotx, _roty, _fovy;
