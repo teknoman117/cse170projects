@@ -9,10 +9,12 @@
 #include "ogl_tools.h"
 #include "glut_window.h"
 
-#if !(defined WIN32)
-#include <GL/glxew.h>
-#else
+#if (defined WIN32)
 #include <GL/wglew.h>
+#elif (defined __APPLE__)
+
+#else
+#include <GL/glxew.h>
 #endif
 
 //===== static members =====
@@ -41,7 +43,16 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
    glPrintInfo();
 
 // Setup vertical synchronization on Linux
-#if !(defined WIN32)
+#if (defined WIN32)
+   if (WGLEW_EXT_swap_control)
+   {
+       // Turn on vertical synchronization
+       std::cout << "Enabling vertical synchronization using WGL_EXT_swap_control" << std::endl;
+       wglSwapIntervalEXT(1);
+   }
+#elif (defined __APPLE__)
+
+#else
    // Do we support GLX_EXT_swap_control (Desktop w/ GeForce GTX 770, Manjaro Linux 64bit, kernel 3.19, Nvidia 352.30 driver, OpenGL whatever version you want)
    if(GLXEW_EXT_swap_control)
    {
@@ -66,13 +77,6 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
       // Turn on vertical synchronization
       std::cout << "Enabling vertical synchronization using GLX_MESA_swap_control" << std::endl;
       glXSwapIntervalMESA(1);
-   }
-#else
-   if (WGLEW_EXT_swap_control)
-   {
-       // Turn on vertical synchronization
-       std::cout << "Enabling vertical synchronization using WGL_EXT_swap_control" << std::endl;
-       wglSwapIntervalEXT(1);
    }
 #endif
 

@@ -12,13 +12,13 @@ PROGRAM = lab01
 OPTFLAGS = -g  # for debug
 #OPTFLAGS =  -O3 -s
 CC       = g++
-CFLAGS   = -Wall -Wno-format $(OPTFLAGS) -I./ -std=c++11
+CFLAGS   = -Wall -Wno-format $(OPTFLAGS) -I./ -I/usr/local/include -std=c++11
 
-ifeq ($(strip $(OS)),Darwin)
-	LDFLAGS = -framework GLUT -framework OpenGL
-else
-	LDFLAGS = -lGL -lglut -lGLU -lGLEW
-endif
+#ifeq ($(strip $(OS)),Darwin)
+	#LDFLAGS = -framework GLUT -framework OpenGL
+#else
+	LDFLAGS = -L/usr/local/lib -framework GLUT -lGLEW -framework OpenGL
+#endif
 
 #######################################################################
 

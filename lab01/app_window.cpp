@@ -6,6 +6,7 @@
 #include <ratio>
 #include <algorithm>
 #include <functional>
+#include <cmath>
 
 using namespace std::chrono;
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A1FA88C6-F222-4925-8AB8-F74674EB4D61</string>
+	<key>IDESourceControlProjectName</key>
+	<string>glutapp3d</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>25DF45AF39BEB4A53C5B132A3128CBE58AE4FFD3</key>
+		<string>github.com:Teknoman117/cse170projects.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>lab02/glutapp3d.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>25DF45AF39BEB4A53C5B132A3128CBE58AE4FFD3</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:Teknoman117/cse170projects.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>25DF45AF39BEB4A53C5B132A3128CBE58AE4FFD3</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>25DF45AF39BEB4A53C5B132A3128CBE58AE4FFD3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>cse170projects</string>
+		</dict>
+	</array>
+</dict>
+</plist>
