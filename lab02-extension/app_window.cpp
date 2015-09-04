@@ -106,6 +106,9 @@ void AppWindow::glutDisplay ()
  {
    // Clear the rendering window
    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+   glFrontFace(GL_CCW);
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
 
    // Build a cross with some lines (if not built yet):
    if ( _axis.changed ) // needs update
