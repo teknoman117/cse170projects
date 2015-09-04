@@ -74,7 +74,7 @@ void SoCapsule::build ( float len, float rt, float rb, int nfaces )
     P.clear(); C.clear(); // set size to zero, just in case
    
     float hlen = len/2.0f;
-    int   levels = std::floor(static_cast<float>(nfaces) / 2.0f);
+    int   levels = std::ceil(static_cast<float>(nfaces) / 2.0f);
     float faceAngularHeight = (static_cast<float>(M_PI) / 2.0) / static_cast<float>(levels);
     float faceAngularLength = (2.0 * static_cast<float>(M_PI)) / static_cast<float>(nfaces);
     int   vertices = 2 + (2*levels + 1)*(nfaces * 6);
