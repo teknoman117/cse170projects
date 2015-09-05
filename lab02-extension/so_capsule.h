@@ -16,8 +16,9 @@ class SoCapsule : public GlObjects
 {
 private :
     std::vector<GsVec>   P; // coordinates
-    std::vector<GLshort>   E; // element buffer
+    std::vector<GLshort> E; // element buffer
     std::vector<GsColor> C; // colors
+    std::vector<GsVec>   N;
     
     int _numpoints;         // saves the number of points
     

@@ -66,6 +66,8 @@
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		F1190F031B97AAF8002C4607 /* so_capsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_capsule.cpp; sourceTree = SOURCE_ROOT; };
 		F1190F041B97AAF8002C4607 /* so_capsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_capsule.h; sourceTree = SOURCE_ROOT; };
+		F153DCA71B9A340A00C79E19 /* fsh_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_flat.glsl; sourceTree = SOURCE_ROOT; };
+		F153DCA81B9A340A00C79E19 /* vsh_mcol_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_mcol_flat.glsl; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				F1190ED11B97A549002C4607 /* glutapp3d */,
+				F153DCA91B9A340D00C79E19 /* shaders */,
 				F1190EFA1B97A5AA002C4607 /* lib */,
 				F1190ED01B97A549002C4607 /* Products */,
 			);
@@ -148,6 +151,16 @@
 			);
 			name = lib;
 			path = osx/glew/lib;
+			sourceTree = "<group>";
+		};
+		F153DCA91B9A340D00C79E19 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F153DCA71B9A340A00C79E19 /* fsh_flat.glsl */,
+				F153DCA81B9A340A00C79E19 /* vsh_mcol_flat.glsl */,
+			);
+			name = shaders;
+			path = glutapp3d;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

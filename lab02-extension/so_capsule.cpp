@@ -19,7 +19,7 @@ void SoCapsule::init ( const GlProgram& prog )
     // Define buffers needed:
     set_program ( prog );
     gen_vertex_arrays ( 1 ); // will use 1 vertex array
-    gen_buffers ( 3 );       // will use 3 buffers: one for coordinates, one for colors, one for indices
+    gen_buffers ( 4 );       // will use 3 buffers: one for coordinates, one for colors, one for indices
     uniform_locations ( 2 ); // will send 2 variables: the 2 matrices below
     uniform_location ( 0, "vTransf" );
     uniform_location ( 1, "vProj" );
@@ -27,7 +27,7 @@ void SoCapsule::init ( const GlProgram& prog )
 
 void SoCapsule::build ( float len, float rt, float rb, int nfaces )
 {
-    P.clear(); C.clear(); E.clear(); // set size to zero, just in case
+    P.clear(); C.clear(); E.clear(); N.clear(); // set size to zero, just in case
    
     float hlen = len/2.0f;
     int   levels = std::ceil(static_cast<float>(nfaces) / 2.0f);
@@ -39,9 +39,11 @@ void SoCapsule::build ( float len, float rt, float rb, int nfaces )
     // Reserve space for the capsule vertices
     P.reserve(vertices);
     C.reserve(vertices);
+    N.reserve(vertices);
     E.reserve(indicies);
     
-    P.push_back(GsVec(0.0f, -hlen - rb, 0.0f)); C.push_back(GsColor::white);
+    // Push the bottom vertex
+    P.push_back(GsVec(0.0f, -hlen - rb, 0.0f)); C.push_back(GsColor::white); N.push_back(GsVec(0.0f, -1.0f, 0.0f));
     
     // Generate the bottom vertices
     for(int j = levels-1; j >= 0; j--)
@@ -52,7 +54,12 @@ void SoCapsule::build ( float len, float rt, float rb, int nfaces )
         {
             // phi coordinate
             float p = static_cast<float>(i) * faceAngularLength;
-            P.push_back(GsVec((rb * std::cos(p)) * std::cos(t), -hlen - (rb * std::sin(t)), (rb * std::sin(p)) * std::cos(t)));
+            GsVec vertex ((rb * std::cos(p)) * std::cos(t), -hlen - (rb * std::sin(t)), (rb * std::sin(p)) * std::cos(t));
+            GsVec normal = vertex - GsVec(0.0f, -hlen, 0.0f);
+            normal.normalize();
+            
+            P.push_back(vertex);
+            N.push_back(normal);
             C.push_back(GsColor::white);
         }
     }
@@ -66,12 +73,17 @@ void SoCapsule::build ( float len, float rt, float rb, int nfaces )
         {
             // phi coordinate
             float p = static_cast<float>(i) * faceAngularLength;
-            P.push_back(GsVec((rt * std::cos(p)) * std::cos(t), hlen + (rt * std::sin(t)), (rt * std::sin(p)) * std::cos(t)));
+            GsVec vertex ((rt * std::cos(p)) * std::cos(t), hlen + (rt * std::sin(t)), (rt * std::sin(p)) * std::cos(t));
+            GsVec normal = vertex - GsVec(0.0f, hlen, 0.0f);
+            normal.normalize();
+            
+            P.push_back(vertex);
+            N.push_back(normal);
             C.push_back(GsColor::white);
         }
     }
 
-    P.push_back(GsVec(0.0f, hlen + rt, 0.0f)); C.push_back(GsColor::white);
+    P.push_back(GsVec(0.0f, hlen + rt, 0.0f)); C.push_back(GsColor::white); N.push_back(GsVec(0.0f, 1.0f, 0.0f));
     
     // Compute indices of bottom cap
     for(int j = 1; j <= nfaces; j++)
@@ -109,11 +121,13 @@ void SoCapsule::build ( float len, float rt, float rb, int nfaces )
     glBufferData ( GL_ARRAY_BUFFER, P.size()*3*sizeof(float), &P[0], GL_STATIC_DRAW );
     glBindBuffer ( GL_ARRAY_BUFFER, buf[1] );
     glBufferData ( GL_ARRAY_BUFFER, C.size()*4*sizeof(gsbyte), &C[0], GL_STATIC_DRAW );
-    glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, buf[2] );
+    glBindBuffer ( GL_ARRAY_BUFFER, buf[2] );
+    glBufferData ( GL_ARRAY_BUFFER, N.size()*3*sizeof(float), &N[0], GL_STATIC_DRAW );
+    glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, buf[3] );
     glBufferData ( GL_ELEMENT_ARRAY_BUFFER, E.size()*sizeof(GLshort), &E[0], GL_STATIC_DRAW );
     
     // save size so that we can free our buffers and later just draw the OpenGL arrays:
-    //_numpoints = P.size();
+    _numpoints = P.size();
     
     // free non-needed memory:
     P.resize(0); C.resize(0);
@@ -134,7 +148,11 @@ void SoCapsule::draw ( GsMat& tr, GsMat& pr )
     glEnableVertexAttribArray ( 1 );
     glVertexAttribPointer ( 1, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, 0 );
     
-    glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, buf[2] ); // colors
+    glBindBuffer ( GL_ARRAY_BUFFER, buf[2] ); // normals
+    glEnableVertexAttribArray ( 2 );
+    glVertexAttribPointer ( 2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    
+    glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, buf[3] ); // indices
     
     glUniformMatrix4fv ( uniloc[0], 1, GL_FALSE, tr.e );
     glUniformMatrix4fv ( uniloc[1], 1, GL_FALSE, pr.e );
