@@ -3,14 +3,18 @@
 layout (location = 0) in vec3 vPos;
 layout (location = 1) in vec4 vColor;
 layout (location = 2) in vec3 vNormal;
+
 uniform mat4 vTransf;
 uniform mat4 vProj;
+
 out vec4 Color;
+out vec3 Normal;
 
 void main ()
 {
-    Color = vec4(vNormal, 1.0);
-    //Color = vColor / 255.0;
+    Color = vColor / 255.0;
+    Normal = vNormal;
+    
     gl_Position = vec4 ( vPos, 1.0 ) * vTransf * vProj;
 
     // Note: our vector appears on the left side of the above multiplication
