@@ -34,6 +34,9 @@
     <ClCompile Include="..\so_axis.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\so_capsule.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -64,6 +67,9 @@
       <Filter>ogl tools</Filter>
     </ClInclude>
     <ClInclude Include="..\so_axis.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_capsule.h">
       <Filter>myapp</Filter>
     </ClInclude>
   </ItemGroup>
