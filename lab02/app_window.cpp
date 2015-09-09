@@ -51,9 +51,9 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
         case 'q': numFaces += 1; redraw(); break;
         case 'a': numFaces = ((numFaces > 3) ? (numFaces - 1) : 3); redraw(); break;
         case 'w': topRadius += 0.05f; redraw(); break;
-        case 's': topRadius = ((topRadius > 0.05) ? (topRadius - 0.05f) : 0.05f); redraw(); break;
+        case 's': topRadius = ((topRadius - 0.05 > 0.05) ? (topRadius - 0.05f) : 0.05f); redraw(); break;
         case 'e': bottomRadius += 0.05f; redraw(); break;
-        case 'd': bottomRadius = ((bottomRadius > 0.05) ? (bottomRadius - 0.05f) : 0.05f); redraw(); break;
+        case 'd': bottomRadius = ((bottomRadius - 0.05 > 0.05) ? (bottomRadius - 0.05f) : 0.05f); redraw(); break;
         default: modified = false;
     }
      
