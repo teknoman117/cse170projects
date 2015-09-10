@@ -23,6 +23,7 @@
 		F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
 		F1190F021B97A5EF002C4607 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190F011B97A5EF002C4607 /* GLUT.framework */; };
 		F1A36D3E1BA0D19300A26EEB /* so_capsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1A36D3C1BA0D19300A26EEB /* so_capsule.cpp */; };
+		F1A36D411BA0D90100A26EEB /* so_tube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1A36D3F1BA0D90100A26EEB /* so_tube.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +67,8 @@
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		F1A36D3C1BA0D19300A26EEB /* so_capsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_capsule.cpp; sourceTree = SOURCE_ROOT; };
 		F1A36D3D1BA0D19300A26EEB /* so_capsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_capsule.h; sourceTree = SOURCE_ROOT; };
+		F1A36D3F1BA0D90100A26EEB /* so_tube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_tube.cpp; sourceTree = SOURCE_ROOT; };
+		F1A36D401BA0D90100A26EEB /* so_tube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_tube.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +118,8 @@
 				F1190EEE1B97A598002C4607 /* so_axis.h */,
 				F1A36D3C1BA0D19300A26EEB /* so_capsule.cpp */,
 				F1A36D3D1BA0D19300A26EEB /* so_capsule.h */,
+				F1A36D3F1BA0D90100A26EEB /* so_tube.cpp */,
+				F1A36D401BA0D90100A26EEB /* so_tube.h */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -206,6 +211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1A36D411BA0D90100A26EEB /* so_tube.cpp in Sources */,
 				F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */,
 				F1A36D3E1BA0D19300A26EEB /* so_capsule.cpp in Sources */,
 				F1190EF91B97A598002C4607 /* so_axis.cpp in Sources */,
