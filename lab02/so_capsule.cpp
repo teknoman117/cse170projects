@@ -9,6 +9,10 @@
 #include "so_capsule.h"
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159
+#endif
+
 namespace
 {
     // Push a triangle

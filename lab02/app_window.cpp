@@ -22,8 +22,13 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
 void AppWindow::initPrograms ()
  {
    // Load your shaders and link your programs here:
-   _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
-   _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
+#ifdef WIN32
+   _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
+   _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
+#else
+	 _vertexsh.load_and_compile(GL_VERTEX_SHADER, "vsh_mcol_flat.glsl");
+	 _fragsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_flat.glsl");
+#endif
    _prog.init_and_link ( _vertexsh, _fragsh );
 
    // Init my scene objects:
