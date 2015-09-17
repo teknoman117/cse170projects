@@ -19,7 +19,9 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     _w = w;
     _h = h;
     
-    initialTime = high_resolution_clock::now();
+    previousTime = high_resolution_clock::now();
+    frameTime = 0.0;
+    paused = false;
 }
 
 void AppWindow::initPrograms ()
@@ -50,7 +52,8 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 {
     switch ( key )
     {
-    case ' ': _viewaxis = !_viewaxis; break;
+    case ' ': paused = !paused; break;
+    case '\r': frameTime = 0.0; break;
     case 27 : exit(1); // Esc was pressed
     }
 }
@@ -99,10 +102,14 @@ void AppWindow::glutDisplay ()
 {
     // Frame time calculations
     high_resolution_clock::time_point currentTime = high_resolution_clock::now();
-    duration<double> frameTime = duration_cast<duration<double>>(currentTime - initialTime);
+    duration<double> frameDelta = duration_cast<duration<double>>(currentTime - previousTime);
+    previousTime = currentTime;
     
-    double subsecondsRotation = frameTime.count() * (2.0 * M_PI);
-    double secondsRotation = (frameTime.count() / 60.0) * (2.0 * M_PI);
+    if(!paused)
+        frameTime += frameDelta.count();
+    
+    double subsecondsRotation = frameTime * (2.0 * M_PI);
+    double secondsRotation = (frameTime / 60.0) * (2.0 * M_PI);
     subsecondsRotation = -subsecondsRotation;
     secondsRotation = -secondsRotation;
     
@@ -116,7 +123,7 @@ void AppWindow::glutDisplay ()
     }
     if ( _border.changed )
     {
-        _border.build(0.1f, 1.0f, 60);
+        _border.build(0.1f, 0.5f, 60);
     }
     if ( _seconds.changed )
     {
@@ -158,13 +165,14 @@ void AppWindow::glutDisplay ()
         _axis.draw ( stransf, sproj );
     
     // Draw the border
-    GsMat borderRotation, borderRotationFinal;
-    borderRotation.rotx(M_PI / 2.0f);
-    borderRotationFinal = stransf * borderRotation;
-    _border.draw(borderRotationFinal, sproj);
+    /*GsMat borderTranslation, borderTransform;
+    borderTranslation.translation(0.0, 0.5, 0.0);
+    borderTransform = stransf;
+    
+    _border.draw(borderTransform, sproj);*/
     
     // Compute the sub sections transformations
-    GsMat subsecondsRotationFinal, subsecondsRot, subsecondsTranslation;
+    /*GsMat subsecondsRotationFinal, subsecondsRot, subsecondsTranslation;
     subsecondsRot.rotz(subsecondsRotation);
     subsecondsTranslation.translation(0.0f, 0.30f, 0.0f);
     subsecondsRotationFinal = stransf * subsecondsRot * subsecondsTranslation;
@@ -175,7 +183,45 @@ void AppWindow::glutDisplay ()
     secondsRot.rotz(secondsRotation);
     secondsTranslation.translation(0.0f, 0.425f, 0.0f);
     secondsRotationFinal = stransf * secondsRot * secondsTranslation;
-    _seconds.draw(secondsRotationFinal, sproj);
+    _seconds.draw(secondsRotationFinal, sproj);*/
+    
+    // Compute the transformation matrices for the projection!!
+    GsMat shadowMatrix;
+    GLfloat groundPlane[4] = {0, 1, 0, 0};
+    
+    GLfloat light[4] = {2, 2, 2, 1};
+    
+    //GsVec lightPosition = stransf * GsVec(0, 2, 2);
+    //GLfloat light[4] = {lightPosition.x, lightPosition.y, lightPosition.z, 0};
+    
+    GLfloat dotProduct = (groundPlane[0] * light[0]) +
+                         (groundPlane[1] * light[1]) +
+                         (groundPlane[2] * light[2]) +
+                         (groundPlane[3] * light[3]);
+    
+    shadowMatrix.e[0] = dotProduct - (light[0] * groundPlane[0]);
+    shadowMatrix.e[4] =            - (light[0] * groundPlane[1]);
+    shadowMatrix.e[8] =            - (light[0] * groundPlane[2]);
+    shadowMatrix.e[12] =           - (light[0] * groundPlane[3]);
+    
+    shadowMatrix.e[1] =            - (light[1] * groundPlane[0]);
+    shadowMatrix.e[5] = dotProduct - (light[1] * groundPlane[1]);
+    shadowMatrix.e[9] =            - (light[1] * groundPlane[2]);
+    shadowMatrix.e[13] =           - (light[1] * groundPlane[3]);
+    
+    shadowMatrix.e[2] =             - (light[2] * groundPlane[0]);
+    shadowMatrix.e[6] =             - (light[2] * groundPlane[1]);
+    shadowMatrix.e[10] = dotProduct - (light[2] * groundPlane[2]);
+    shadowMatrix.e[14] =            - (light[2] * groundPlane[3]);
+    
+    shadowMatrix.e[3] =             - (light[3] * groundPlane[0]);
+    shadowMatrix.e[7] =             - (light[3] * groundPlane[1]);
+    shadowMatrix.e[11] =            - (light[3] * groundPlane[2]);
+    shadowMatrix.e[15] = dotProduct - (light[3] * groundPlane[3]);
+    
+    //GsMat shadowTransform = stransf * shadowMatrix;
+    //_border.draw(shadowTransform, sproj);
+    
     
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)

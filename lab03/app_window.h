@@ -34,8 +34,10 @@ class AppWindow : public GlutWindow
     bool  _viewaxis;
     int _w, _h;
     
-    std::chrono::high_resolution_clock::time_point initialTime;
-
+    std::chrono::high_resolution_clock::time_point previousTime;
+    double frameTime;
+    bool   paused;
+    
 public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();

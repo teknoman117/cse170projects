@@ -66,8 +66,8 @@ void SoTube::build ( float len, float r, int nfaces )
     {
         float p = static_cast<float>(i) * faceAngularLength;
         
-        V.push_back(GsVec(r * std::cos(p), hlen, r * std::sin(p)));
-        V.push_back(GsVec(r * std::cos(p), -hlen, r * std::sin(p)));
+        V.push_back(GsVec(r * std::cos(p), r * std::sin(p) + 0.5f,  hlen));
+        V.push_back(GsVec(r * std::cos(p), r * std::sin(p) + 0.5f, -hlen));
     }
     
     // Stitch everything back together
