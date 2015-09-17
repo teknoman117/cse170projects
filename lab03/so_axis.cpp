@@ -12,9 +12,10 @@ void SoAxis::init ( const GlProgram& prog )
    set_program ( prog );
    gen_vertex_arrays ( 1 ); // will use 1 vertex array
    gen_buffers ( 2 );       // will use 2 buffers: one for coordinates and one for colors
-   uniform_locations ( 2 ); // will send 2 variables: the 2 matrices below
+   uniform_locations ( 3 ); // will send 2 variables: the 2 matrices below
    uniform_location ( 0, "vTransf" );
    uniform_location ( 1, "vProj" );
+   uniform_location ( 2, "diffuse" );
  }
 
 void SoAxis::build ( float r )
@@ -70,6 +71,7 @@ void SoAxis::draw ( GsMat& tr, GsMat& pr )
 
    glUniformMatrix4fv ( uniloc[0], 1, GL_FALSE, tr.e );
    glUniformMatrix4fv ( uniloc[1], 1, GL_FALSE, pr.e );
+   glUniform4f ( uniloc[2], 1, 1, 1, 1);
 
    glDrawArrays ( GL_LINES, 0, _numpoints );
  }

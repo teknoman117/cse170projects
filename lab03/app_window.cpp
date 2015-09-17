@@ -7,6 +7,38 @@
 
 using namespace std::chrono;
 
+namespace 
+{
+    // Compute the shadow matrix (adapted from ftp://ftp.sgi.com/opengl/contrib/blythe/advanced99/notes/node192.html)
+    void ComputeShadowMatrix(GsMat& shadowMat, float *ground, float *light)
+    {
+        float dot = ground[0] * light[0] +
+                    ground[1] * light[1] +
+                    ground[2] * light[2] +
+                    ground[3] * light[3];
+        
+        shadowMat.e[0] = dot - light[0] * ground[0];
+        shadowMat.e[1] = 0.0 - light[0] * ground[1];
+        shadowMat.e[2] = 0.0 - light[0] * ground[2];
+        shadowMat.e[3] = 0.0 - light[0] * ground[3];
+        
+        shadowMat.e[4] = 0.0 - light[1] * ground[0];
+        shadowMat.e[5] = dot - light[1] * ground[1];
+        shadowMat.e[6] = 0.0 - light[1] * ground[2];
+        shadowMat.e[7] = 0.0 - light[1] * ground[3];
+        
+        shadowMat.e[8] = 0.0 - light[2] * ground[0];
+        shadowMat.e[9] = 0.0 - light[2] * ground[1];
+        shadowMat.e[10] = dot - light[2] * ground[2];
+        shadowMat.e[11] = 0.0 - light[2] * ground[3];
+        
+        shadowMat.e[12] = 0.0 - light[3] * ground[0];
+        shadowMat.e[13] = 0.0 - light[3] * ground[1];
+        shadowMat.e[14] = 0.0 - light[3] * ground[2];
+        shadowMat.e[15] = dot - light[3] * ground[3];
+    }
+}
+
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     : GlutWindow ( label, x, y, w, h )
 {
@@ -22,6 +54,9 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     previousTime = high_resolution_clock::now();
     frameTime = 0.0;
     paused = false;
+
+    lightPosition = GsVec(0.0, 1.0, 0.0);
+    lightEnabled = true;
 }
 
 void AppWindow::initPrograms ()
@@ -36,6 +71,10 @@ void AppWindow::initPrograms ()
     _border.init ( _prog );
     _subseconds.init ( _prog );
     _seconds.init ( _prog );
+
+    // Indicator to show where the light is
+    lightIndicator.init(_prog);
+    lightIndicator.build(0.0, 0.05, 0.05, 6);
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -54,6 +93,13 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
     {
     case ' ': paused = !paused; break;
     case '\r': frameTime = 0.0; break;
+    case 'q': lightPosition.x += 0.05; break;
+    case 'w': lightPosition.y += 0.05; break;
+    case 'e': lightPosition.z += 0.05; break;
+    case 'a': lightPosition.x -= 0.05; break;
+    case 's': lightPosition.y = (lightPosition.y - 0.05 > 0.05) ? lightPosition.y - 0.05 : 0.05; break;
+    case 'd': lightPosition.z -= 0.05f; break;
+    case '/': lightEnabled = !lightEnabled; break;
     case 27 : exit(1); // Esc was pressed
     }
 }
@@ -106,7 +152,9 @@ void AppWindow::glutDisplay ()
     previousTime = currentTime;
     
     if(!paused)
+    {
         frameTime += frameDelta.count();
+    }
     
     double subsecondsRotation = frameTime * (2.0 * M_PI);
     double secondsRotation = (frameTime / 60.0) * (2.0 * M_PI);
@@ -127,16 +175,16 @@ void AppWindow::glutDisplay ()
     }
     if ( _seconds.changed )
     {
-        _seconds.build(0.85, 0.01666, 0.01666, 5);
+        _seconds.build(0.425, 0.008333, 0.008333, 2.5);
     }
     if ( _subseconds.changed )
     {
-        _subseconds.build(0.60, 0.01666, 0.01666, 5);
+        _subseconds.build(0.30, 0.008333, 0.008333, 2.5);
     }
-    
 
     // Define our scene transformation:
-    GsMat rx, ry, stransf;
+    GsMat rx, ry, stransf, nshadow;
+    nshadow.identity();
     rx.rotx ( _rotx );
     ry.roty ( _roty );
     stransf = rx*ry; // set the scene transformation matrix
@@ -148,7 +196,7 @@ void AppWindow::glutDisplay ()
     GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
     camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
 
-    float aspect=static_cast<float>(_w) / static_cast<float>(_h), znear=0.1f, zfar=50.0f;
+    float aspect=static_cast<float>(_w) / static_cast<float>(_h), znear=0.1f, zfar=500.0f;
     persp.perspective ( _fovy, aspect, znear, zfar ); // set our 4x4 perspective matrix
 
     // Our matrices are in "line-major" format, so vertices should be multiplied on the 
@@ -160,68 +208,62 @@ void AppWindow::glutDisplay ()
     //  format, what will cause our values to be transposed, and we will then have in our 
     //  shaders vectors on the left side of a multiplication to a matrix.
 
-    // Draw:
+    // Draw the axes
     if ( _viewaxis )
+    {
         _axis.draw ( stransf, sproj );
+    }
     
+    // Transform matrices
+    GsMat transform;
+
     // Draw the border
-    /*GsMat borderTranslation, borderTransform;
+    GsMat borderTranslation;
     borderTranslation.translation(0.0, 0.5, 0.0);
-    borderTransform = stransf;
+    transform = stransf * borderTranslation;
+    _border.draw(transform, sproj, GsColor::white);
     
-    _border.draw(borderTransform, sproj);*/
-    
+    GsMat derp;
+    derp.translation(0.0f, 0.5f, 0.0f);
+
     // Compute the sub sections transformations
-    /*GsMat subsecondsRotationFinal, subsecondsRot, subsecondsTranslation;
+    GsMat subsecondsRot, subsecondsTranslation;
     subsecondsRot.rotz(subsecondsRotation);
-    subsecondsTranslation.translation(0.0f, 0.30f, 0.0f);
-    subsecondsRotationFinal = stransf * subsecondsRot * subsecondsTranslation;
-    _subseconds.draw(subsecondsRotationFinal, sproj);
+    subsecondsTranslation.translation(0.0f, 0.15f, 0.0f);
+    transform = stransf * derp * subsecondsRot * subsecondsTranslation;
+    _subseconds.draw(transform, sproj, GsColor::white);
     
     // Compute the sub sections transformations
-    GsMat secondsRotationFinal, secondsRot, secondsTranslation;
+    GsMat secondsRot, secondsTranslation;
     secondsRot.rotz(secondsRotation);
-    secondsTranslation.translation(0.0f, 0.425f, 0.0f);
-    secondsRotationFinal = stransf * secondsRot * secondsTranslation;
-    _seconds.draw(secondsRotationFinal, sproj);*/
-    
-    // Compute the transformation matrices for the projection!!
-    GsMat shadowMatrix;
-    GLfloat groundPlane[4] = {0, 1, 0, 0};
-    
-    GLfloat light[4] = {2, 2, 2, 1};
-    
-    //GsVec lightPosition = stransf * GsVec(0, 2, 2);
-    //GLfloat light[4] = {lightPosition.x, lightPosition.y, lightPosition.z, 0};
-    
-    GLfloat dotProduct = (groundPlane[0] * light[0]) +
-                         (groundPlane[1] * light[1]) +
-                         (groundPlane[2] * light[2]) +
-                         (groundPlane[3] * light[3]);
-    
-    shadowMatrix.e[0] = dotProduct - (light[0] * groundPlane[0]);
-    shadowMatrix.e[4] =            - (light[0] * groundPlane[1]);
-    shadowMatrix.e[8] =            - (light[0] * groundPlane[2]);
-    shadowMatrix.e[12] =           - (light[0] * groundPlane[3]);
-    
-    shadowMatrix.e[1] =            - (light[1] * groundPlane[0]);
-    shadowMatrix.e[5] = dotProduct - (light[1] * groundPlane[1]);
-    shadowMatrix.e[9] =            - (light[1] * groundPlane[2]);
-    shadowMatrix.e[13] =           - (light[1] * groundPlane[3]);
-    
-    shadowMatrix.e[2] =             - (light[2] * groundPlane[0]);
-    shadowMatrix.e[6] =             - (light[2] * groundPlane[1]);
-    shadowMatrix.e[10] = dotProduct - (light[2] * groundPlane[2]);
-    shadowMatrix.e[14] =            - (light[2] * groundPlane[3]);
-    
-    shadowMatrix.e[3] =             - (light[3] * groundPlane[0]);
-    shadowMatrix.e[7] =             - (light[3] * groundPlane[1]);
-    shadowMatrix.e[11] =            - (light[3] * groundPlane[2]);
-    shadowMatrix.e[15] = dotProduct - (light[3] * groundPlane[3]);
-    
-    //GsMat shadowTransform = stransf * shadowMatrix;
-    //_border.draw(shadowTransform, sproj);
-    
+    secondsTranslation.translation(0.0f, 0.2125f, 0.0f);
+    transform = stransf * derp * secondsRot * secondsTranslation;
+    _seconds.draw(transform, sproj, GsColor::white);
+
+    // Draw the shadow  stuff
+    if(lightEnabled)
+    {
+        // Draw an indicator of the lights position
+        transform.translation(lightPosition);
+        transform = stransf * transform;
+        lightIndicator.draw(transform, sproj, GsColor::yellow);
+
+        // Compute the shadow projection matrix
+        GsMat shadowMatrix;
+        float light[4] = {lightPosition.x, lightPosition.y, lightPosition.z, 1};
+        float ground[4] = {0, 1, 0, 0};
+
+        ComputeShadowMatrix(shadowMatrix, &ground[0], &light[0]);
+
+        transform = stransf * shadowMatrix * borderTranslation;
+        _border.draw(transform, sproj, GsColor::cyan);
+        
+        transform = stransf * shadowMatrix * derp * subsecondsRot * subsecondsTranslation;
+        _subseconds.draw(transform, sproj, GsColor::cyan);
+
+        transform = stransf * shadowMatrix * derp * secondsRot * secondsTranslation;
+        _seconds.draw(transform, sproj, GsColor::cyan);
+    }
     
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)

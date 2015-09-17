@@ -24,7 +24,7 @@ public :
     SoTube();
     void init ( const GlProgram& prog );
     void build ( float len, float r, int nfaces );
-    void draw ( GsMat& tr, GsMat& pr );
+    void draw ( GsMat& tr, GsMat& pr, GsColor color );
 };
 
 #endif // SO_AXIS_H

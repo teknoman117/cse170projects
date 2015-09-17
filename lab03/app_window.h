@@ -33,6 +33,11 @@ class AppWindow : public GlutWindow
     float _rotx, _roty, _fovy;
     bool  _viewaxis;
     int _w, _h;
+
+    // Shadow data
+    GsVec     lightPosition;
+    bool      lightEnabled;
+    SoCapsule lightIndicator;
     
     std::chrono::high_resolution_clock::time_point previousTime;
     double frameTime;
