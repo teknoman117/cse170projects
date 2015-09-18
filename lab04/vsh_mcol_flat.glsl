@@ -4,7 +4,7 @@ layout (location = 0) in vec3 vPos;
 layout (location = 1) in vec4 vColor;
 uniform mat4 vTransf;
 uniform mat4 vProj;
-flat out vec4 Color;
+out vec4 Color;
 
 void main ()
  {

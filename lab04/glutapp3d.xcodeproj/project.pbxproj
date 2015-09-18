@@ -22,6 +22,7 @@
 		F1190EFE1B97A5AA002C4607 /* libGLEWmx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */; };
 		F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
 		F1190F021B97A5EF002C4607 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190F011B97A5EF002C4607 /* GLUT.framework */; };
+		F1AB82F31BABB54E00807C48 /* so_cylinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +64,11 @@
 		F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEWmx.a; sourceTree = "<group>"; };
 		F1190EFF1B97A5EA002C4607 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_cylinder.cpp; sourceTree = SOURCE_ROOT; };
+		F1AB82F21BABB54E00807C48 /* so_cylinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_cylinder.h; sourceTree = SOURCE_ROOT; };
+		F1AB82F51BABBE9500807C48 /* fsh_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_flat.glsl; sourceTree = "<group>"; };
+		F1AB82F61BABBE9500807C48 /* vsh_mcol_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_mcol_flat.glsl; sourceTree = "<group>"; };
+		F1AB82F71BABD2DD00807C48 /* vsh_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_flat.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				F1190ED11B97A549002C4607 /* glutapp3d */,
+				F1AB82F41BABBE7F00807C48 /* shaders */,
 				F1190EFA1B97A5AA002C4607 /* lib */,
 				F1190ED01B97A549002C4607 /* Products */,
 			);
@@ -110,6 +117,8 @@
 				F1190EEC1B97A598002C4607 /* ogl_tools.h */,
 				F1190EED1B97A598002C4607 /* so_axis.cpp */,
 				F1190EEE1B97A598002C4607 /* so_axis.h */,
+				F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */,
+				F1AB82F21BABB54E00807C48 /* so_cylinder.h */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -143,6 +152,16 @@
 			);
 			name = lib;
 			path = osx/glew/lib;
+			sourceTree = "<group>";
+		};
+		F1AB82F41BABBE7F00807C48 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F1AB82F51BABBE9500807C48 /* fsh_flat.glsl */,
+				F1AB82F71BABD2DD00807C48 /* vsh_flat.glsl */,
+				F1AB82F61BABBE9500807C48 /* vsh_mcol_flat.glsl */,
+			);
+			name = shaders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,6 +227,7 @@
 				F1190EF51B97A598002C4607 /* gs_quat.cpp in Sources */,
 				F1190EF21B97A598002C4607 /* gs.cpp in Sources */,
 				F1190EF01B97A598002C4607 /* app_window.cpp in Sources */,
+				F1AB82F31BABB54E00807C48 /* so_cylinder.cpp in Sources */,
 				F1190EF81B97A598002C4607 /* ogl_tools.cpp in Sources */,
 				F1190EF41B97A598002C4607 /* gs_mat.cpp in Sources */,
 				F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */,
@@ -338,6 +358,7 @@
 				F1190ED81B97A549002C4607 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
