@@ -10,32 +10,59 @@ using namespace std::chrono;
 namespace 
 {
     // Compute the shadow matrix (adapted from ftp://ftp.sgi.com/opengl/contrib/blythe/advanced99/notes/node192.html)
-    void ComputeShadowMatrix(GsMat& shadowMat, float *ground, float *light)
+    void ComputeShadowMatrixPointLight(GsMat& shadowMat, GsVec light, float *ground)
     {
         float dot = ground[0] * light[0] +
                     ground[1] * light[1] +
                     ground[2] * light[2] +
-                    ground[3] * light[3];
+                    ground[3];
         
-        shadowMat.e[0] = dot - light[0] * ground[0];
-        shadowMat.e[1] = 0.0 - light[0] * ground[1];
-        shadowMat.e[2] = 0.0 - light[0] * ground[2];
-        shadowMat.e[3] = 0.0 - light[0] * ground[3];
+        shadowMat.e[0] = dot - light.x * ground[0];
+        shadowMat.e[1] = 0.0 - light.x * ground[1];
+        shadowMat.e[2] = 0.0 - light.x * ground[2];
+        shadowMat.e[3] = 0.0 - light.x * ground[3];
         
-        shadowMat.e[4] = 0.0 - light[1] * ground[0];
-        shadowMat.e[5] = dot - light[1] * ground[1];
-        shadowMat.e[6] = 0.0 - light[1] * ground[2];
-        shadowMat.e[7] = 0.0 - light[1] * ground[3];
+        shadowMat.e[4] = 0.0 - light.y * ground[0];
+        shadowMat.e[5] = dot - light.y * ground[1];
+        shadowMat.e[6] = 0.0 - light.y * ground[2];
+        shadowMat.e[7] = 0.0 - light.y * ground[3];
         
-        shadowMat.e[8] = 0.0 - light[2] * ground[0];
-        shadowMat.e[9] = 0.0 - light[2] * ground[1];
-        shadowMat.e[10] = dot - light[2] * ground[2];
-        shadowMat.e[11] = 0.0 - light[2] * ground[3];
+        shadowMat.e[8] = 0.0 - light.z * ground[0];
+        shadowMat.e[9] = 0.0 - light.z * ground[1];
+        shadowMat.e[10] = dot - light.z * ground[2];
+        shadowMat.e[11] = 0.0 - light.z * ground[3];
         
-        shadowMat.e[12] = 0.0 - light[3] * ground[0];
-        shadowMat.e[13] = 0.0 - light[3] * ground[1];
-        shadowMat.e[14] = 0.0 - light[3] * ground[2];
-        shadowMat.e[15] = dot - light[3] * ground[3];
+        shadowMat.e[12] = 0.0 - ground[0];
+        shadowMat.e[13] = 0.0 - ground[1];
+        shadowMat.e[14] = 0.0 - ground[2];
+        shadowMat.e[15] = dot - ground[3];
+    }
+    
+    void ComputeShadowMatrixDirectionalLight(GsMat& shadowMat, GsVec light, float *ground)
+    {
+        float dot = ground[0] * light[0] +
+                    ground[1] * light[1] +
+                    ground[2] * light[2];
+        
+        shadowMat.e[0] = dot - light.x * ground[0];
+        shadowMat.e[1] = 0.0 - light.x * ground[1];
+        shadowMat.e[2] = 0.0 - light.x * ground[2];
+        shadowMat.e[3] = 0.0 - light.x * ground[3];
+        
+        shadowMat.e[4] = 0.0 - light.y * ground[0];
+        shadowMat.e[5] = dot - light.y * ground[1];
+        shadowMat.e[6] = 0.0 - light.y * ground[2];
+        shadowMat.e[7] = 0.0 - light.y * ground[3];
+        
+        shadowMat.e[8] = 0.0 - light.z * ground[0];
+        shadowMat.e[9] = 0.0 - light.z * ground[1];
+        shadowMat.e[10] = dot - light.z * ground[2];
+        shadowMat.e[11] = 0.0 - light.z * ground[3];
+        
+        shadowMat.e[12] = 0.0;
+        shadowMat.e[13] = 0.0;
+        shadowMat.e[14] = 0.0;
+        shadowMat.e[15] = dot;
     }
 }
 
@@ -250,11 +277,10 @@ void AppWindow::glutDisplay ()
 
         // Compute the shadow projection matrix
         GsMat shadowMatrix;
-        float light[4] = {lightPosition.x, lightPosition.y, lightPosition.z, 1};
         float ground[4] = {0, 1, 0, 0};
-
-        ComputeShadowMatrix(shadowMatrix, &ground[0], &light[0]);
-
+        
+        ComputeShadowMatrixPointLight(shadowMatrix, lightPosition, &ground[0]);
+        
         transform = stransf * shadowMatrix * borderTranslation;
         _border.draw(transform, sproj, GsColor::cyan);
         
