@@ -132,7 +132,7 @@ void AppWindow::glutDisplay ()
     GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
     camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
 
-    float aspect=1.0f, znear=0.1f, zfar=50.0f;
+    float aspect=static_cast<float>(_w)/static_cast<float>(_h), znear=0.1f, zfar=50.0f;
     persp.perspective ( _fovy, aspect, znear, zfar ); // set our 4x4 perspective matrix
 
     // Our matrices are in "line-major" format, so vertices should be multiplied on the 
