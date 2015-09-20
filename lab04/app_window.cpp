@@ -4,7 +4,7 @@
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h )
+    : GlutWindow ( label, x, y, w, h ), _material(GsColor(128, 128, 0), GsColor(255, 255, 0), GsColor::white, 3.0f), _sun(GsVec(2, 2, 2), GsColor(128, 128, 0), GsColor::white, GsColor::white)
 {
     initPrograms ();
     addMenuEntry ( "Option 0", evOption0 );
@@ -22,8 +22,8 @@ void AppWindow::initPrograms ()
     // Load your shaders and link your programs here:
     _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
     _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
-    _flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_flat.glsl");
-    _flatfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_flat.glsl");
+    _flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lighting.glsl");
+    _flatfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lighting.glsl");
 
     _prog.init_and_link ( _vertexsh, _fragsh );
     _flatprog.init_and_link( _flatvsh, _flatfsh );
@@ -147,7 +147,9 @@ void AppWindow::glutDisplay ()
     // Draw:
     if ( _viewaxis ) _axis.draw ( stransf, sproj );
     
-    _cylinder.draw(stransf, sproj);
+    _sun.pos = stransf * GsVec(2,2,2);
+    
+    _cylinder.draw(stransf, sproj, _sun, _material);
 
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)

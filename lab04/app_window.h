@@ -24,6 +24,9 @@ class AppWindow : public GlutWindow
     SoAxis _axis;
     SoCylinder _cylinder;
     
+    Light _sun;
+    Material _material;
+    
     // App data:
     enum MenuEv { evOption0, evOption1 };
     float _rotx, _roty, _fovy;

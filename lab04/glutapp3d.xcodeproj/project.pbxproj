@@ -64,6 +64,10 @@
 		F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEWmx.a; sourceTree = "<group>"; };
 		F1190EFF1B97A5EA002C4607 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		F12CD1CF1BAC902F000B7688 /* material.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = material.h; sourceTree = SOURCE_ROOT; };
+		F12CD1D11BAC91AA000B7688 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = SOURCE_ROOT; };
+		F12CD1D21BACBFB0000B7688 /* fsh_lighting.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_lighting.glsl; sourceTree = "<group>"; };
+		F12CD1D31BACBFB0000B7688 /* vsh_lighting.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_lighting.glsl; sourceTree = "<group>"; };
 		F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_cylinder.cpp; sourceTree = SOURCE_ROOT; };
 		F1AB82F21BABB54E00807C48 /* so_cylinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_cylinder.h; sourceTree = SOURCE_ROOT; };
 		F1AB82F51BABBE9500807C48 /* fsh_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_flat.glsl; sourceTree = "<group>"; };
@@ -119,6 +123,8 @@
 				F1190EEE1B97A598002C4607 /* so_axis.h */,
 				F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */,
 				F1AB82F21BABB54E00807C48 /* so_cylinder.h */,
+				F12CD1CF1BAC902F000B7688 /* material.h */,
+				F12CD1D11BAC91AA000B7688 /* light.h */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -157,6 +163,8 @@
 		F1AB82F41BABBE7F00807C48 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				F12CD1D21BACBFB0000B7688 /* fsh_lighting.glsl */,
+				F12CD1D31BACBFB0000B7688 /* vsh_lighting.glsl */,
 				F1AB82F51BABBE9500807C48 /* fsh_flat.glsl */,
 				F1AB82F71BABD2DD00807C48 /* vsh_flat.glsl */,
 				F1AB82F61BABBE9500807C48 /* vsh_mcol_flat.glsl */,
