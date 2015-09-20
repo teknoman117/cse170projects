@@ -8,9 +8,18 @@ void SoCylinder::init ( const GlProgram& prog )
     gen_vertex_arrays ( 1 ); // will use 1 vertex array
     gen_buffers ( 3 );       // will use 2 buffers: one for coordinates, one for normals, one for indices
     
-    uniform_locations ( 2 ); // will send 2 variables: the 2 matrices below
+    uniform_locations ( 10 ); // will send 2 variables: the 2 matrices below
     uniform_location ( 0, "vTransf" );
     uniform_location ( 1, "vProj" );
+    
+    uniform_location(2, "lPos");
+    uniform_location(3, "la");
+    uniform_location(4, "ld");
+    uniform_location(5, "ls");
+    uniform_location(6, "ka");
+    uniform_location(7, "kd");
+    uniform_location(8, "ks");
+    uniform_location(9, "sh");
 }
 
 void SoCylinder::build ( float length, float radius, unsigned short nfaces )
@@ -100,7 +109,7 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
     changed = 0;
 }
 
-void SoCylinder::draw ( GsMat& tr, GsMat& pr )
+void SoCylinder::draw ( GsMat& tr, GsMat& pr, const Light& l, const Material& m )
 {
     // Draw Lines:
     glUseProgram ( prog );
@@ -118,6 +127,16 @@ void SoCylinder::draw ( GsMat& tr, GsMat& pr )
     
     glUniformMatrix4fv ( uniloc[0], 1, GL_FALSE, tr.e );
     glUniformMatrix4fv ( uniloc[1], 1, GL_FALSE, pr.e );
+    
+    float f[4]; // we convert below our color values to be in [0,1]
+    glUniform3fv ( uniloc[2], 1, l.pos.e );
+    glUniform4fv ( uniloc[3], 1, l.amb.get(f) );
+    glUniform4fv ( uniloc[4], 1, l.dif.get(f) );
+    glUniform4fv ( uniloc[5], 1, l.spe.get(f) );
+    glUniform4fv ( uniloc[6], 1, m.amb.get(f) );
+    glUniform4fv ( uniloc[7], 1, m.dif.get(f) );
+    glUniform4fv ( uniloc[8], 1, m.spe.get(f) );
+    glUniform1fv ( uniloc[9], 1, &m.sh );
     
     glDrawElements( GL_TRIANGLE_STRIP, (GLsizei) elementCount, GL_UNSIGNED_SHORT, 0);
 }

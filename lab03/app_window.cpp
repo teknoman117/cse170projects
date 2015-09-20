@@ -64,6 +64,21 @@ namespace
         shadowMat.e[14] = 0.0;
         shadowMat.e[15] = dot;
     }
+    
+    
+    void ComputeShadowMatrixGroundPointLight(GsMat& shadowMat, GsVec light)
+    {
+        shadowMat.zero();
+        
+        shadowMat.e[0] = light.y;
+        shadowMat.e[1] = -light.x;
+        shadowMat.e[9] = -light.z;
+        shadowMat.e[10] = light.y;
+        shadowMat.e[13] = -1;
+        shadowMat.e[15] = light.y;
+        
+    }
+    
 }
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
@@ -279,7 +294,8 @@ void AppWindow::glutDisplay ()
         GsMat shadowMatrix;
         float ground[4] = {0, 1, 0, 0};
         
-        ComputeShadowMatrixPointLight(shadowMatrix, lightPosition, &ground[0]);
+        //ComputeShadowMatrixDirectionalLight(shadowMatrix, lightPosition, &ground[0]);
+        ComputeShadowMatrixGroundPointLight(shadowMatrix, lightPosition);
         
         transform = stransf * shadowMatrix * borderTranslation;
         _border.draw(transform, sproj, GsColor::cyan);
