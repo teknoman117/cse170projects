@@ -4,7 +4,7 @@
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h ), _material(GsColor(128, 128, 0), GsColor(255, 255, 0), GsColor::white, 3.0f), _sun(GsVec(2, 2, 2), GsColor(128, 128, 0), GsColor::white, GsColor::white)
+    : GlutWindow ( label, x, y, w, h ), _sun(GsVec(2, 2, 2), GsColor(128, 128, 0), GsColor::white, GsColor::white), _material(GsColor(128, 128, 0), GsColor(255, 255, 0), GsColor::white, 3.0f)
 {
     initPrograms ();
     addMenuEntry ( "Option 0", evOption0 );
@@ -45,51 +45,41 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 {
-    bool updated = true;
-    
     switch ( key )
     {
-    case ' ': _viewaxis = !_viewaxis; break;
-    case 'q': nfaces++; _cylinder.changed = 1; break;
-    case 'a': nfaces = (nfaces > 3) ? nfaces - 1 : 3; _cylinder.changed = 1; break;
-    case 27 : exit(1); // Esc was pressed
-    default: updated = false;
-    }
-    
-    if(updated)
-    {
-        redraw();
+      case ' ': _viewaxis = !_viewaxis; break;
+      case 'q': nfaces++; _cylinder.changed = 1; break;
+      case 'a': nfaces = (nfaces > 3) ? nfaces - 1 : 3; _cylinder.changed = 1; break;
+      case 27 : exit(1); // Esc was pressed
     }
 }
 
 void AppWindow::glutSpecial ( int key, int x, int y )
- {
-   bool rd=true;
-   const float incr=GS_TORAD(2.5f);
-   const float incf=0.05f;
-   switch ( key )
-    { case GLUT_KEY_LEFT:      _roty-=incr; break;
-      case GLUT_KEY_RIGHT:     _roty+=incr; break;
-      case GLUT_KEY_UP:        _rotx-=incr; break;
-      case GLUT_KEY_DOWN:      _rotx+=incr; break;
-      case GLUT_KEY_PAGE_UP:   _fovy-=incf; break;
-      case GLUT_KEY_PAGE_DOWN: _fovy+=incf; break;
-      case GLUT_KEY_HOME:      _fovy=GS_TORAD(60.0f); _rotx=_roty=0; break;
-      default: return; // return without rendering
-	}
-   if (rd) redraw(); // ask the window to be rendered when possible
- }
+{
+    const float incr=GS_TORAD(2.5f);
+    const float incf=0.05f;
+    switch ( key )
+    { 
+        case GLUT_KEY_LEFT:      _roty-=incr; break;
+        case GLUT_KEY_RIGHT:     _roty+=incr; break;
+        case GLUT_KEY_UP:        _rotx-=incr; break;
+        case GLUT_KEY_DOWN:      _rotx+=incr; break;
+        case GLUT_KEY_PAGE_UP:   _fovy-=incf; break;
+        case GLUT_KEY_PAGE_DOWN: _fovy+=incf; break;
+        case GLUT_KEY_HOME:      _fovy=GS_TORAD(60.0f); _rotx=_roty=0; break;
+    }
+}
 
 void AppWindow::glutMouse ( int b, int s, int x, int y )
- {
-   // The mouse is not used in this example.
-   // Recall that a mouse click in the screen corresponds
-   // to a whole line traversing the 3D scene.
- }
+{
+    // The mouse is not used in this example.
+    // Recall that a mouse click in the screen corresponds
+    // to a whole line traversing the 3D scene.
+}
 
 void AppWindow::glutMotion ( int x, int y )
- {
- }
+{
+}
 
 void AppWindow::glutMenu ( int m )
  {
@@ -154,5 +144,10 @@ void AppWindow::glutDisplay ()
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)
     glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
+}
+
+void AppWindow::glutIdle()
+{
+  redraw();
 }
 

@@ -23,6 +23,7 @@ public:
     
     void init ( const GlProgram& prog );
     void build ( float length, float radius, unsigned short nfaces );
+    
     void draw ( GsMat& tr, GsMat& pr, const Light& l, const Material& m );
 };
 

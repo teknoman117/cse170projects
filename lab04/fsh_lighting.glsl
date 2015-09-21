@@ -32,7 +32,8 @@ void main()
     if(dot(l,n) < 0)
     {
         s = vec4(0,0,0,1);
+        d = vec4(0,0,0,1);
     }
     
-    FragColor = vec4(a.rgb + d.xyz + s.xyz, 1.0);
+    FragColor = a + d;
 }

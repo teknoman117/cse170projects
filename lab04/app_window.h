@@ -47,6 +47,7 @@ public :
     virtual void glutMotion ( int x, int y );
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
+    virtual void glutIdle ();
 };
 
 #endif // APP_WINDOW_H
