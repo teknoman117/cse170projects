@@ -34,6 +34,12 @@
     <ClCompile Include="..\so_axis.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\so_cylinder.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\so_segments.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -66,6 +72,12 @@
     <ClInclude Include="..\so_axis.h">
       <Filter>myapp</Filter>
     </ClInclude>
+    <ClInclude Include="..\so_cylinder.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_segments.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="myapp">
@@ -86,6 +98,15 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\vsh_mcol_flat.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\fsh_lighting.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_flat.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_lighting.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

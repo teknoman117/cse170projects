@@ -1,6 +1,10 @@
 #include "so_cylinder.h"
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159f
+#endif
+
 void SoCylinder::init ( const GlProgram& prog, const GlProgram& nprog, bool smooth )
 {
     // Define buffers needed:
@@ -87,7 +91,7 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
     N[(4*nfaces) + 1] = GsVec(0,-1,0);
     
     // Compute the indices into the vertices for the tube
-    for(size_t i = 0; i < nfaces; i++)
+    for(unsigned short i = 0; i < nfaces; i++)
     {
         E.push_back(i + (0*nfaces));
         E.push_back(i + (1*nfaces));
@@ -96,7 +100,7 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
     E.push_back(1*nfaces);
 
     // Compute the indices for the top
-    for(size_t i = 0; i < nfaces; i++)
+    for(unsigned short i = 0; i < nfaces; i++)
     {
         E.push_back(i + (2*nfaces));
         E.push_back(0 + (4*nfaces));
@@ -105,7 +109,7 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
     E.push_back(4*nfaces);
     
     // Compute the indices for the bottom
-    for(size_t i = 0; i < nfaces; i++)
+    for(unsigned short i = 0; i < nfaces; i++)
     {
         E.push_back(1 + (4*nfaces));
         E.push_back(i + (3*nfaces));
@@ -121,7 +125,7 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
             normals.P.push_back(*v);
             normals.C.push_back(GsColor::green);
             
-            normals.P.push_back((*v) + (*n * 0.075));
+            normals.P.push_back((*v) + (*n * 0.075f));
             normals.C.push_back(GsColor::green);
         }
     }
@@ -129,44 +133,6 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
     // build the normals for the hard surface
     else
     {
-        /*for(std::vector<unsigned short>::iterator i = E.begin() + 2; i != E.end(); i += 2)
-        {
-            // -2, -1, 0
-            // 1, 0, -1
-            
-            
-            GsVec a = V[*(i-2)];
-            GsVec b = V[*(i-1)];
-            GsVec c = V[*(i)];
-            
-            GsVec origin = (a + b + c) / 3;
-            
-            GsVec an = N[*(i-2)];
-            GsVec bn = N[*(i-1)];
-            GsVec cn = N[*(i)];
-            
-            GsVec normal = (an + bn + cn) / 3;
-            normal.normalize();
-            
-            normals.P.push_back(origin); normals.C.push_back(GsColor::yellow);
-            normals.P.push_back(origin + (normal * 0.075)); normals.C.push_back(GsColor::yellow);
-            
-            a = V[*(i+1)];
-            b = V[*(i)];
-            c = V[*(i-1)];
-            
-            origin = (a + b + c) / 3;
-            
-            an = N[*(i+1)];
-            bn = N[*(i)];
-            cn = N[*(i-1)];
-            
-            normal = (an + bn + cn) / 3;
-            normal.normalize();
-            
-            normals.P.push_back(origin); normals.C.push_back(GsColor::yellow);
-            normals.P.push_back(origin + (normal * 0.075)); normals.C.push_back(GsColor::yellow);
-        }*/
         for(size_t i = 2; i < E.size(); i += 2)
         {
             // -2, -1, 0
@@ -192,7 +158,7 @@ void SoCylinder::build ( float length, float radius, unsigned short nfaces )
             if(ai != bi && ai != ci && bi != ci  && !( !(i % (nfaces+1)) && i != 0  ))
             {
                 normals.P.push_back(origin); normals.C.push_back(GsColor::yellow);
-                normals.P.push_back(origin + (normal * 0.075)); normals.C.push_back(GsColor::yellow);
+                normals.P.push_back(origin + (normal * 0.075f)); normals.C.push_back(GsColor::yellow);
             }
             
             ai = E[i+1];

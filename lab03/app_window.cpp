@@ -5,6 +5,10 @@
 
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159
+#endif
+
 using namespace std::chrono;
 
 namespace 
@@ -18,23 +22,23 @@ namespace
                     ground[3];
         
         shadowMat.e[0] = dot - light.x * ground[0];
-        shadowMat.e[1] = 0.0 - light.x * ground[1];
-        shadowMat.e[2] = 0.0 - light.x * ground[2];
-        shadowMat.e[3] = 0.0 - light.x * ground[3];
+        shadowMat.e[1] = 0.0f - light.x * ground[1];
+        shadowMat.e[2] = 0.0f - light.x * ground[2];
+        shadowMat.e[3] = 0.0f - light.x * ground[3];
         
-        shadowMat.e[4] = 0.0 - light.y * ground[0];
+        shadowMat.e[4] = 0.0f - light.y * ground[0];
         shadowMat.e[5] = dot - light.y * ground[1];
-        shadowMat.e[6] = 0.0 - light.y * ground[2];
-        shadowMat.e[7] = 0.0 - light.y * ground[3];
+        shadowMat.e[6] = 0.0f - light.y * ground[2];
+        shadowMat.e[7] = 0.0f - light.y * ground[3];
         
-        shadowMat.e[8] = 0.0 - light.z * ground[0];
-        shadowMat.e[9] = 0.0 - light.z * ground[1];
+        shadowMat.e[8] = 0.0f - light.z * ground[0];
+        shadowMat.e[9] = 0.0f - light.z * ground[1];
         shadowMat.e[10] = dot - light.z * ground[2];
-        shadowMat.e[11] = 0.0 - light.z * ground[3];
+        shadowMat.e[11] = 0.0f - light.z * ground[3];
         
-        shadowMat.e[12] = 0.0 - ground[0];
-        shadowMat.e[13] = 0.0 - ground[1];
-        shadowMat.e[14] = 0.0 - ground[2];
+        shadowMat.e[12] = 0.0f - ground[0];
+        shadowMat.e[13] = 0.0f - ground[1];
+        shadowMat.e[14] = 0.0f - ground[2];
         shadowMat.e[15] = dot - ground[3];
     }
     
@@ -45,23 +49,23 @@ namespace
                     ground[2] * light[2];
         
         shadowMat.e[0] = dot - light.x * ground[0];
-        shadowMat.e[1] = 0.0 - light.x * ground[1];
-        shadowMat.e[2] = 0.0 - light.x * ground[2];
-        shadowMat.e[3] = 0.0 - light.x * ground[3];
+        shadowMat.e[1] = 0.0f - light.x * ground[1];
+        shadowMat.e[2] = 0.0f - light.x * ground[2];
+        shadowMat.e[3] = 0.0f - light.x * ground[3];
         
-        shadowMat.e[4] = 0.0 - light.y * ground[0];
+        shadowMat.e[4] = 0.0f - light.y * ground[0];
         shadowMat.e[5] = dot - light.y * ground[1];
-        shadowMat.e[6] = 0.0 - light.y * ground[2];
-        shadowMat.e[7] = 0.0 - light.y * ground[3];
+        shadowMat.e[6] = 0.0f - light.y * ground[2];
+        shadowMat.e[7] = 0.0f - light.y * ground[3];
         
-        shadowMat.e[8] = 0.0 - light.z * ground[0];
-        shadowMat.e[9] = 0.0 - light.z * ground[1];
+        shadowMat.e[8] = 0.0f - light.z * ground[0];
+        shadowMat.e[9] = 0.0f - light.z * ground[1];
         shadowMat.e[10] = dot - light.z * ground[2];
-        shadowMat.e[11] = 0.0 - light.z * ground[3];
+        shadowMat.e[11] = 0.0f - light.z * ground[3];
         
-        shadowMat.e[12] = 0.0;
-        shadowMat.e[13] = 0.0;
-        shadowMat.e[14] = 0.0;
+        shadowMat.e[12] = 0.0f;
+        shadowMat.e[13] = 0.0f;
+        shadowMat.e[14] = 0.0f;
         shadowMat.e[15] = dot;
     }
     
@@ -74,7 +78,7 @@ namespace
         shadowMat.e[1] = -light.x;
         shadowMat.e[9] = -light.z;
         shadowMat.e[10] = light.y;
-        shadowMat.e[13] = -1;
+        shadowMat.e[13] = -1.0f;
         shadowMat.e[15] = light.y;
         
     }
@@ -104,8 +108,13 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
 void AppWindow::initPrograms ()
 {
     // Load your shaders and link your programs here:
-    _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
-    _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
+#ifdef WIN32
+    _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
+    _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
+#else
+	_vertexsh.load_and_compile(GL_VERTEX_SHADER, "vsh_mcol_flat.glsl");
+	_fragsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_flat.glsl");
+#endif
     _prog.init_and_link ( _vertexsh, _fragsh );
 
     // Init my scene objects:
@@ -116,7 +125,7 @@ void AppWindow::initPrograms ()
 
     // Indicator to show where the light is
     lightIndicator.init(_prog);
-    lightIndicator.build(0.0, 0.05, 0.05, 6);
+    lightIndicator.build(0.0f, 0.05f, 0.05f, 6);
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -135,11 +144,11 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
     {
     case ' ': paused = !paused; break;
     case '\r': frameTime = 0.0; break;
-    case 'q': lightPosition.x += 0.05; break;
-    case 'w': lightPosition.y += 0.05; break;
-    case 'e': lightPosition.z += 0.05; break;
-    case 'a': lightPosition.x -= 0.05; break;
-    case 's': lightPosition.y = (lightPosition.y - 0.05 > 0.05) ? lightPosition.y - 0.05 : 0.05; break;
+    case 'q': lightPosition.x += 0.05f; break;
+    case 'w': lightPosition.y += 0.05f; break;
+    case 'e': lightPosition.z += 0.05f; break;
+    case 'a': lightPosition.x -= 0.05f; break;
+    case 's': lightPosition.y = (lightPosition.y - 0.05f > 0.05f) ? lightPosition.y - 0.05f : 0.05f; break;
     case 'd': lightPosition.z -= 0.05f; break;
     case '/': lightEnabled = !lightEnabled; break;
     case 27 : exit(1); // Esc was pressed
@@ -217,11 +226,11 @@ void AppWindow::glutDisplay ()
     }
     if ( _seconds.changed )
     {
-        _seconds.build(0.425, 0.008333, 0.008333, 2.5);
+        _seconds.build(0.425f, 0.008333f, 0.008333f, 6);
     }
     if ( _subseconds.changed )
     {
-        _subseconds.build(0.30, 0.008333, 0.008333, 2.5);
+        _subseconds.build(0.30f, 0.008333f, 0.008333f, 6);
     }
 
     // Define our scene transformation:

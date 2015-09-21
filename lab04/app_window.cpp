@@ -4,6 +4,10 @@
 # include "app_window.h"
 # include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159
+#endif
+
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     : GlutWindow ( label, x, y, w, h ), _sun(GsVec(2, 2, 2), GsColor(128, 128, 0), GsColor::white, GsColor::white), _material(GsColor(128, 128, 0), GsColor(255, 255, 0), GsColor::white, 3.0f)
 {
@@ -26,11 +30,19 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
 void AppWindow::initPrograms ()
 {
     // Load your shaders and link your programs here:
-    _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
-    _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
-    _flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_flat.glsl");
-    _lightvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lighting.glsl");
-    _lightfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lighting.glsl");
+#ifdef WIN32
+    _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
+    _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
+    _flatvsh.load_and_compile(GL_VERTEX_SHADER, "../vsh_flat.glsl");
+    _lightvsh.load_and_compile(GL_VERTEX_SHADER, "../vsh_lighting.glsl");
+    _lightfsh.load_and_compile(GL_FRAGMENT_SHADER, "../fsh_lighting.glsl");
+#else
+	_vertexsh.load_and_compile(GL_VERTEX_SHADER, "vsh_mcol_flat.glsl");
+	_fragsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_flat.glsl");
+	_flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_flat.glsl");
+	_lightvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lighting.glsl");
+	_lightfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lighting.glsl");
+#endif
 
     _prog.init_and_link ( _vertexsh, _fragsh );
     _flatprog.init_and_link (  _flatvsh, _fragsh );
