@@ -2,6 +2,7 @@
 # include <iostream>
 # include <gsim/gs.h>
 # include "app_window.h"
+# include <cmath>
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     : GlutWindow ( label, x, y, w, h ), _sun(GsVec(2, 2, 2), GsColor(128, 128, 0), GsColor::white, GsColor::white), _material(GsColor(128, 128, 0), GsColor(255, 255, 0), GsColor::white, 3.0f)
@@ -9,12 +10,17 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     initPrograms ();
     addMenuEntry ( "Option 0", evOption0 );
     addMenuEntry ( "Option 1", evOption1 );
+    
     _viewaxis = true;
     _fovy = GS_TORAD(60.0f);
     _rotx = _roty = 0;
     _w = w;
     _h = h;
-     nfaces = 32;
+    
+    nfaces = 16;
+    flat = false;
+    normals = false;
+    lightpos = 0.0;
 }
 
 void AppWindow::initPrograms ()
@@ -22,15 +28,18 @@ void AppWindow::initPrograms ()
     // Load your shaders and link your programs here:
     _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
     _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
-    _flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lighting.glsl");
-    _flatfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lighting.glsl");
+    _flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_flat.glsl");
+    _lightvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lighting.glsl");
+    _lightfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lighting.glsl");
 
     _prog.init_and_link ( _vertexsh, _fragsh );
-    _flatprog.init_and_link( _flatvsh, _flatfsh );
-
+    _flatprog.init_and_link (  _flatvsh, _fragsh );
+    _lightprog.init_and_link ( _lightvsh, _lightfsh );
+    
     // Init my scene objects:
     _axis.init ( _prog );
-    _cylinder.init ( _flatprog );
+    _cylinder.init ( _lightprog, _prog, true );
+    _flatcylinder.init( _flatprog, _prog, false );
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -50,6 +59,12 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
       case ' ': _viewaxis = !_viewaxis; break;
       case 'q': nfaces++; _cylinder.changed = 1; break;
       case 'a': nfaces = (nfaces > 3) ? nfaces - 1 : 3; _cylinder.changed = 1; break;
+      case 'z': flat = true; break;
+      case 'x': flat = false; break;
+      case 'c': normals = true; break;
+      case 'v': normals = false; break;
+      case 'w': lightpos += (M_PI / 36.0); break;
+      case 's': lightpos -= (M_PI / 36.0); break;
       case 27 : exit(1); // Esc was pressed
     }
 }
@@ -107,6 +122,7 @@ void AppWindow::glutDisplay ()
     if ( _cylinder.changed )
     {
         _cylinder.build(1.0f, 0.25f, nfaces);
+        _flatcylinder.build(1.0f, 0.25f, nfaces);
     }
 
     // Define our scene transformation:
@@ -137,10 +153,25 @@ void AppWindow::glutDisplay ()
     // Draw:
     if ( _viewaxis ) _axis.draw ( stransf, sproj );
     
-    _sun.pos = stransf * GsVec(2,2,2);
+    _sun.pos = stransf * GsVec(2.0 * std::cos(lightpos), 2.0, 2.0 * std::sin(lightpos));
     
-    _cylinder.draw(stransf, sproj, _sun, _material);
-
+    if(flat)
+    {
+        _flatcylinder.draw(stransf, sproj);
+        if(normals)
+        {
+            _flatcylinder.drawNormals(stransf, sproj);
+        }
+    }
+    else
+    {
+        _cylinder.draw(stransf, sproj, _sun, _material);
+        if(normals)
+        {
+            _cylinder.drawNormals(stransf, sproj);
+        }
+    }
+    
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)
     glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front

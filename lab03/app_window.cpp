@@ -294,8 +294,8 @@ void AppWindow::glutDisplay ()
         GsMat shadowMatrix;
         float ground[4] = {0, 1, 0, 0};
         
-        //ComputeShadowMatrixDirectionalLight(shadowMatrix, lightPosition, &ground[0]);
-        ComputeShadowMatrixGroundPointLight(shadowMatrix, lightPosition);
+        ComputeShadowMatrixDirectionalLight(shadowMatrix, lightPosition, &ground[0]);
+        //ComputeShadowMatrixGroundPointLight(shadowMatrix, lightPosition);
         
         transform = stransf * shadowMatrix * borderTranslation;
         _border.draw(transform, sproj, GsColor::cyan);

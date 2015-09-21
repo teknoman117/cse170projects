@@ -6,7 +6,7 @@ layout (location = 1) in vec4 vColor;
 uniform mat4 vTransf;
 uniform mat4 vProj;
 
-out vec4 Color;
+flat out vec4 Color;
 
 void main ()
 {

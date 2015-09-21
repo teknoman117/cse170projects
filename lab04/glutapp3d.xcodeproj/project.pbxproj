@@ -22,6 +22,7 @@
 		F1190EFE1B97A5AA002C4607 /* libGLEWmx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */; };
 		F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
 		F1190F021B97A5EF002C4607 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190F011B97A5EF002C4607 /* GLUT.framework */; };
+		F13D00271BB0BD42008B93AA /* so_segments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F13D00251BB0BD42008B93AA /* so_segments.cpp */; settings = {ASSET_TAGS = (); }; };
 		F1AB82F31BABB54E00807C48 /* so_cylinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +69,8 @@
 		F12CD1D11BAC91AA000B7688 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = SOURCE_ROOT; };
 		F12CD1D21BACBFB0000B7688 /* fsh_lighting.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_lighting.glsl; sourceTree = "<group>"; };
 		F12CD1D31BACBFB0000B7688 /* vsh_lighting.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_lighting.glsl; sourceTree = "<group>"; };
+		F13D00251BB0BD42008B93AA /* so_segments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_segments.cpp; sourceTree = SOURCE_ROOT; };
+		F13D00261BB0BD42008B93AA /* so_segments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_segments.h; sourceTree = SOURCE_ROOT; };
 		F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_cylinder.cpp; sourceTree = SOURCE_ROOT; };
 		F1AB82F21BABB54E00807C48 /* so_cylinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_cylinder.h; sourceTree = SOURCE_ROOT; };
 		F1AB82F51BABBE9500807C48 /* fsh_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_flat.glsl; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 				F1190EEE1B97A598002C4607 /* so_axis.h */,
 				F1AB82F11BABB54E00807C48 /* so_cylinder.cpp */,
 				F1AB82F21BABB54E00807C48 /* so_cylinder.h */,
+				F13D00251BB0BD42008B93AA /* so_segments.cpp */,
+				F13D00261BB0BD42008B93AA /* so_segments.h */,
 				F12CD1CF1BAC902F000B7688 /* material.h */,
 				F12CD1D11BAC91AA000B7688 /* light.h */,
 			);
@@ -233,6 +238,7 @@
 				F1190EF31B97A598002C4607 /* gs_color.cpp in Sources */,
 				F1190EF61B97A598002C4607 /* gs_vec.cpp in Sources */,
 				F1190EF51B97A598002C4607 /* gs_quat.cpp in Sources */,
+				F13D00271BB0BD42008B93AA /* so_segments.cpp in Sources */,
 				F1190EF21B97A598002C4607 /* gs.cpp in Sources */,
 				F1190EF01B97A598002C4607 /* app_window.cpp in Sources */,
 				F1AB82F31BABB54E00807C48 /* so_cylinder.cpp in Sources */,

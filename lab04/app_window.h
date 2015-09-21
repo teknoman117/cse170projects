@@ -14,15 +14,17 @@
 class AppWindow : public GlutWindow
 {
     // OpenGL shaders and programs:
-    GlShader _vertexsh, _fragsh;
-    GlShader _flatvsh, _flatfsh;
-
+    GlShader _vertexsh, _fragsh, _flatvsh;
+    GlShader _lightvsh, _lightfsh;
+    
     GlProgram _prog;
+    GlProgram _lightprog;
     GlProgram _flatprog;
 
     // My scene objects:
     SoAxis _axis;
     SoCylinder _cylinder;
+    SoCylinder _flatcylinder;
     
     Light _sun;
     Material _material;
@@ -33,6 +35,9 @@ class AppWindow : public GlutWindow
     bool  _viewaxis;
     int _w, _h;
     int nfaces;
+    bool normals;
+    bool flat;
+    double lightpos;
     
 public :
     AppWindow ( const char* label, int x, int y, int w, int h );
