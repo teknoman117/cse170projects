@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F1170BCD1BB34A1500D34127 /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1170BC81BB34A1500D34127 /* model.cpp */; settings = {ASSET_TAGS = (); }; };
 		F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190ED91B97A598002C4607 /* app_main.cpp */; };
 		F1190EF01B97A598002C4607 /* app_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDA1B97A598002C4607 /* app_window.cpp */; };
 		F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDC1B97A598002C4607 /* glut_window.cpp */; };
@@ -37,6 +38,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F1170BC81BB34A1500D34127 /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = model.cpp; sourceTree = "<group>"; };
+		F1170BC91BB34A1500D34127 /* model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = model.h; sourceTree = "<group>"; };
+		F1170BCA1BB34A1500D34127 /* rhand.model */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rhand.model; sourceTree = "<group>"; };
+		F1170BCB1BB34A1500D34127 /* rlowerarm.model */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rlowerarm.model; sourceTree = "<group>"; };
+		F1170BCC1BB34A1500D34127 /* rupperarm.model */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rupperarm.model; sourceTree = "<group>"; };
 		F1190ECF1B97A549002C4607 /* glutapp3d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = glutapp3d; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1190ED91B97A598002C4607 /* app_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_main.cpp; sourceTree = SOURCE_ROOT; };
 		F1190EDA1B97A598002C4607 /* app_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_window.cpp; sourceTree = SOURCE_ROOT; };
@@ -82,6 +88,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F1170BC71BB34A1500D34127 /* armmodel */ = {
+			isa = PBXGroup;
+			children = (
+				F1170BC81BB34A1500D34127 /* model.cpp */,
+				F1170BC91BB34A1500D34127 /* model.h */,
+				F1170BCA1BB34A1500D34127 /* rhand.model */,
+				F1170BCB1BB34A1500D34127 /* rlowerarm.model */,
+				F1170BCC1BB34A1500D34127 /* rupperarm.model */,
+			);
+			path = armmodel;
+			sourceTree = SOURCE_ROOT;
+		};
 		F1190EC61B97A549002C4607 = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +121,7 @@
 		F1190ED11B97A549002C4607 /* glutapp3d */ = {
 			isa = PBXGroup;
 			children = (
+				F1170BC71BB34A1500D34127 /* armmodel */,
 				F1190EDE1B97A598002C4607 /* gsim */,
 				F1190ED91B97A598002C4607 /* app_main.cpp */,
 				F1190EDA1B97A598002C4607 /* app_window.cpp */,
@@ -183,7 +202,7 @@
 		F1190EC71B97A549002C4607 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0640;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = ucmerced;
 				TargetAttributes = {
 					F1190ECE1B97A549002C4607 = {
@@ -224,6 +243,7 @@
 				F1190EF41B97A598002C4607 /* gs_mat.cpp in Sources */,
 				F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */,
 				F1190EF71B97A598002C4607 /* gs_vec2.cpp in Sources */,
+				F1170BCD1BB34A1500D34127 /* model.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +270,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
