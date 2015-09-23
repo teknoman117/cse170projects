@@ -23,13 +23,26 @@ class AppWindow : public GlutWindow
      
     // My scene objects:
     SoAxis _axis;
-    SoModel _model;
+    
+    SoModel _hand;
+    SoModel _lowerarm;
+    SoModel _upperarm;
      
     // App data:
     enum MenuEv { evOption0, evOption1 };
     float _rotx, _roty, _fovy;
     bool  _viewaxis;
     int _w, _h;
+    
+    // Flags
+    bool showNormals;
+    bool showWireframe;
+    bool showFlat;
+    
+    // Rotations
+    float shoulderRotation;
+    float elbowRotation;
+    float handRotation;
 
     // Lighting stuff
     Light    _light;

@@ -28,7 +28,7 @@ void main()
     vec3 r = reflect(-l, n);
     
     // Compute ambient lighting
-    vec4 a = la * ka;
+    vec4 a = la * Color;
     vec4 d = ld * Color * dot(l, n);
     vec4 s = ls * ks * pow(max(r.z, 0), sh);
     if(dot(l,n) < 0)
