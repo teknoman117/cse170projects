@@ -63,12 +63,13 @@ bool GsColor::set ( const char* s )
  }
 
 // we dont do double versions to avoid automatic typecasts complications...
-void GsColor::get ( float f[4] ) const
+float* GsColor::get ( float f[4] ) const
  {
    f[0] = float(r) / 255.0f;
    f[1] = float(g) / 255.0f;
    f[2] = float(b) / 255.0f;
    f[3] = float(a) / 255.0f;
+     return f;
  }
 
 void GsColor::get3 ( float f[3] ) const

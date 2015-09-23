@@ -4,34 +4,51 @@
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-          :GlutWindow ( label, x, y, w, h )
- {
-   initPrograms ();
-   addMenuEntry ( "Option 0", evOption0 );
-   addMenuEntry ( "Option 1", evOption1 );
-   _viewaxis = true;
-   _fovy = GS_TORAD(60.0f);
-   _rotx = _roty = 0;
-   _w = w;
-   _h = h;
- }
+    : GlutWindow ( label, x, y, w, h ),
+    _light(GsVec(2, 2, 2), GsColor::white, GsColor::white, GsColor::white),
+    _material(GsColor(32, 32, 32), GsColor(255, 255, 255), GsColor::white, 4.0f)
+{
+    initPrograms ();
+    
+    addMenuEntry ( "Option 0", evOption0 );
+    addMenuEntry ( "Option 1", evOption1 );
+    
+    _viewaxis = true;
+    _fovy = GS_TORAD(60.0f);
+    _rotx = _roty = 0;
+    _w = w;
+    _h = h;
+}
 
 void AppWindow::initPrograms ()
- {
-   // Load your shaders and link your programs here:
+{
+    // Load your shaders and link your programs here:
 #ifdef WIN32
-   _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
-   _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
+    _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
+    _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
 #else
-   _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
-   _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
+    _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
+    _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
+    _modelvsh.load_and_compile( GL_VERTEX_SHADER, "vsh_flat_model.glsl" );
+    _modelfsh.load_and_compile( GL_FRAGMENT_SHADER, "fsh_flat_model.glsl" );
 #endif
-     
-   _prog.init_and_link ( _vertexsh, _fragsh );
 
-   // Init my scene objects:
-   _axis.init ( _prog );
- }
+    _prog.init_and_link ( _vertexsh, _fragsh );
+    _modelprog.init_and_link( _modelvsh, _modelfsh );
+
+    // Init my scene objects:
+    _axis.init ( _prog );
+    _model.init( _modelprog );
+
+    // Load the models
+    Model rhand, rlowerarm, rupperarm;
+
+    rhand.load("armmodel/rhand.model");
+    rlowerarm.load("armmodel/rlowerarm.model");
+    rupperarm.load("armmodel/rupperarm.model");
+    
+    _model.build(rhand);
+}
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
 // so make here the conversion when needed
@@ -94,45 +111,55 @@ void AppWindow::glutReshape ( int w, int h )
 
 // here we will redraw the scene according to the current state of the application.
 void AppWindow::glutDisplay ()
- {
-   // Clear the rendering window
-   glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+{
+    // Clear the rendering window
+    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-   // Build a cross with some lines (if not built yet):
-   if ( _axis.changed ) // needs update
-    { _axis.build(1.0f); // axis has radius 1.0
+    // Build a cross with some lines (if not built yet):
+    if ( _axis.changed ) // needs update
+    {
+        _axis.build(1.0f); // axis has radius 1.0
     }
 
-   // Define our scene transformation:
-   GsMat rx, ry, stransf;
-   rx.rotx ( _rotx );
-   ry.roty ( _roty );
-   stransf = rx*ry; // set the scene transformation matrix
+    // Define our scene transformation:
+    GsMat rx, ry, stransf;
+    rx.rotx ( _rotx );
+    ry.roty ( _roty );
+    stransf = rx*ry; // set the scene transformation matrix
 
-   // Define our projection transformation:
-   // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
-   GsMat camview, persp, sproj;
+    // Define our projection transformation:
+    // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
+    GsMat camview, persp, sproj;
 
-   GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
-   camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
+    GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
+    camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
 
-   float aspect=1.0f, znear=0.1f, zfar=50.0f;
-   persp.perspective ( _fovy, aspect, znear, zfar ); // set our 4x4 perspective matrix
+    float aspect=1.0f, znear=0.1f, zfar=50.0f;
+    persp.perspective ( _fovy, aspect, znear, zfar ); // set our 4x4 perspective matrix
 
-   // Our matrices are in "line-major" format, so vertices should be multiplied on the 
-   // right side of a matrix multiplication, therefore in the expression below camview will
-   // affect the vertex before persp, because v' = (persp*camview)*v = (persp)*(camview*v).
-   sproj = persp * camview; // set final scene projection
+    // Our matrices are in "line-major" format, so vertices should be multiplied on the 
+    // right side of a matrix multiplication, therefore in the expression below camview will
+    // affect the vertex before persp, because v' = (persp*camview)*v = (persp)*(camview*v).
+    sproj = persp * camview; // set final scene projection
 
-   //  Note however that when the shader receives a matrix it will store it in column-major 
-   //  format, what will cause our values to be transposed, and we will then have in our 
-   //  shaders vectors on the left side of a multiplication to a matrix.
+    //  Note however that when the shader receives a matrix it will store it in column-major 
+    //  format, what will cause our values to be transposed, and we will then have in our 
+    //  shaders vectors on the left side of a multiplication to a matrix.
 
-   // Draw:
-   if ( _viewaxis ) _axis.draw ( stransf, sproj );
+    // Draw:
+    if ( _viewaxis ) _axis.draw ( stransf, sproj );
+    
+    
+    GsMat scale, transform;
+    scale.scale(0.05, 0.05, 0.05);
+    transform = stransf * scale;
+    
+    _light.pos = stransf * GsVec(2,2,2);
+    
+    _model.draw(transform, sproj, _light, _material);
 
-   // Swap buffers and draw:
-   glFlush();         // flush the pipeline (usually not necessary)
-   glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
+    // Swap buffers and draw:
+    glFlush();         // flush the pipeline (usually not necessary)
+    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
 }
 

@@ -92,7 +92,7 @@ class GsColor
     bool set ( const char* s );
 
     /*! Put the four components in f[], transforming each one to range [0.0,1.0] */
-    void get ( float f[4] ) const; 
+    float* get ( float f[4] ) const;
 
     /*! Put the first 3 components in f[], transforming each one to range [0.0,1.0] */
     void get3 ( float f[3] ) const; 

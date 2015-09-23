@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F1170BCD1BB34A1500D34127 /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1170BC81BB34A1500D34127 /* model.cpp */; settings = {ASSET_TAGS = (); }; };
+		F1170BD01BB34D6200D34127 /* so_model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1170BCE1BB34D6200D34127 /* so_model.cpp */; settings = {ASSET_TAGS = (); }; };
 		F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190ED91B97A598002C4607 /* app_main.cpp */; };
 		F1190EF01B97A598002C4607 /* app_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDA1B97A598002C4607 /* app_window.cpp */; };
 		F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDC1B97A598002C4607 /* glut_window.cpp */; };
@@ -43,6 +44,13 @@
 		F1170BCA1BB34A1500D34127 /* rhand.model */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rhand.model; sourceTree = "<group>"; };
 		F1170BCB1BB34A1500D34127 /* rlowerarm.model */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rlowerarm.model; sourceTree = "<group>"; };
 		F1170BCC1BB34A1500D34127 /* rupperarm.model */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rupperarm.model; sourceTree = "<group>"; };
+		F1170BCE1BB34D6200D34127 /* so_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_model.cpp; sourceTree = SOURCE_ROOT; };
+		F1170BCF1BB34D6200D34127 /* so_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_model.h; sourceTree = SOURCE_ROOT; };
+		F1170BD11BB3576500D34127 /* fsh_flat_model.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_flat_model.glsl; sourceTree = "<group>"; };
+		F1170BD21BB3576500D34127 /* vsh_flat_model.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_flat_model.glsl; sourceTree = "<group>"; };
+		F1170BD31BB3590700D34127 /* quad.model */ = {isa = PBXFileReference; lastKnownFileType = text; path = quad.model; sourceTree = "<group>"; };
+		F1170BD41BB35F6B00D34127 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = SOURCE_ROOT; };
+		F1170BD51BB35F6B00D34127 /* material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = material.h; sourceTree = SOURCE_ROOT; };
 		F1190ECF1B97A549002C4607 /* glutapp3d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = glutapp3d; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1190ED91B97A598002C4607 /* app_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_main.cpp; sourceTree = SOURCE_ROOT; };
 		F1190EDA1B97A598002C4607 /* app_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_window.cpp; sourceTree = SOURCE_ROOT; };
@@ -96,6 +104,7 @@
 				F1170BCA1BB34A1500D34127 /* rhand.model */,
 				F1170BCB1BB34A1500D34127 /* rlowerarm.model */,
 				F1170BCC1BB34A1500D34127 /* rupperarm.model */,
+				F1170BD31BB3590700D34127 /* quad.model */,
 			);
 			path = armmodel;
 			sourceTree = SOURCE_ROOT;
@@ -132,6 +141,10 @@
 				F1190EEC1B97A598002C4607 /* ogl_tools.h */,
 				F1190EED1B97A598002C4607 /* so_axis.cpp */,
 				F1190EEE1B97A598002C4607 /* so_axis.h */,
+				F1170BCE1BB34D6200D34127 /* so_model.cpp */,
+				F1170BCF1BB34D6200D34127 /* so_model.h */,
+				F1170BD41BB35F6B00D34127 /* light.h */,
+				F1170BD51BB35F6B00D34127 /* material.h */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -170,6 +183,8 @@
 		F1CDE23E1BB1310000A8C841 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				F1170BD11BB3576500D34127 /* fsh_flat_model.glsl */,
+				F1170BD21BB3576500D34127 /* vsh_flat_model.glsl */,
 				F1CDE23C1BB130FC00A8C841 /* fsh_flat.glsl */,
 				F1CDE23D1BB130FC00A8C841 /* vsh_mcol_flat.glsl */,
 			);
@@ -239,6 +254,7 @@
 				F1190EF51B97A598002C4607 /* gs_quat.cpp in Sources */,
 				F1190EF21B97A598002C4607 /* gs.cpp in Sources */,
 				F1190EF01B97A598002C4607 /* app_window.cpp in Sources */,
+				F1170BD01BB34D6200D34127 /* so_model.cpp in Sources */,
 				F1190EF81B97A598002C4607 /* ogl_tools.cpp in Sources */,
 				F1190EF41B97A598002C4607 /* gs_mat.cpp in Sources */,
 				F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */,
