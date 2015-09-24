@@ -7,7 +7,7 @@ layout (location = 2) in vec4 vColor;
 uniform mat4 vTransf;
 uniform mat4 vProj;
 
-out vec3 Norm;
+flat out vec3 Norm;
 out vec4 Pos;
 out vec4 Color;
 

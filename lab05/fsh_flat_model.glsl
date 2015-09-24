@@ -1,6 +1,6 @@
 # version 400
 
-in vec3 Norm;
+flat in vec3 Norm;
 in vec4 Pos;
 in vec4 Color;
 

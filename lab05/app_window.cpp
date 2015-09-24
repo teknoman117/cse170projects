@@ -4,6 +4,8 @@
 # include "app_window.h"
 # include <cmath>
 
+using namespace std::chrono;
+
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     : GlutWindow ( label, x, y, w, h ),
     _light(GsVec(2, 2, 2), GsColor::darkgray, GsColor::white, GsColor::white),
@@ -27,6 +29,8 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     shoulderRotation = M_PI/4.0f;
     elbowRotation = -M_PI/3.0f;
     handRotation = M_PI/8.0f;
+    
+    previousTime = high_resolution_clock::now();
 }
 
 void AppWindow::initPrograms ()
@@ -35,27 +39,36 @@ void AppWindow::initPrograms ()
 #ifdef WIN32
     _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
     _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
+    _modelvsh.load_and_compile( GL_VERTEX_SHADER, "../vsh_model.glsl" );
+    _modelfsh.load_and_compile( GL_FRAGMENT_SHADER, "../fsh_model.glsl" );
+    _modelflatvsh.load_and_compile( GL_VERTEX_SHADER, "../vsh_flat_model.glsl" );
+    _modelflatfsh.load_and_compile( GL_FRAGMENT_SHADER, "../fsh_flat_model.glsl" );
 #else
     _vertexsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
     _fragsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
-    _modelvsh.load_and_compile( GL_VERTEX_SHADER, "vsh_flat_model.glsl" );
-    _modelfsh.load_and_compile( GL_FRAGMENT_SHADER, "fsh_flat_model.glsl" );
+    _modelvsh.load_and_compile( GL_VERTEX_SHADER, "vsh_model.glsl" );
+    _modelfsh.load_and_compile( GL_FRAGMENT_SHADER, "fsh_model.glsl" );
+    _modelflatvsh.load_and_compile( GL_VERTEX_SHADER, "vsh_flat_model.glsl" );
+    _modelflatfsh.load_and_compile( GL_FRAGMENT_SHADER, "fsh_flat_model.glsl" );
 #endif
 
     _prog.init_and_link ( _vertexsh, _fragsh );
     _modelprog.init_and_link( _modelvsh, _modelfsh );
+    _modelflagprog.init_and_link( _modelflatvsh, _modelflatfsh );
 
     // Init my scene objects:
     _axis.init ( _prog );
-    _hand.init( _modelprog );
-    _lowerarm.init( _modelprog );
-    _upperarm.init( _modelprog );
+    _hand.init( _modelprog ); _flathand.init(_modelflagprog); _nhand.init(_prog);
+    _lowerarm.init( _modelprog ); _flatlowerarm.init(_modelflagprog); _nlowerarm.init(_prog);
+    _upperarm.init( _modelprog ); _flatupperarm.init(_modelflagprog); _nupperarm.init(_prog);
 
     // Load the models
     Model rhand, rlowerarm, rupperarm;
 
 #ifdef WIN32
-#error getrekt
+    rhand.load("../armmodel/rhand.model");
+    rlowerarm.load("../armmodel/rlowerarm.model");
+    rupperarm.load("../armmodel/rupperarm.model");
 #else
     rhand.load("armmodel/rhand.model");
     rlowerarm.load("armmodel/rlowerarm.model");
@@ -63,9 +76,9 @@ void AppWindow::initPrograms ()
 #endif
     
     // Build the model scene objects
-    _hand.build( rhand );
-    _lowerarm.build( rlowerarm );
-    _upperarm.build( rupperarm );
+    _hand.build( rhand ); _flathand.build( rhand ); _nhand.build(rhand);
+    _lowerarm.build( rlowerarm ); _flatlowerarm.build(rlowerarm); _nlowerarm.build(rlowerarm);
+    _upperarm.build( rupperarm ); _flatupperarm.build(rupperarm); _nupperarm.build(rupperarm);
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -96,13 +109,10 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
         case 'd': handRotation += incf; break;
 	  case 27 : exit(1); // Esc was pressed
 	}
-     
-     redraw();
  }
 
 void AppWindow::glutSpecial ( int key, int x, int y )
  {
-   bool rd=true;
    const float incr=GS_TORAD(2.5f);
    const float incf=0.05f;
    switch ( key )
@@ -115,7 +125,6 @@ void AppWindow::glutSpecial ( int key, int x, int y )
       case GLUT_KEY_HOME:      _fovy=GS_TORAD(60.0f); _rotx=_roty=0; break;
       default: return; // return without rendering
 	}
-   if (rd) redraw(); // ask the window to be rendered when possible
  }
 
 void AppWindow::glutMouse ( int b, int s, int x, int y )
@@ -148,6 +157,9 @@ void AppWindow::glutDisplay ()
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glPolygonMode(GL_FRONT_AND_BACK, showWireframe ? GL_LINE : GL_FILL);
 
+    frameTime += duration_cast<duration<double>>(high_resolution_clock::now() - previousTime).count();
+    previousTime = high_resolution_clock::now();
+    
     // Build a cross with some lines (if not built yet):
     if ( _axis.changed ) // needs update
     {
@@ -167,7 +179,7 @@ void AppWindow::glutDisplay ()
     GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
     camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
 
-    float aspect=1.0f, znear=0.1f, zfar=50.0f;
+    float aspect=static_cast<float>(_w)/static_cast<float>(_h), znear=0.1f, zfar=50.0f;
     persp.perspective ( _fovy, aspect, znear, zfar ); // set our 4x4 perspective matrix
 
     // Our matrices are in "line-major" format, so vertices should be multiplied on the 
@@ -184,7 +196,7 @@ void AppWindow::glutDisplay ()
     {
         _axis.draw ( stransf, sproj );
     }
-    _light.pos = stransf * GsVec(-2,2,2);
+    _light.pos = stransf * GsVec(std::cos(frameTime), 2.0, std::sin(frameTime));
     
     
     GsMat scale, translation, translationB, rotation, rotationB, transform;
@@ -197,22 +209,48 @@ void AppWindow::glutDisplay ()
     // Draw the upper arm
     rotation.rotx(shoulderRotation);
     transform = transform * rotation;
-    _upperarm.draw(transform, sproj, _light, _material);
+    GsMat transformUA = transform;
 
     // Draw the lower arm
     translation.translation(0.0f, 0.0f, 26.0f);
     rotation.rotx(elbowRotation);
     transform = transform * translation * rotation;
-    _lowerarm.draw(transform, sproj, _light, _material);
+    GsMat transformLA = transform;
     
     // Draw the hand
     translation.translation(0.0, 0.0f, 24.0f);
     rotation.rotx(handRotation);
     transform = transform * translation * rotation;
-    _hand.draw(transform, sproj, _light, _material);
+    GsMat transformHD = transform;
+    
+    if(showFlat)
+    {
+        _flatupperarm.draw(transformUA, sproj, _light, _material);
+        _flatlowerarm.draw(transformLA, sproj, _light, _material);
+        _flathand.draw(transformHD, sproj, _light, _material);
+    }
+    
+    else
+    {
+        _upperarm.draw(transformUA, sproj, _light, _material);
+        _lowerarm.draw(transformLA, sproj, _light, _material);
+        _hand.draw(transformHD, sproj, _light, _material);
+    }
+    
+    if(showNormals)
+    {
+        _nhand.draw(transformHD, sproj, showFlat);
+        _nlowerarm.draw(transformLA, sproj, showFlat);
+        _nupperarm.draw(transformUA, sproj, showFlat);
+    }
     
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)
     glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
+}
+
+void AppWindow::glutIdle()
+{
+    redraw();
 }
 

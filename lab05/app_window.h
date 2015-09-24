@@ -10,6 +10,9 @@
 
 # include "so_axis.h"
 # include "so_model.h"
+# include "so_model_normals.h"
+
+# include <chrono>
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -19,20 +22,28 @@ class AppWindow : public GlutWindow
     GlProgram _prog;
      
     GlShader _modelvsh, _modelfsh;
+    GlShader _modelflatvsh, _modelflatfsh;
+    
     GlProgram _modelprog;
-     
+    GlProgram _modelflagprog;
+    
     // My scene objects:
     SoAxis _axis;
     
-    SoModel _hand;
-    SoModel _lowerarm;
-    SoModel _upperarm;
+    SoModel _hand, _flathand;
+    SoModel _lowerarm, _flatlowerarm;
+    SoModel _upperarm, _flatupperarm;
+    
+    SoModelNormals _nhand, _nlowerarm, _nupperarm;
      
     // App data:
     enum MenuEv { evOption0, evOption1 };
     float _rotx, _roty, _fovy;
     bool  _viewaxis;
     int _w, _h;
+    
+    double frameTime;
+    std::chrono::high_resolution_clock::time_point previousTime;
     
     // Flags
     bool showNormals;
@@ -61,6 +72,7 @@ private : // functions derived from the base class
     virtual void glutMotion ( int x, int y );
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
+    virtual void glutIdle();
 };
 
 #endif // APP_WINDOW_H
