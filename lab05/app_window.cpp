@@ -4,6 +4,10 @@
 # include "app_window.h"
 # include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159f
+#endif
+
 using namespace std::chrono;
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )

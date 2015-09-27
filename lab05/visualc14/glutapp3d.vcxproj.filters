@@ -34,6 +34,15 @@
     <ClCompile Include="..\so_axis.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\so_model.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\so_model_normals.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\armmodel\model.cpp">
+      <Filter>loader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -66,6 +75,21 @@
     <ClInclude Include="..\so_axis.h">
       <Filter>myapp</Filter>
     </ClInclude>
+    <ClInclude Include="..\so_model.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_model_normals.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\light.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\material.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\armmodel\model.h">
+      <Filter>loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="myapp">
@@ -80,12 +104,27 @@
     <Filter Include="graphsim tools">
       <UniqueIdentifier>{c9628ba3-d800-4870-ba96-41f6812019fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="loader">
+      <UniqueIdentifier>{4044bdb0-8dcd-46e0-b4cd-073cf621980d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\fsh_flat.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\vsh_mcol_flat.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\fsh_flat_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\fsh_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_flat_model.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

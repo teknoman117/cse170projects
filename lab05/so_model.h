@@ -9,7 +9,7 @@
 #include <gsim/gs_vec.h>
 
 #include "ogl_tools.h"
-#include "model.h"
+#include "armmodel/model.h"
 
 #include "light.h"
 #include "material.h"
