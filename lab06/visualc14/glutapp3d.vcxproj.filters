@@ -58,6 +58,12 @@
     <ClCompile Include="..\so_lines.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\gs_image.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\so_cylinder.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -123,6 +129,12 @@
     <ClInclude Include="..\so_lines.h">
       <Filter>myapp</Filter>
     </ClInclude>
+    <ClInclude Include="..\so_cylinder.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gs_image.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="myapp">
@@ -136,6 +148,9 @@
     </Filter>
     <Filter Include="graphsim tools">
       <UniqueIdentifier>{c9628ba3-d800-4870-ba96-41f6812019fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="textures">
+      <UniqueIdentifier>{953ece0f-b5ce-492a-94c4-3c164fbbff05}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -157,5 +172,13 @@
     <None Include="..\vsh_mcol_phong.glsl">
       <Filter>shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\barrel_texture_oil.bmp">
+      <Filter>textures</Filter>
+    </Image>
+    <Image Include="..\barrel_texture_wood.bmp">
+      <Filter>textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

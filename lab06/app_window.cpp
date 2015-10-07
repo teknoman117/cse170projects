@@ -71,12 +71,20 @@ void AppWindow::initPrograms ()
 void AppWindow::initTextures()
 {
     const int   textureCount = 2;
+#ifdef WIN32
+	const char *textures[] =
+	{
+		"../barrel_texture_oil.bmp",
+		"../barrel_texture_wood.bmp"
+	};
+#else
     const char *textures[] =
     {
         "barrel_texture_oil.bmp",
         "barrel_texture_wood.bmp"
     };
-    
+#endif
+
     // Generate the texture handles
     glGenTextures(textureCount, &_textures[0]);
     

@@ -120,6 +120,7 @@
     <ClCompile Include="..\gsim\gs_material.cpp" />
     <ClCompile Include="..\gsim\gs_string.cpp" />
     <ClCompile Include="..\gsim\gs_strings.cpp" />
+    <ClCompile Include="..\gs_image.cpp" />
     <ClCompile Include="..\so_axis.cpp" />
     <ClCompile Include="..\app_window.cpp" />
     <ClCompile Include="..\glut_window.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="..\gsim\gs_vec.cpp" />
     <ClCompile Include="..\gsim\gs_vec2.cpp" />
     <ClCompile Include="..\ogl_tools.cpp" />
+    <ClCompile Include="..\so_cylinder.cpp" />
     <ClCompile Include="..\so_lines.cpp" />
     <ClCompile Include="..\so_superquadric.cpp" />
     <ClCompile Include="..\so_myobject.cpp" />
@@ -143,6 +145,7 @@
     <ClInclude Include="..\gsim\gs_string.h" />
     <ClInclude Include="..\gsim\gs_strings.h" />
     <ClInclude Include="..\gsim\gs_trace.h" />
+    <ClInclude Include="..\gs_image.h" />
     <ClInclude Include="..\so_axis.h" />
     <ClInclude Include="..\app_window.h" />
     <ClInclude Include="..\glut_window.h" />
@@ -154,6 +157,7 @@
     <ClInclude Include="..\gsim\gs_vec.h" />
     <ClInclude Include="..\gsim\gs_vec2.h" />
     <ClInclude Include="..\ogl_tools.h" />
+    <ClInclude Include="..\so_cylinder.h" />
     <ClInclude Include="..\so_lines.h" />
     <ClInclude Include="..\so_superquadric.h" />
     <ClInclude Include="..\so_myobject.h" />
@@ -165,6 +169,10 @@
     <None Include="..\vsh_mcol_flat.glsl" />
     <None Include="..\vsh_mcol_phong.glsl" />
     <None Include="..\vsh_mcol_gouraud.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\barrel_texture_oil.bmp" />
+    <Image Include="..\barrel_texture_wood.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

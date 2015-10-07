@@ -2,6 +2,10 @@
 # include "so_cylinder.h"
 # include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159f
+#endif
+
 SoTexturedCylinder::SoTexturedCylinder()
  {
    _numpoints = 0;
