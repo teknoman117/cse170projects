@@ -29,7 +29,7 @@ using glm::mat3;
 using glm::mat4;
 using glm::quat;
 
-#if (defined GS_WINDOWS)
+#if (defined WIN32)
   # include <windows.h>
   # include <GL/glew.h>
 #elif (defined __APPLE__)

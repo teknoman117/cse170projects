@@ -17,7 +17,7 @@
 #ifndef __TRANSFORM_H__
 #define __TRANSFORM_H__
 
-#include "ogl_tools.h"
+#include "stdafx.h"
 #include <json/json.h>
 
 // Class to wrap rotation, translation, and scale transformations
