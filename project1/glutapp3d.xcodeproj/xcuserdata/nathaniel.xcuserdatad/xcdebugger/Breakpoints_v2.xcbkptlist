@@ -57,13 +57,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "app_window.cpp"
-            timestampString = "467537317.596766"
+            filePath = "destructo-base/AnimationSource.cpp"
+            timestampString = "467549033.28906"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
-            landmarkName = "AppWindow::glutDisplay ()"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
+            landmarkName = "AnimationSource::Update(double delta, double now)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -16,6 +16,7 @@
 
 #include "stdafx.h"
 #include "ModelInstance.h"
+#include "AnimationTransition.h"
 #include "OS.h"
 
 //#define __MODELINSTANCE_PRINT_LOGS__
@@ -25,14 +26,11 @@
  * @param _model Model to provide an instance of
  */
 ModelInstance::ModelInstance(Model *_model)
-    : model(_model), node(new Node()), /*controller(new AnimationController()),*/ animation(NULL)
+    : model(_model), node(new Node())
 {
-    // Bind the animation controller
-    //controller->Bind(_model->Skeleton());
-    
-    // Bind the animator
-    animation.Bind(_model->Skeleton());
-    //node->AddChild(animation.Skeleton());
+    nullAnimation = new AnimationSource();
+    nullAnimation->Bind(model->Skeleton());
+    animation = nullAnimation;
 }
 
 /**
@@ -40,10 +38,12 @@ ModelInstance::ModelInstance(Model *_model)
  * @param instance ModelInstance to duplicate (does not duplicate model)
  */
 ModelInstance::ModelInstance(const ModelInstance& instance)
-    : model(instance.model), node(new Node()), /*controller(instance.controller),*/ animation(instance.animation)
+    : model(instance.model), node(new Node())
 {
     node->LocalTransform() = instance.GetNode()->LocalTransform();
-    //node->AddChild(animation.Skeleton());
+    nullAnimation = new AnimationSource();
+    nullAnimation->Bind(model->Skeleton());
+    animation = nullAnimation;
 }
 
 /**
@@ -56,17 +56,14 @@ void ModelInstance::Update(double delta, double now)
     // Make sure our model is uploaded
     model->Update(delta, now);
     
-    // Update the animation controller
-    //controller->Update(delta, now);
-    
     // Update the animation test
-    animation.Update(delta, now);
+    animation->Update(delta, now);
 }
 
 /*
 * Modify the animation directly, cause we be crazy man
 */
-AnimationClip & ModelInstance::Animation()
+AnimationSource* ModelInstance::Animation()
 {
 	return animation;
 }
@@ -80,21 +77,9 @@ void ModelInstance::Draw(MaterialProgram *program)
     // Push the model transform onto the program's matrix stack
     program->Model.PushMatrix();
     program->Model.SetMatrix(node->TransformMatrix());
-    //program->Model.Apply();
-    
-    // DUCT TAPE SOLUTON WARNING
-    /*if(controller->Layers().size())
-    {
-        // Draw the model (If we have animation layers
-        model->Draw(program, *(controller->Skeleton()));
-    }
-    
-    // otherwise fallback on the older system
-    else
-    {*/
-        animation.Skeleton()->Recalculate();
-        model->Draw(program, *(animation.Skeleton()));
-    //}
+
+    animation->Skeleton()->Recalculate();
+    model->Draw(program, *(animation->Skeleton()));
     
     // Remove the translation
     program->Model.PopMatrix();
@@ -128,23 +113,14 @@ const Model* ModelInstance::GetModel() const
 }
 
 /**
- * Get a reference to the animation controller of this model instance
- * @return Reference to the animation controller of this model instance
- */
-/*AnimationController* ModelInstance::Controller()
-{
-    return controller;
-}*/
-
-/**
  *
  */
 mat4 ModelInstance::GetTransformOfSkeletalNode(std::string name)
 {
     // Get the current bone
-    Node *animationNode = animation.Skeleton()->FindNode(name);
+    Node *animationNode = animation->Skeleton()->FindNode(name);
     if(!animationNode)
-        return glm::mat4();
+        return node->TransformMatrix();
     
     // Return a composed transformation for the node
     return node->TransformMatrix() * animationNode->TransformMatrix();
@@ -208,8 +184,6 @@ ModelInstance* ModelInstance::LoadManifestEntry(const Json::Value& model, Textur
     return instance;
 }
 
-
-
 // TEST TEST TEST
 bool ModelInstance::PlayAnimation(const std::string name)
 {
@@ -222,15 +196,61 @@ bool ModelInstance::PlayAnimation(const std::string name)
         return false;
     }
     
-    animation.Reset();
-    animation.SetAnimation(anim->second);
-    animation.Play(true, OS::Now());
+    // Create the animation clip for the new animation
+    AnimationClip *animationClip = new AnimationClip(anim->second);
+    animationClip->Bind(model->Skeleton());
+    animationClip->Play(true, OS::Now());
+    
+    AnimationTransition *transition = new AnimationTransition;
+    transition->Bind(model->Skeleton());
+    transition->Start(animation, animationClip, 0.25, [this] (AnimationTransition *source, AnimationSource *from, AnimationSource *to)
+    {
+        if(source == this->animation)
+        {
+            this->animation = to;
+            delete source;
+        }
+    });
+    animation = transition;
+    
     
     // Return success
     return true;
 }
 
+void ModelInstance::PlayCustomAnimation(AnimationSource *animationSource)
+{
+    // Create the animation clip for the new animation
+    AnimationTransition *transition = new AnimationTransition;
+    transition->Bind(model->Skeleton());
+    transition->Start(animation, animationSource, 0.25, [this] (AnimationTransition *source, AnimationSource *from, AnimationSource *to)
+    {
+        if(source == this->animation)
+        {
+            this->animation = to;
+            delete source;
+        }
+    });
+    animation = transition;
+}
+
+void ModelInstance::PlayNullAnimation()
+{
+    // Create the animation clip for the new animation
+    AnimationTransition *transition = new AnimationTransition;
+    transition->Bind(model->Skeleton());
+    transition->Start(animation, nullAnimation, 0.25, [this] (AnimationTransition *source, AnimationSource *from, AnimationSource *to)
+    {
+        if(source == this->animation)
+        {
+            this->animation = to;
+            delete source;
+        }
+    });
+    animation = transition;
+}
+
 const Node* ModelInstance::Skeleton() const
 {
-    return animation.Skeleton();
+    return animation->Skeleton();
 }

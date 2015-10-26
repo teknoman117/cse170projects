@@ -16,7 +16,12 @@ class AnimationTransition : public AnimationSource
 {
     AnimationSource *sourceFrom;
     AnimationSource *sourceTo;
+    
+    double           transitionProgress;
     double           transitionDuration;
+    
+    std::function<void (AnimationTransition *, AnimationSource *, AnimationSource *)> transitionCallback;
+    bool             triggered;
     
 public:
     

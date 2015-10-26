@@ -33,7 +33,8 @@ class ModelInstance
     Node                     *node;
     
     /** SUPER DUPER TESTING MODE SHIT */
-    AnimationClip             animation;
+    AnimationSource          *nullAnimation;
+    AnimationSource          *animation;
 public:
     /**
      * Create a model instance for a model
@@ -57,7 +58,7 @@ public:
 	/*
 	* Modify the animation directly, cause we be crazy man
 	*/
-	AnimationClip & Animation();
+	AnimationSource* Animation();
 
     /**
      * Draw this model instance with a particular shader
@@ -97,6 +98,8 @@ public:
     
     /** Test stuff **/
     bool PlayAnimation(const std::string name);
+    void PlayCustomAnimation(AnimationSource *animationSource);
+    void PlayNullAnimation();
     const Node* Skeleton() const;
 };
 

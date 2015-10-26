@@ -106,6 +106,8 @@ bool AnimationClip::IsLooping()
  */
 void AnimationClip::Update(double delta, double now)
 {
+    AnimationSource::Update(delta, now);
+    
     // Update the skeleton of the model
     if(animation && playing)
     {

@@ -32,6 +32,7 @@ class GlutWindow
     static void glutKeyboardCB ( unsigned char key, int x, int y );
     static void glutKeyboardUpCB ( unsigned char key, int x, int y );
     static void glutSpecialCB ( int key, int x, int y );
+    static void glutSpecialUpCB ( int key, int x, int y );
     static void glutReshapeCB ( int w, int h );
 
    public:
@@ -53,6 +54,7 @@ class GlutWindow
     virtual void glutKeyboard ( unsigned char key, int x, int y ) {}
     virtual void glutKeyboardUp ( unsigned char key, int x, int y ) {}
     virtual void glutSpecial ( int key, int x, int y ) {}
+    virtual void glutSpecialUp ( int key, int x, int y ) {}
     virtual void glutMouse ( int b, int s, int x, int y ) {}
     virtual void glutMotion ( int x, int y ) {}
     virtual void glutReshape ( int w, int h ) {}

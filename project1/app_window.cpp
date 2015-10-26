@@ -2,7 +2,7 @@
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h ), sceneRoot(new Node()), modelGroup("meshes/manifest.json", textureCache)
+    : GlutWindow ( label, x, y, w, h ), sceneRoot(new Node()), modelGroup("meshes/manifest.json", textureCache), mechwarriorRate(vec2(0.0f,0.0f)), mechwarriorRotateRate(0.0f)
 {
     initPrograms ();
     
@@ -22,24 +22,29 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     
     // Setup the cameras
     cameraSelection = false;
-    
     mechCamera = new Node();
     mechCamera->LocalTransform().Rotation() = glm::angleAxis(-glm::pi<float>(), vec3(0,1,0));
-    mechCamera->LocalTransform().Translation() = glm::vec3(0,0.8,-2);
+    mechCamera->LocalTransform().Translation() = glm::vec3(0,0.35,-0.95);
     mechCameraRotator = new Node();
+    mechCameraRotator->LocalTransform().Translation() = glm::vec3(0,0.5,0);
     mechCameraRotator->AddChild(mechCamera);
-    //mechwarriorInstance->GetNode()->FindNode("body")->AddChild(mechCameraRotator);
     
     groundCamera = new Node();
     groundCamera->LocalTransform().Translation() = vec3(1, 0.65, 1);
     groundCamera->LocalTransform().Rotation() = glm::angleAxis(glm::pi<float>() / 4.0f, vec3(0,1,0)) * glm::angleAxis(-glm::pi<float>() / 16.0f, vec3(1,0,0));
     sceneRoot->AddChild(groundCamera);
     
-    // Add the animations as menu options
-    int animationId = 0;
-    addMenuEntry( "Stop Animations", animationId++);
-    for( auto animation : mechwarriorInstance->GetModel()->Animations() )
-        addMenuEntry(animation.second->Id().c_str(), animationId++);
+    // Initial state for some tracking
+    keys['z'] = false;
+    keys['x'] = false;
+    specials[GLUT_KEY_UP] = false;
+    specials[GLUT_KEY_RIGHT] = false;
+    specials[GLUT_KEY_LEFT] = false;
+    specials[GLUT_KEY_DOWN] = false;
+    
+    manualPoseAnimation = new AnimationSource;
+    manualPoseAnimation->Bind(mechwarriorInstance->GetModel()->Skeleton());
+    manualPoseAnimation->Update(0, 0);
 }
 
 void AppWindow::initPrograms ()
@@ -68,33 +73,145 @@ vec2 AppWindow::windowToScene ( const vec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 {
-    switch ( key )
+    // Check if we should trigger oneshot
+    auto tracker = keys.find(key);
+    if(tracker == keys.end() || !tracker->second)
     {
-        case 27 : exit(1); // Esc was pressed
-        case ' ': cameraSelection = !cameraSelection;
+        keys[key] = true;
+        OnKeyDown(key);
     }
 }
 
 void AppWindow::glutKeyboardUp ( unsigned char key, int x, int y )
 {
+    keys[key] = false;
+    
+    if(!keys['z'] && !keys['x'])
+        mechwarriorRotateRate = 0.0f;
+    else if(keys['z'])
+        mechwarriorRotateRate = glm::pi<float>() / 4.0f;
+    else if(keys['x'])
+        mechwarriorRotateRate = -glm::pi<float>() / 4.0f;
+    
+    if(!keys['q'] && !keys['a'])
+        mechwarriorBody.x = 0.0f;
+    else if(keys['q'])
+        mechwarriorBody.x = glm::pi<float>() / 3.0f;
+    else if(keys['a'])
+        mechwarriorBody.x = -glm::pi<float>() / 3.0f;
+    
+    if(!keys['w'] && !keys['s'])
+        mechwarriorArm.x = 0.0f;
+    else if(keys['w'])
+        mechwarriorArm.x = glm::pi<float>() / 6.0f;
+    else if(keys['s'])
+        mechwarriorArm.x = -glm::pi<float>() / 6.0f;
+    
+    if(!keys['e'] && !keys['d'])
+        mechwarriorLegs[0].x = 0.0f;
+    else if(keys['e'])
+        mechwarriorLegs[0].x = glm::pi<float>() / 10.0f;
+    else if(keys['d'])
+        mechwarriorLegs[0].x = -glm::pi<float>() / 10.0f;
+    
+    if(!keys['r'] && !keys['f'])
+        mechwarriorLegs[1].x = 0.0f;
+    else if(keys['r'])
+        mechwarriorLegs[1].x = glm::pi<float>() / 10.0f;
+    else if(keys['f'])
+        mechwarriorLegs[1].x = -glm::pi<float>() / 10.0f;
+    
+    if(!keys['t'] && !keys['g'])
+        mechwarriorLegs[2].x = 0.0f;
+    else if(keys['t'])
+        mechwarriorLegs[2].x = glm::pi<float>() / 10.0f;
+    else if(keys['g'])
+        mechwarriorLegs[2].x = -glm::pi<float>() / 10.0f;
+    
+}
+
+void AppWindow::OnKeyDown(unsigned char key)
+{
     switch ( key )
     {
-        
+        case 27 : exit(1); // Esc was pressed
+        case ' ': cameraSelection = !cameraSelection; break;
+        case 'z':
+            mechwarriorRotateRate = glm::pi<float>() / 4.0f;
+            break;
+        case 'x':
+            mechwarriorRotateRate = -glm::pi<float>() / 4.0f;
+            break;
+        case 'q':
+            mechwarriorBody.x = glm::pi<float>() / 4.0f;
+            break;
+        case 'a':
+            mechwarriorBody.x = -glm::pi<float>() / 4.0f;
+            break;
+        case 'w':
+            mechwarriorArm.x = glm::pi<float>() / 6.0f;
+            break;
+        case 's':
+            mechwarriorArm.x = -glm::pi<float>() / 6.0f;
+            break;
+        case 'e':
+            //if(!(fabs(mechwarriorRate.x) > 0.0f || fabs(mechwarriorRate.y) > 0.0f))
+                
+            mechwarriorLegs[0].x = glm::pi<float>() / 10.0f;
+            break;
+        case 'd':
+            mechwarriorLegs[0].x = -glm::pi<float>() / 10.0f;
+            break;
+        case 'r':
+            mechwarriorLegs[1].x = glm::pi<float>() / 10.0f;
+            break;
+        case 'f':
+            mechwarriorLegs[1].x = -glm::pi<float>() / 10.0f;
+            break;
+        case 't':
+            mechwarriorLegs[2].x = glm::pi<float>() / 10.0f;
+            break;
+        case 'g':
+            mechwarriorLegs[2].x = -glm::pi<float>() / 10.0f;
+            break;
     }
 }
 
 void AppWindow::glutSpecial ( int key, int x, int y )
 {
-    const float incr=2.5f * (M_PI / 180.0f);
-    
-    switch ( key )
+    auto tracker = specials.find(key);
+    if(tracker == specials.end() || !tracker->second)
     {
-        /*case GLUT_KEY_LEFT:      rotation.y-=incr; break;
-        case GLUT_KEY_RIGHT:     rotation.y+=incr; break;
-        case GLUT_KEY_UP:        rotation.x-=incr; break;
-        case GLUT_KEY_DOWN:      rotation.x+=incr; break;*/
-        
-        default: return; // return without rendering
+        specials[key] = true;
+        OnSpecialDown(key);
+    }
+}
+
+void AppWindow::glutSpecialUp ( int key, int x, int y )
+{
+    specials[key] = false;
+    
+    switch(key)
+    {
+        case GLUT_KEY_DOWN:
+        case GLUT_KEY_UP:
+        case GLUT_KEY_LEFT:
+        case GLUT_KEY_RIGHT:
+            mechwarriorAnimationControl();
+            break;
+    }
+}
+
+void AppWindow::OnSpecialDown(int special)
+{
+    switch(special)
+    {
+        case GLUT_KEY_DOWN:
+        case GLUT_KEY_UP:
+        case GLUT_KEY_LEFT:
+        case GLUT_KEY_RIGHT:
+            mechwarriorAnimationControl();
+            break;
     }
 }
 
@@ -106,18 +223,11 @@ void AppWindow::glutMouse ( int b, int s, int x, int y )
  }
 
 void AppWindow::glutMotion ( int x, int y )
- {
- }
+{
+}
 
 void AppWindow::glutMenu ( int m )
 {
-    if(!m)
-        mechwarriorInstance->Animation().Stop();
-    else
-    {
-        auto animationId = std::next(mechwarriorInstance->GetModel()->Animations().begin(), m - 1);
-        mechwarriorInstance->PlayAnimation(animationId->second->Id());
-    }
 }
 
 void AppWindow::glutReshape ( int w, int h )
@@ -131,6 +241,43 @@ void AppWindow::glutReshape ( int w, int h )
     glViewport( 0, 0, w, h );
 }
 
+void AppWindow::mechwarriorAnimationControl()
+{
+    static int currentState = -1;
+    
+    if(specials[GLUT_KEY_UP])
+    {
+        mechwarriorRate = vec2(0.65,0);
+        if(currentState != GLUT_KEY_UP)
+            mechwarriorInstance->PlayAnimation("walking");
+        currentState = GLUT_KEY_UP;
+    } else if(specials[GLUT_KEY_DOWN])
+    {
+        mechwarriorRate = vec2(-0.40,0);
+        if(currentState != GLUT_KEY_DOWN)
+            mechwarriorInstance->PlayAnimation("backpedal");
+        currentState = GLUT_KEY_DOWN;
+    } else if(specials[GLUT_KEY_LEFT])
+    {
+        mechwarriorRate = vec2(0,0.4);
+        if(currentState != GLUT_KEY_LEFT)
+            mechwarriorInstance->PlayAnimation("strafe_left");
+        currentState = GLUT_KEY_LEFT;
+    } else if(specials[GLUT_KEY_RIGHT])
+    {
+        mechwarriorRate = vec2(0,-0.4);
+        if(currentState != GLUT_KEY_RIGHT)
+            mechwarriorInstance->PlayAnimation("strafe_right");
+        currentState = GLUT_KEY_RIGHT;
+    } else
+    {
+        mechwarriorRate = vec2(0,0);
+        if(currentState != -1)
+            mechwarriorInstance->PlayNullAnimation();
+        currentState = -1;
+    }
+}
+
 // here we will redraw the scene according to the current state of the application.
 void AppWindow::glutDisplay ()
 {
@@ -142,9 +289,38 @@ void AppWindow::glutDisplay ()
     double        currentTime  = OS::Now();
     double        delta        = currentTime - previousTime;
     
-    // Perform all computations
-    mechwarriorInstance->Update(delta, currentTime);
+    // Update mechwarrior manual animation goals
+    mechwarriorBody.y += mechwarriorBody.x * (float) delta;
+    mechwarriorArm.y += mechwarriorArm.x * (float) delta;
+    mechwarriorLegs[0].y += mechwarriorLegs[0].x * (float) delta;
+    mechwarriorLegs[1].y += mechwarriorLegs[1].x * (float) delta;
+    mechwarriorLegs[2].y += mechwarriorLegs[2].x * (float) delta;
     
+    // Update mechwarrior global motion
+    mechwarriorInstance->Update(delta, currentTime);
+    if(fabs(mechwarriorRate.x) > 0.0f || fabs(mechwarriorRate.y) > 0.0f)
+    {
+        mat4 currentUpdate = glm::rotate(mechwarriorRotateRate * (float) delta, vec3(0.0f,1.0f,0.0f)) * glm::translate(vec3(mechwarriorRate.y, 0, mechwarriorRate.x) * (float) delta);
+        mat4 currentTransform = mechwarriorInstance->GetNode()->LocalTransform().TransformMatrix();
+        mechwarriorInstance->GetNode()->LocalTransform().SetTransformMatrix(currentTransform * currentUpdate);
+        
+        for(int i = 0; i < 3; i++)
+            mechwarriorLegs[i].y = 0.0f;
+    }
+    
+    // Update manual animation goals for all animations
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("body")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorBody.y, vec3(0,1,0));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("lf_elbow")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorArm.y, vec3(1,0,0));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("rt_elbow")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorArm.y, vec3(1,0,0));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("rt_thigh")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorLegs[0].y, vec3(1,0,0));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("lf_thigh")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorLegs[0].y, vec3(1,0,0));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("rt_knee2")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorLegs[1].y, vec3(0,0,1));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("lf_knee2")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorLegs[1].y, vec3(0,0,1));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("rt_ankle")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorLegs[2].y, vec3(1,0,0));
+    mechwarriorInstance->Animation()->Skeleton()->FindNode("lf_ankle")->LocalTransform().Rotation() *= glm::angleAxis(mechwarriorLegs[2].y, vec3(1,0,0));
+    mechwarriorInstance->Animation()->Skeleton()->Recalculate();
+    
+    // Update scene graph
     sceneRoot->Recalculate();
     
     // Compute the camera matrix
@@ -154,7 +330,7 @@ void AppWindow::glutDisplay ()
     else
     {
         mechCameraRotator->Recalculate();
-        viewMatrix = inverse(mechwarriorInstance->GetTransformOfSkeletalNode("body") * mechCamera->TransformMatrix());
+        viewMatrix = inverse(mechwarriorInstance->GetNode()->TransformMatrix() * mechCamera->TransformMatrix());
     }
     groundProgram->Camera.SetViewMatrix(viewMatrix);
     modelProgram->Camera.SetViewMatrix(viewMatrix);

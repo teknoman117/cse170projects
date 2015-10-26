@@ -82,13 +82,6 @@ Node::~Node()
     {
         delete *it;
     }
-    
-    // If we have a parent, remove ourselves from their child list.  This is fine because child destructors are called first from
-    // the parent deconstructor.  parent should still exist as children are dying.  morbid...
-    if(parent)
-    {
-        parent->children.erase(std::find(parent->children.begin(), parent->children.end(), this));
-    }
 }
 
 std::string& Node::Id()

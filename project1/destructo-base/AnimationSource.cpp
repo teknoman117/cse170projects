@@ -110,7 +110,11 @@ void AnimationSource::Bind(const Node* root)
  */
 void AnimationSource::Update(double delta, double now)
 {
-    
+    // Copy the from source's skeleton into the local skeleton
+    for(Node::flattreemap::iterator it = skeletonTable.begin(); it != skeletonTable.end(); it++)
+    {
+        it->second->LocalTransform() = InitialBones().find(it->first)->second->LocalTransform();
+    }
 }
 
 /**

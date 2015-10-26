@@ -56,6 +56,9 @@ public:
     glm::vec3&       Scale();
     glm::quat&       Rotation();
     
+    // Set the transform matrix (will be decomposed)
+    void SetTransformMatrix(mat4 transformMatrix);
+    
     // Get a combined transformation matrix
     const glm::mat4& TransformMatrix();
     

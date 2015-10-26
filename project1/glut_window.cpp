@@ -92,6 +92,7 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
     ::glutKeyboardFunc ( glutKeyboardCB );
     ::glutKeyboardUpFunc ( glutKeyboardUpCB );
     ::glutSpecialFunc ( glutSpecialCB );
+    ::glutSpecialUpFunc ( glutSpecialUpCB );
     ::glutMouseFunc ( glutMouseCB );
     ::glutMotionFunc ( glutMotionCB );
 
@@ -120,6 +121,11 @@ void GlutWindow::glutSpecialCB ( int key, int x, int y )
  {
    Singleton->glutSpecial ( key, x, y );
  }
+
+void GlutWindow::glutSpecialUpCB ( int key, int x, int y )
+{
+    Singleton->glutSpecialUp ( key, x, y );
+}
 
 void GlutWindow::glutMouseCB ( int b, int s, int x, int y )
  {

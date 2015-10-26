@@ -79,6 +79,25 @@ Transform& Transform::operator=(const Transform &transform)
     return *this;
 }
 
+void Transform::SetTransformMatrix(mat4 transformMatrix)
+{
+    // Extract the translation
+    translation = vec3(transformMatrix[3]);
+    
+    mat3 rotation = mat3(transformMatrix);
+    
+    // Extract the scale
+    scale = vec3(length(rotation[0]), length(rotation[1]), length(rotation[2]));
+    rotation[0] /= length(rotation[0]);
+    rotation[1] /= length(rotation[1]);
+    rotation[2] /= length(rotation[2]);
+    
+    // Extract the rotation
+    this->rotation = glm::toQuat(rotation);
+    
+    dirty = true;
+}
+
 // Return read only references to our internal content (does NOT flag content as dirty)
 const glm::vec3& Transform::Translation() const
 {
