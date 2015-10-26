@@ -32,7 +32,7 @@ ModelInstance::ModelInstance(Model *_model)
     
     // Bind the animator
     animation.Bind(_model->Skeleton());
-    node->AddChild(animation.Skeleton());
+    //node->AddChild(animation.Skeleton());
 }
 
 /**
@@ -43,7 +43,7 @@ ModelInstance::ModelInstance(const ModelInstance& instance)
     : model(instance.model), node(new Node()), /*controller(instance.controller),*/ animation(instance.animation)
 {
     node->LocalTransform() = instance.GetNode()->LocalTransform();
-    node->AddChild(animation.Skeleton());
+    //node->AddChild(animation.Skeleton());
 }
 
 /**
@@ -77,6 +77,11 @@ AnimationClip & ModelInstance::Animation()
  */
 void ModelInstance::Draw(MaterialProgram *program)
 {
+    // Push the model transform onto the program's matrix stack
+    program->Model.PushMatrix();
+    program->Model.SetMatrix(node->TransformMatrix());
+    //program->Model.Apply();
+    
     // DUCT TAPE SOLUTON WARNING
     /*if(controller->Layers().size())
     {
@@ -90,6 +95,9 @@ void ModelInstance::Draw(MaterialProgram *program)
         animation.Skeleton()->Recalculate();
         model->Draw(program, *(animation.Skeleton()));
     //}
+    
+    // Remove the translation
+    program->Model.PopMatrix();
 }
 
 /**
@@ -127,6 +135,20 @@ const Model* ModelInstance::GetModel() const
 {
     return controller;
 }*/
+
+/**
+ *
+ */
+mat4 ModelInstance::GetTransformOfSkeletalNode(std::string name)
+{
+    // Get the current bone
+    Node *animationNode = animation.Skeleton()->FindNode(name);
+    if(!animationNode)
+        return glm::mat4();
+    
+    // Return a composed transformation for the node
+    return node->TransformMatrix() * animationNode->TransformMatrix();
+}
 
 /**
  * Static method to construct a model instance from a manifest file
@@ -191,8 +213,6 @@ ModelInstance* ModelInstance::LoadManifestEntry(const Json::Value& model, Textur
 // TEST TEST TEST
 bool ModelInstance::PlayAnimation(const std::string name)
 {
-    animation.Reset();
-    
     // Get an iterator to the animation we want to play
     Model::animation_const_iterator anim = model->Animations().find(name);
     
@@ -202,10 +222,8 @@ bool ModelInstance::PlayAnimation(const std::string name)
         return false;
     }
     
-    // Play this animation
+    animation.Reset();
     animation.SetAnimation(anim->second);
-    
-    // Play the animation
     animation.Play(true, OS::Now());
     
     // Return success

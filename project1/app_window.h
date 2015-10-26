@@ -28,13 +28,13 @@ class AppWindow : public GlutWindow
     ModelInstance    *mechwarriorInstance;
     GLTexturedQuad   *ground;
     
-    Node             *camera;
-    Transform         cameraTransform;
+    Node             *mechCamera;
+    Node             *mechCameraRotator;
+    Node             *groundCamera;
 
     // App data:
-    float             _rotx, _roty;
-    glm::vec3         rotation;
     glm::vec2         viewport;
+    bool              cameraSelection;
 
 public :
     AppWindow ( const char* label, int x, int y, int w, int h );
@@ -44,6 +44,7 @@ public :
 private : // functions derived from the base class
     virtual void glutMenu ( int m );
     virtual void glutKeyboard ( unsigned char key, int x, int y );
+    virtual void glutKeyboardUp ( unsigned char key, int x, int y );
     virtual void glutSpecial ( int key, int x, int y );
     virtual void glutMouse ( int b, int s, int x, int y );
     virtual void glutMotion ( int x, int y );

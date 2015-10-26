@@ -58,6 +58,7 @@
 		F1C2A0591BDC34E9008E9BE0 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A0571BDC34E9008E9BE0 /* Utilities.cpp */; };
 		F1C2A05B1BDC373E008E9BE0 /* lodepng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A05A1BDC373E008E9BE0 /* lodepng.cpp */; };
 		F1C2A05E1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A05C1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp */; };
+		F1C2A0611BDE1237008E9BE0 /* AnimationTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A05F1BDE1237008E9BE0 /* AnimationTransition.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -158,6 +159,8 @@
 		F1C2A05A1BDC373E008E9BE0 /* lodepng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lodepng.cpp; sourceTree = "<group>"; };
 		F1C2A05C1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLTexturedQuad.cpp; sourceTree = SOURCE_ROOT; };
 		F1C2A05D1BDDBAE4008E9BE0 /* GLTexturedQuad.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLTexturedQuad.hpp; sourceTree = SOURCE_ROOT; };
+		F1C2A05F1BDE1237008E9BE0 /* AnimationTransition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationTransition.cpp; sourceTree = "<group>"; };
+		F1C2A0601BDE1237008E9BE0 /* AnimationTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationTransition.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -288,6 +291,8 @@
 				F1C2A0021BDC308B008E9BE0 /* Animation.h */,
 				F1C2A0511BDC3285008E9BE0 /* AnimationClip.cpp */,
 				F1C2A0521BDC3285008E9BE0 /* AnimationClip.h */,
+				F1C2A05F1BDE1237008E9BE0 /* AnimationTransition.cpp */,
+				F1C2A0601BDE1237008E9BE0 /* AnimationTransition.h */,
 				F1C2A0541BDC330A008E9BE0 /* AnimationSource.cpp */,
 				F1C2A0551BDC330A008E9BE0 /* AnimationSource.h */,
 				F1C2A0031BDC308B008E9BE0 /* GL3DProgram.cpp */,
@@ -443,6 +448,7 @@
 				F1C2A02F1BDC308B008E9BE0 /* Animation.cpp in Sources */,
 				F1C2A0401BDC308B008E9BE0 /* OS.cpp in Sources */,
 				F1C2A04C1BDC314B008E9BE0 /* GLCombinedMatrix.cpp in Sources */,
+				F1C2A0611BDE1237008E9BE0 /* AnimationTransition.cpp in Sources */,
 				F1C2A0431BDC308B008E9BE0 /* Transform.cpp in Sources */,
 				F1C2A03D1BDC308B008E9BE0 /* ModelGroup.cpp in Sources */,
 				F1190EF01B97A598002C4607 /* app_window.cpp in Sources */,

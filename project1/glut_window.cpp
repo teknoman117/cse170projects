@@ -90,6 +90,7 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
 
     // Set up GLUT callback functions to receive events:
     ::glutKeyboardFunc ( glutKeyboardCB );
+    ::glutKeyboardUpFunc ( glutKeyboardUpCB );
     ::glutSpecialFunc ( glutSpecialCB );
     ::glutMouseFunc ( glutMouseCB );
     ::glutMotionFunc ( glutMotionCB );
@@ -149,4 +150,9 @@ void GlutWindow::glutDisplayCB ()
  {
    Singleton->glutDisplay ();
  }
+
+void GlutWindow::glutKeyboardUpCB(unsigned char key, int x, int y)
+{
+    Singleton->glutKeyboardUp(key, x, y);
+}
 

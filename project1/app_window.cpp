@@ -2,7 +2,7 @@
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h ), sceneRoot(new Node()), camera(new Node()), modelGroup("meshes/manifest.json", textureCache)
+    : GlutWindow ( label, x, y, w, h ), sceneRoot(new Node()), modelGroup("meshes/manifest.json", textureCache)
 {
     initPrograms ();
     
@@ -10,7 +10,6 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     
     // Create an instance of the mechwarrior model
     mechwarriorInstance = modelGroup.NewInstance("robot02");
-    mechwarriorInstance->GetNode()->LocalTransform().Translation() = glm::vec3(0,0,-5);
     mechwarriorInstance->GetNode()->Id() = "Mechwarrior";
     sceneRoot->AddChild(mechwarriorInstance->GetNode());
     
@@ -21,10 +20,20 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     ground->GetNode()->Id() = "Ground";
     sceneRoot->AddChild(ground->GetNode());
     
-    // Setup the camera
-    mechwarriorInstance->GetNode()->FindNode("body")->AddChild(camera);
-    camera->LocalTransform().Rotation() = glm::angleAxis(-glm::pi<float>(), vec3(0,1,0));
-    camera->LocalTransform().Translation() = glm::vec3(0,0.8,-2);
+    // Setup the cameras
+    cameraSelection = false;
+    
+    mechCamera = new Node();
+    mechCamera->LocalTransform().Rotation() = glm::angleAxis(-glm::pi<float>(), vec3(0,1,0));
+    mechCamera->LocalTransform().Translation() = glm::vec3(0,0.8,-2);
+    mechCameraRotator = new Node();
+    mechCameraRotator->AddChild(mechCamera);
+    //mechwarriorInstance->GetNode()->FindNode("body")->AddChild(mechCameraRotator);
+    
+    groundCamera = new Node();
+    groundCamera->LocalTransform().Translation() = vec3(1, 0.65, 1);
+    groundCamera->LocalTransform().Rotation() = glm::angleAxis(glm::pi<float>() / 4.0f, vec3(0,1,0)) * glm::angleAxis(-glm::pi<float>() / 16.0f, vec3(1,0,0));
+    sceneRoot->AddChild(groundCamera);
     
     // Add the animations as menu options
     int animationId = 0;
@@ -62,6 +71,15 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
     switch ( key )
     {
         case 27 : exit(1); // Esc was pressed
+        case ' ': cameraSelection = !cameraSelection;
+    }
+}
+
+void AppWindow::glutKeyboardUp ( unsigned char key, int x, int y )
+{
+    switch ( key )
+    {
+        
     }
 }
 
@@ -71,10 +89,10 @@ void AppWindow::glutSpecial ( int key, int x, int y )
     
     switch ( key )
     {
-        case GLUT_KEY_LEFT:      rotation.y-=incr; break;
+        /*case GLUT_KEY_LEFT:      rotation.y-=incr; break;
         case GLUT_KEY_RIGHT:     rotation.y+=incr; break;
         case GLUT_KEY_UP:        rotation.x-=incr; break;
-        case GLUT_KEY_DOWN:      rotation.x+=incr; break;
+        case GLUT_KEY_DOWN:      rotation.x+=incr; break;*/
         
         default: return; // return without rendering
     }
@@ -130,7 +148,14 @@ void AppWindow::glutDisplay ()
     sceneRoot->Recalculate();
     
     // Compute the camera matrix
-    mat4 viewMatrix = inverse(camera->TransformMatrix());
+    mat4 viewMatrix = mat4();
+    if(cameraSelection)
+        viewMatrix = inverse(groundCamera->TransformMatrix());
+    else
+    {
+        mechCameraRotator->Recalculate();
+        viewMatrix = inverse(mechwarriorInstance->GetTransformOfSkeletalNode("body") * mechCamera->TransformMatrix());
+    }
     groundProgram->Camera.SetViewMatrix(viewMatrix);
     modelProgram->Camera.SetViewMatrix(viewMatrix);
     

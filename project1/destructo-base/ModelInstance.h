@@ -84,6 +84,11 @@ public:
     const Model* GetModel() const;
     
     /**
+     *
+     */
+    mat4 GetTransformOfSkeletalNode(std::string name);
+    
+    /**
      * Static method to construct a model instance from a manifest file
      * @param value The Json serialized value to build this model instance from
      * @return Pointer to a model instance encapsulating the entry
