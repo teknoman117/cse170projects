@@ -29,8 +29,11 @@ uniform vec3 material_color_ambient;
 uniform vec3 material_color_diffuse;
 
 // Output data to fragment stage
+out vec4  Pos;
+out vec3  Norm;
+out vec2  Tex;
+
 out vec4  fragment_color_in;
-out vec2  texture_coordinates;
 
 void main()
 {
@@ -65,8 +68,12 @@ void main()
     fragment_color_in = vec4(material_color_diffuse, 1.0);
     
 	// Output the texture coordinates to the next shader stage
-	texture_coordinates = vTex0;
+	Tex = vTex0;
+    
+    // Per vertex attributes
+    Pos = MV * position;
+    Norm = vec3(MV * normal);
     
     // Calculate the position of the vertex
-	gl_Position = P * (MV * position);
+    gl_Position = P * Pos;
 }
