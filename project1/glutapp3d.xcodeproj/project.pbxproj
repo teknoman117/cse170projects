@@ -57,6 +57,7 @@
 		F1C2A0561BDC330A008E9BE0 /* AnimationSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A0541BDC330A008E9BE0 /* AnimationSource.cpp */; };
 		F1C2A0591BDC34E9008E9BE0 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A0571BDC34E9008E9BE0 /* Utilities.cpp */; };
 		F1C2A05B1BDC373E008E9BE0 /* lodepng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A05A1BDC373E008E9BE0 /* lodepng.cpp */; };
+		F1C2A05E1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A05C1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -106,7 +107,6 @@
 		F1C2A0061BDC308B008E9BE0 /* GLLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLLight.h; sourceTree = "<group>"; };
 		F1C2A0071BDC308B008E9BE0 /* GLLighting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLLighting.cpp; sourceTree = "<group>"; };
 		F1C2A0081BDC308B008E9BE0 /* GLLighting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLLighting.h; sourceTree = "<group>"; };
-		F1C2A0091BDC308B008E9BE0 /* GLLightProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLLightProgram.h; sourceTree = "<group>"; };
 		F1C2A00A1BDC308B008E9BE0 /* GLModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLModel.cpp; sourceTree = "<group>"; };
 		F1C2A00B1BDC308B008E9BE0 /* GLModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLModel.h; sourceTree = "<group>"; };
 		F1C2A00C1BDC308B008E9BE0 /* GLProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLProgram.cpp; sourceTree = "<group>"; };
@@ -156,8 +156,8 @@
 		F1C2A0571BDC34E9008E9BE0 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
 		F1C2A0581BDC34E9008E9BE0 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		F1C2A05A1BDC373E008E9BE0 /* lodepng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lodepng.cpp; sourceTree = "<group>"; };
-		F1CDE23C1BB130FC00A8C841 /* fsh_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_flat.glsl; sourceTree = "<group>"; };
-		F1CDE23D1BB130FC00A8C841 /* vsh_mcol_flat.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_mcol_flat.glsl; sourceTree = "<group>"; };
+		F1C2A05C1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLTexturedQuad.cpp; sourceTree = SOURCE_ROOT; };
+		F1C2A05D1BDDBAE4008E9BE0 /* GLTexturedQuad.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLTexturedQuad.hpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,7 +187,6 @@
 			isa = PBXGroup;
 			children = (
 				F1190ED11B97A549002C4607 /* glutapp3d */,
-				F1CDE23E1BB1310000A8C841 /* shaders */,
 				F1190EFA1B97A5AA002C4607 /* lib */,
 				F1190ED01B97A549002C4607 /* Products */,
 			);
@@ -211,6 +210,8 @@
 				F1190EDB1B97A598002C4607 /* app_window.h */,
 				F1190EDC1B97A598002C4607 /* glut_window.cpp */,
 				F1190EDD1B97A598002C4607 /* glut_window.h */,
+				F1C2A05C1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp */,
+				F1C2A05D1BDDBAE4008E9BE0 /* GLTexturedQuad.hpp */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -295,7 +296,6 @@
 				F1C2A0061BDC308B008E9BE0 /* GLLight.h */,
 				F1C2A0071BDC308B008E9BE0 /* GLLighting.cpp */,
 				F1C2A0081BDC308B008E9BE0 /* GLLighting.h */,
-				F1C2A0091BDC308B008E9BE0 /* GLLightProgram.h */,
 				F1C2A00A1BDC308B008E9BE0 /* GLModel.cpp */,
 				F1C2A00B1BDC308B008E9BE0 /* GLModel.h */,
 				F1C2A00C1BDC308B008E9BE0 /* GLProgram.cpp */,
@@ -338,15 +338,6 @@
 			);
 			path = "destructo-base";
 			sourceTree = SOURCE_ROOT;
-		};
-		F1CDE23E1BB1310000A8C841 /* shaders */ = {
-			isa = PBXGroup;
-			children = (
-				F1CDE23C1BB130FC00A8C841 /* fsh_flat.glsl */,
-				F1CDE23D1BB130FC00A8C841 /* vsh_mcol_flat.glsl */,
-			);
-			name = shaders;
-			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -471,6 +462,7 @@
 				F1C2A0591BDC34E9008E9BE0 /* Utilities.cpp in Sources */,
 				F1C2A0321BDC308B008E9BE0 /* GLLighting.cpp in Sources */,
 				F1C2A03F1BDC308B008E9BE0 /* Node.cpp in Sources */,
+				F1C2A05E1BDDBAE4008E9BE0 /* GLTexturedQuad.cpp in Sources */,
 				F1C2A0371BDC308B008E9BE0 /* GLTextureCubeMap.cpp in Sources */,
 				F1C2A0331BDC308B008E9BE0 /* GLModel.cpp in Sources */,
 				F1C2A0391BDC308B008E9BE0 /* Material.cpp in Sources */,
@@ -648,6 +640,7 @@
 				F1C29FD91BDBEEE0008E9BE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

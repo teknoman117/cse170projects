@@ -1,17 +1,30 @@
 # include <destructo-base/OS.h>
-
-# include <iostream>
-# include <cmath>
-
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h ), modelGroup("meshes/manifest.json", textureCache)
+    : GlutWindow ( label, x, y, w, h ), sceneRoot(new Node()), camera(new Node()), modelGroup("meshes/manifest.json", textureCache)
 {
     initPrograms ();
     
+    sceneRoot->Id() = "Scene Root";
+    
     // Create an instance of the mechwarrior model
     mechwarriorInstance = modelGroup.NewInstance("robot02");
+    mechwarriorInstance->GetNode()->LocalTransform().Translation() = glm::vec3(0,0,-5);
+    mechwarriorInstance->GetNode()->Id() = "Mechwarrior";
+    sceneRoot->AddChild(mechwarriorInstance->GetNode());
+    
+    // Create a textured quad for the ground (tile the texture 50 times across its surface
+    ground = new GLTexturedQuad(textureCache, "textures/terrain.png");
+    ground->Build(groundProgram, 50.0);
+    ground->GetNode()->LocalTransform().Scale() = vec3(100,1,100);
+    ground->GetNode()->Id() = "Ground";
+    sceneRoot->AddChild(ground->GetNode());
+    
+    // Setup the camera
+    mechwarriorInstance->GetNode()->FindNode("body")->AddChild(camera);
+    camera->LocalTransform().Rotation() = glm::angleAxis(-glm::pi<float>(), vec3(0,1,0));
+    camera->LocalTransform().Translation() = glm::vec3(0,0.8,-2);
     
     // Add the animations as menu options
     int animationId = 0;
@@ -31,6 +44,7 @@ void AppWindow::initPrograms ()
     
     // Load the program for the model shader
     modelProgram = new MaterialProgram("shaders/vsh_model.glsl", "shaders/fsh_model.glsl");
+    groundProgram = new GL3DProgram("shaders/vsh_quad.glsl", "shaders/fsh_quad.glsl");
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -93,6 +107,7 @@ void AppWindow::glutReshape ( int w, int h )
     // Update the projection matrix with the new viewport information
     viewport = vec2(w,h);
     modelProgram->Camera.SetFrustrum(glm::pi<float>() / 3.0f, viewport.x / viewport.y, 0.1f, 50.0f);
+    groundProgram->Camera.SetFrustrum(glm::pi<float>() / 3.0f, viewport.x / viewport.y, 0.1f, 50.0f);
     
     // Define that OpenGL should use the whole window for rendering
     glViewport( 0, 0, w, h );
@@ -108,17 +123,26 @@ void AppWindow::glutDisplay ()
     static double previousTime = OS::Now();
     double        currentTime  = OS::Now();
     double        delta        = currentTime - previousTime;
-
+    
+    // Perform all computations
+    mechwarriorInstance->Update(delta, currentTime);
+    
+    sceneRoot->Recalculate();
+    
+    // Compute the camera matrix
+    mat4 viewMatrix = inverse(camera->TransformMatrix());
+    groundProgram->Camera.SetViewMatrix(viewMatrix);
+    modelProgram->Camera.SetViewMatrix(viewMatrix);
+    
+    // Perform all renderering
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
+    // Render the ground
+    groundProgram->UseProgram();
+    ground->Draw(groundProgram);
+    
+    // Render the mechwarrior
     modelProgram->UseProgram();
-    
-    modelProgram->Camera.SetCameraPosition(vec3(0,0,2), vec3(0,0,0), vec3(0,1,0));
-    modelProgram->Camera.Apply();
-    
-    mechwarriorInstance->Update(delta, currentTime);
-    mechwarriorInstance->GetTransform().Rotation() = glm::angleAxis(rotation.x, vec3(1,0,0)) *
-                                                     glm::angleAxis(rotation.y, vec3(0,1,0));
     mechwarriorInstance->Draw(modelProgram);
     
     previousTime = currentTime;

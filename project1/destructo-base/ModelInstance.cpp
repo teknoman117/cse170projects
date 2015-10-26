@@ -25,13 +25,14 @@
  * @param _model Model to provide an instance of
  */
 ModelInstance::ModelInstance(Model *_model)
-    : model(_model), transform(Transform()), /*controller(new AnimationController()),*/ animation(NULL)
+    : model(_model), node(new Node()), /*controller(new AnimationController()),*/ animation(NULL)
 {
     // Bind the animation controller
     //controller->Bind(_model->Skeleton());
     
     // Bind the animator
     animation.Bind(_model->Skeleton());
+    node->AddChild(animation.Skeleton());
 }
 
 /**
@@ -39,9 +40,10 @@ ModelInstance::ModelInstance(Model *_model)
  * @param instance ModelInstance to duplicate (does not duplicate model)
  */
 ModelInstance::ModelInstance(const ModelInstance& instance)
-    : model(instance.model), transform(instance.transform), /*controller(instance.controller),*/ animation(instance.animation)
+    : model(instance.model), node(new Node()), /*controller(instance.controller),*/ animation(instance.animation)
 {
-
+    node->LocalTransform() = instance.GetNode()->LocalTransform();
+    node->AddChild(animation.Skeleton());
 }
 
 /**
@@ -75,11 +77,6 @@ AnimationClip & ModelInstance::Animation()
  */
 void ModelInstance::Draw(MaterialProgram *program)
 {
-    // Push the model transform onto the program's matrix stack
-    program->Model.PushMatrix();
-    program->Model.SetMatrix(transform.TransformMatrix());
-    //program->Model.Apply();
-    
     // DUCT TAPE SOLUTON WARNING
     /*if(controller->Layers().size())
     {
@@ -93,18 +90,24 @@ void ModelInstance::Draw(MaterialProgram *program)
         animation.Skeleton()->Recalculate();
         model->Draw(program, *(animation.Skeleton()));
     //}
-    
-    // Remove the translation
-    program->Model.PopMatrix();
 }
 
 /**
- * Get a reference to the transform of the instance
- * @return reference to transform
+ * Get a pointer to the node of the model
+ * @return pointer to the model
  */
-Transform& ModelInstance::GetTransform()
+Node* ModelInstance::GetNode()
 {
-    return transform;
+    return node;
+}
+
+/**
+ * Get a const pointer to the node of the model
+ * @return const pointer to the model
+ */
+const Node* ModelInstance::GetNode() const
+{
+    return node;
 }
 
 /**
@@ -188,6 +191,8 @@ ModelInstance* ModelInstance::LoadManifestEntry(const Json::Value& model, Textur
 // TEST TEST TEST
 bool ModelInstance::PlayAnimation(const std::string name)
 {
+    animation.Reset();
+    
     // Get an iterator to the animation we want to play
     Model::animation_const_iterator anim = model->Animations().find(name);
     

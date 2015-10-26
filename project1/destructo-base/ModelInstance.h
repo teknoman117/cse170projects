@@ -29,8 +29,8 @@ class ModelInstance
     /** Model we are providing an instance of */
     std::shared_ptr<Model>    model;
     
-    /** The transform to render the model at */
-    Transform                 transform;
+    /** The node representing this model's position in space */
+    Node                     *node;
     
     /** SUPER DUPER TESTING MODE SHIT */
     AnimationClip             animation;
@@ -66,10 +66,16 @@ public:
     void Draw(MaterialProgram *program);
     
     /**
-     * Get a reference to the transform of the model
-     * @return reference to transform
+     * Get a pointer to the node of the model
+     * @return pointer to the model
      */
-    Transform& GetTransform();
+    Node* GetNode();
+    
+    /**
+     * Get a const pointer to the node of the model
+     * @return const pointer to the model
+     */
+    const Node* GetNode() const;
     
     /**
      * Get a pointer to the model this instance uses

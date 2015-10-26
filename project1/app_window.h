@@ -5,10 +5,13 @@
 
 # include <destructo-base/stdafx.h>
 # include <destructo-base/TextureCache.h>
-# include <destructo-base/MaterialProgram.h>
 # include <destructo-base/ModelGroup.h>
 # include <destructo-base/ModelInstance.h>
 
+# include <destructo-base/GL3DProgram.h>
+# include <destructo-base/MaterialProgram.h>
+
+# include "GLTexturedQuad.hpp"
 # include "glut_window.h"
 
 // The functionality of your application should be implemented inside AppWindow
@@ -18,9 +21,15 @@ class AppWindow : public GlutWindow
     TextureCache      textureCache;
     ModelGroup        modelGroup;
     MaterialProgram  *modelProgram;
+    GL3DProgram      *groundProgram;
     
     // My scene objects
+    Node             *sceneRoot;
     ModelInstance    *mechwarriorInstance;
+    GLTexturedQuad   *ground;
+    
+    Node             *camera;
+    Transform         cameraTransform;
 
     // App data:
     float             _rotx, _roty;

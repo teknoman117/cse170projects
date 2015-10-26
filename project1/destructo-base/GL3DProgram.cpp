@@ -66,4 +66,9 @@ void GL3DProgram::Apply()
         // Set the mvp matrix
         glUniformMatrix4fv(uniformMatrixModelViewProjection, 1, GL_FALSE, &storage[0][0]);
     }
+    
+    // Apply other stuff
+    Model.Apply();
+    Camera.Apply();
+    //Lights.Apply();
 }

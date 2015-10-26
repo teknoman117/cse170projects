@@ -370,6 +370,7 @@ void Model::Draw(MaterialProgram *program, const Node& _skeleton)
         program->Model.PushMatrix();
         program->Model.Combine(node->TransformMatrix());
         program->Apply();
+        program->Model.PopMatrix();
         
         // Bind the vertex array object
         glBindVertexArray((*renderable)->attributes);
@@ -477,9 +478,6 @@ void Model::Draw(MaterialProgram *program, const Node& _skeleton)
         
         // Finally, we can draw the god damn mesh
         glDrawElements(GL_TRIANGLES, (GLsizei) (*renderable)->meshpart->indices.size(), GL_UNSIGNED_SHORT, NULL);
-        
-        // Pop the matrix
-        program->Model.PopMatrix();
     }
     
     // Store the previous program
