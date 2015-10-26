@@ -10,7 +10,6 @@
 # include <destructo-base/ModelInstance.h>
 
 # include "glut_window.h"
-# include "so_axis.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -18,30 +17,22 @@ class AppWindow : public GlutWindow
     // OpenGL Resources
     TextureCache      textureCache;
     ModelGroup        modelGroup;
-    MaterialProgram   materialProgram;
+    MaterialProgram  *modelProgram;
     
     // My scene objects
     ModelInstance    *mechwarriorInstance;
-    
-    // OpenGL shaders and programs:
-    GlShader _vertexsh, _fragsh;
-    GlProgram _prog;
-
-    // My scene objects:
-    SoAxis _axis;
 
     // App data:
-    enum MenuEv { evOption0, evOption1 };
-    float _rotx, _roty, _rotz, _fovy;
-    bool  _viewaxis;
-    float _w, _h;
+    float             _rotx, _roty;
+    glm::vec3         rotation;
+    glm::vec2         viewport;
 
 public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();
     vec2 windowToScene ( const vec2& v );
 
-    private : // functions derived from the base class
+private : // functions derived from the base class
     virtual void glutMenu ( int m );
     virtual void glutKeyboard ( unsigned char key, int x, int y );
     virtual void glutSpecial ( int key, int x, int y );

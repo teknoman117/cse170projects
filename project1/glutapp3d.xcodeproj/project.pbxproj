@@ -10,8 +10,6 @@
 		F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190ED91B97A598002C4607 /* app_main.cpp */; };
 		F1190EF01B97A598002C4607 /* app_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDA1B97A598002C4607 /* app_window.cpp */; };
 		F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDC1B97A598002C4607 /* glut_window.cpp */; };
-		F1190EF81B97A598002C4607 /* ogl_tools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EEB1B97A598002C4607 /* ogl_tools.cpp */; };
-		F1190EF91B97A598002C4607 /* so_axis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EED1B97A598002C4607 /* so_axis.cpp */; };
 		F1190EFD1B97A5AA002C4607 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFB1B97A5AA002C4607 /* libGLEW.a */; };
 		F1190EFE1B97A5AA002C4607 /* libGLEWmx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */; };
 		F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
@@ -80,10 +78,6 @@
 		F1190EDB1B97A598002C4607 /* app_window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app_window.h; sourceTree = SOURCE_ROOT; };
 		F1190EDC1B97A598002C4607 /* glut_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glut_window.cpp; sourceTree = SOURCE_ROOT; };
 		F1190EDD1B97A598002C4607 /* glut_window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glut_window.h; sourceTree = SOURCE_ROOT; };
-		F1190EEB1B97A598002C4607 /* ogl_tools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ogl_tools.cpp; sourceTree = SOURCE_ROOT; };
-		F1190EEC1B97A598002C4607 /* ogl_tools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ogl_tools.h; sourceTree = SOURCE_ROOT; };
-		F1190EED1B97A598002C4607 /* so_axis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = so_axis.cpp; sourceTree = SOURCE_ROOT; };
-		F1190EEE1B97A598002C4607 /* so_axis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = so_axis.h; sourceTree = SOURCE_ROOT; };
 		F1190EFB1B97A5AA002C4607 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEW.a; sourceTree = "<group>"; };
 		F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEWmx.a; sourceTree = "<group>"; };
 		F1190EFF1B97A5EA002C4607 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -217,10 +211,6 @@
 				F1190EDB1B97A598002C4607 /* app_window.h */,
 				F1190EDC1B97A598002C4607 /* glut_window.cpp */,
 				F1190EDD1B97A598002C4607 /* glut_window.h */,
-				F1190EEB1B97A598002C4607 /* ogl_tools.cpp */,
-				F1190EEC1B97A598002C4607 /* ogl_tools.h */,
-				F1190EED1B97A598002C4607 /* so_axis.cpp */,
-				F1190EEE1B97A598002C4607 /* so_axis.h */,
 			);
 			path = glutapp3d;
 			sourceTree = "<group>";
@@ -458,7 +448,6 @@
 			files = (
 				F1C2A03B1BDC308B008E9BE0 /* Mesh.cpp in Sources */,
 				F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */,
-				F1190EF91B97A598002C4607 /* so_axis.cpp in Sources */,
 				F1C2A0361BDC308B008E9BE0 /* GLTexture.cpp in Sources */,
 				F1C2A02F1BDC308B008E9BE0 /* Animation.cpp in Sources */,
 				F1C2A0401BDC308B008E9BE0 /* OS.cpp in Sources */,
@@ -467,7 +456,6 @@
 				F1C2A03D1BDC308B008E9BE0 /* ModelGroup.cpp in Sources */,
 				F1190EF01B97A598002C4607 /* app_window.cpp in Sources */,
 				F1C2A0531BDC3285008E9BE0 /* AnimationClip.cpp in Sources */,
-				F1190EF81B97A598002C4607 /* ogl_tools.cpp in Sources */,
 				F1C2A03A1BDC308B008E9BE0 /* MaterialProgram.cpp in Sources */,
 				F1C2A0421BDC308B008E9BE0 /* TextureCache.cpp in Sources */,
 				F1C2A0411BDC308B008E9BE0 /* Semaphore.cpp in Sources */,
@@ -541,7 +529,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -578,7 +566,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/osx/glew/include $(SRCROOT)/ $(SRCROOT)/jsoncpp/include";

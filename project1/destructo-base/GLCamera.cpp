@@ -57,17 +57,9 @@ void GLCamera::Reset() {
 }
 
 //Set the camera position in the world. Up vector defaults to 0,0,1
-void GLCamera::SetCameraPosition(vec3 cameraPos, vec3 target, vec3 upVector) {
-
-	vec3 zaxis = cameraZAxis = glm::normalize(cameraPos - target);
-	vec3 xaxis = glm::normalize(glm::cross(upVector,zaxis));
-	vec3 yaxis = glm::cross(zaxis,xaxis);
-	viewMatrix[0] = vec4(xaxis,-glm::dot(xaxis,cameraPos));
-	viewMatrix[1] = vec4(yaxis,-glm::dot(yaxis,cameraPos));
-	viewMatrix[2] = vec4(zaxis,-glm::dot(zaxis,cameraPos));
-	viewMatrix[3] = vec4(0,0,0,1);
-	viewMatrix = glm::transpose(viewMatrix);
-
+void GLCamera::SetCameraPosition(vec3 cameraPos, vec3 target, vec3 upVector)
+{
+    viewMatrix = glm::lookAt(cameraPos, target, upVector);
 }
 
 vec3 GLCamera::GetZAxis() {
@@ -76,15 +68,9 @@ vec3 GLCamera::GetZAxis() {
 
 
 //Change the frustrum matrix to the given values
-void GLCamera::SetFrustrum(float verticalFOV, float aspectRatio, float nearDistance, float farDistance) {
-	float range = (float)tan(verticalFOV*3.141592/180.0*.5)*nearDistance;
-	memset(&projectionMatrix,0,sizeof(projectionMatrix));
-	projectionMatrix[0].x = (2.0f*nearDistance)/(2.0f*range*aspectRatio);
-	
-	projectionMatrix[1].y = nearDistance/range;
-	projectionMatrix[2].z = -(farDistance+nearDistance)/(farDistance-nearDistance);
-	projectionMatrix[3].z = -(2.0f*farDistance*nearDistance)/(farDistance-nearDistance);
-	projectionMatrix[2].w = -1;
+void GLCamera::SetFrustrum(float verticalFOV, float aspectRatio, float nearDistance, float farDistance)
+{
+	projectionMatrix = glm::perspective(verticalFOV, aspectRatio, nearDistance, farDistance);
 }
 
 // Get the view matrix

@@ -4,18 +4,15 @@
  * UC Merced, M. Kallmann 
  *=================================================*/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "ogl_tools.h"
+#include <destructo-base/stdafx.h>
 #include "glut_window.h"
 
 #if (defined WIN32)
-#include <GL/wglew.h>
+    #include <GL/wglew.h>
 #elif (defined __APPLE__)
-// vsync is controled differently on OS X
-
+    // vsync is controled differently on OS X
 #else
-#include <GL/glxew.h>
+    #include <GL/glxew.h>
 #endif
 
 //===== static members =====
@@ -41,10 +38,6 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
     glewExperimental = GL_TRUE;
     GLenum res = glewInit();
     if ( res!=GLEW_OK ) std::cout<<glewGetString(GLEW_VERSION)<<", Error: "<<glewGetErrorString(res)<<"\n";
-
-    std::ostringstream messages;
-    glPrintInfo(messages);
-    std::cout << messages.str();
 
     // Setup vertical synchronization on Linux
     #if (defined WIN32)

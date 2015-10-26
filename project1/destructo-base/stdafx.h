@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <cmath>
 #include <functional>
 #include <limits>
 
@@ -46,18 +47,16 @@ using namespace std;
 #undef UNICODE
 #endif
 
-#include "../ogl_tools.h"
-
-//GLEW now handles all of opengl
-#ifndef WIN32
-//for OSX
-#ifdef __APPLE__
-// GLEW defines __gl_h_ which will trip OS X into thinking the old gl header was included
-#undef __gl_h_
+#if (defined WIN32)
+# include <windows.h>
+# include <GL/glew.h>
+#elif (defined __APPLE__)
+# include <GL/glew.h>
+# include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
-
-#endif
-
 
 //GLM
 #include <glm/glm.hpp>

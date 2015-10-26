@@ -15,7 +15,7 @@
         // Offset transform (baked into skeleton)
         "offset" :
         {
-            "scale" : [ 1.25, 1.25, 1.25 ]
+            "scale" : [ 0.4125, 0.4125, 0.4125 ]
         }
     },
 	
@@ -34,7 +34,7 @@
         // Offset transform (baked into skeleton)
         "offset" :
         {
-            "scale" : [ 2.25, 2.25, 2.25 ]
+            "scale" : [ 0.6, 0.6, 0.6 ]
         }
     }
 ]

@@ -1,6 +1,4 @@
-
-# include <iostream>
-# include "ogl_tools.h"
+# include <destructo-base/stdafx.h>
 # include "app_window.h"
 
 //==========================================================================
