@@ -1,6 +1,22 @@
 # include <destructo-base/OS.h>
 # include "app_window.h"
 
+namespace
+{
+    // Compute the shadow matrix (adapted from ftp://ftp.sgi.com/opengl/contrib/blythe/advanced99/notes/node192.html)
+    void ComputeShadowMatrixPointLight(mat4& shadowMat, vec4 light, vec4 ground)
+    {
+        mat4 dotmat = mat4(1.0) * glm::dot(light, ground);
+        
+        shadowMat[0] = light * ground[0];
+        shadowMat[1] = light * ground[1];
+        shadowMat[2] = light * ground[2];
+        shadowMat[3] = light * ground[3];
+        
+        shadowMat = dotmat - shadowMat;
+    }
+}
+
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     : GlutWindow ( label, x, y, w, h ), sceneRoot(new Node()), modelGroup("meshes/manifest.json", textureCache), mechwarriorRate(vec2(0.0f,0.0f)), mechwarriorRotateRate(0.0f)
 {
@@ -17,6 +33,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     ground = new GLTexturedQuad(textureCache, "textures/terrain.png");
     ground->Build(groundProgram, 50.0);
     ground->GetNode()->LocalTransform().Scale() = vec3(100,1,100);
+    ground->GetNode()->LocalTransform().Translation() = vec3(0,-0.001,0);
     ground->GetNode()->Id() = "Ground";
     sceneRoot->AddChild(ground->GetNode());
     
@@ -59,6 +76,12 @@ void AppWindow::initPrograms ()
     // Load the program for the model shader
     modelProgram = new MaterialProgram("shaders/vsh_model.glsl", "shaders/fsh_model.glsl");
     groundProgram = new GL3DProgram("shaders/vsh_quad.glsl", "shaders/fsh_quad.glsl");
+    
+    // Setup the shadow matrix for the light
+    mat4 shadowMatrix;
+    ComputeShadowMatrixPointLight(shadowMatrix, vec4(0,3,0,1), glm::vec4(0,1,0,0));
+    modelProgram->SetShadowMatrix(shadowMatrix);
+    groundProgram->SetShadowMatrix(shadowMatrix);
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -344,6 +367,9 @@ void AppWindow::glutDisplay ()
     
     // Render the mechwarrior
     modelProgram->UseProgram();
+    modelProgram->SetShadowMode(false);
+    mechwarriorInstance->Draw(modelProgram);
+    modelProgram->SetShadowMode(true);
     mechwarriorInstance->Draw(modelProgram);
     
     previousTime = currentTime;

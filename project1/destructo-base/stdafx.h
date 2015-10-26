@@ -101,4 +101,3 @@ inline float clamp(T x, T a, T b)
 {
     return x < a ? a : (x > b ? b : x);
 }
-

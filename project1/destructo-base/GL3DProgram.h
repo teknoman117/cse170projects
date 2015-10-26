@@ -14,10 +14,14 @@ class GL3DProgram : public GLProgram {
 	GLint attributeIndexNormal;
 	GLint attributeIndexPosition;
     GLint uniformMaterialReflectivity;
+    GLint uniformModeShadow;
     
     // Modelview uniform
     GLint uniformMatrixModelView;
     GLint uniformMatrixModelViewProjection;
+    
+    bool  shadowMode;
+    mat4  shadowMatrix;
 
 public:
 	GL3DProgram(string vertexShaderPath, string fragmentShaderPath);
@@ -42,4 +46,6 @@ public:
     
     // Apply combined matrices
     void Apply();
+    void SetShadowMatrix(mat4 shadowMatrix);
+    void SetShadowMode(bool shadowMode);
 };

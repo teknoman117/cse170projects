@@ -15,6 +15,10 @@ GL3DProgram::GL3DProgram(string vertexShaderPath, string fragmentShaderPath) :
     uniformMaterialReflectivity = glGetUniformLocation(programId, "material_reflectivity");
     uniformMatrixModelView = glGetUniformLocation(programId, "MV");
     uniformMatrixModelViewProjection = glGetUniformLocation(programId, "MVP");
+    uniformModeShadow = glGetUniformLocation(programId, "shadowMode");
+    
+    shadowMode = false;
+    shadowMatrix = mat4(1.0f);
 };
 
 void GL3DProgram::UseProgram(void) {
@@ -46,7 +50,7 @@ void GL3DProgram::Apply()
     // If we have a model view matrix
     if(uniformMatrixModelView >= 0)
     {
-        storage = Camera.ViewMatrix() * storage;
+        storage = Camera.ViewMatrix() * (shadowMode ? shadowMatrix * storage : storage);
         glUniformMatrix4fv(uniformMatrixModelView, 1, GL_FALSE, &storage[0][0]);
     }
     
@@ -60,15 +64,27 @@ void GL3DProgram::Apply()
         } else
         {
             // Do the full chain
-            storage = Camera.ProjectionMatrix() * Camera.ViewMatrix() * storage;
+            storage = Camera.ProjectionMatrix() * Camera.ViewMatrix() * (shadowMode ? shadowMatrix * storage : storage);
         }
         
         // Set the mvp matrix
         glUniformMatrix4fv(uniformMatrixModelViewProjection, 1, GL_FALSE, &storage[0][0]);
     }
     
+    glUniform1i(uniformModeShadow, shadowMode ? 1 : 0);
+    
     // Apply other stuff
     Model.Apply();
     Camera.Apply();
     //Lights.Apply();
+}
+
+void GL3DProgram::SetShadowMatrix(mat4 shadowMatrix)
+{
+    this->shadowMatrix = shadowMatrix;
+}
+
+void GL3DProgram::SetShadowMode(bool shadowMode)
+{
+    this->shadowMode = shadowMode;
 }

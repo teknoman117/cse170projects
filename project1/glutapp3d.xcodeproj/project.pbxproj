@@ -161,6 +161,18 @@
 		F1C2A05D1BDDBAE4008E9BE0 /* GLTexturedQuad.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLTexturedQuad.hpp; sourceTree = SOURCE_ROOT; };
 		F1C2A05F1BDE1237008E9BE0 /* AnimationTransition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationTransition.cpp; sourceTree = "<group>"; };
 		F1C2A0601BDE1237008E9BE0 /* AnimationTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationTransition.h; sourceTree = "<group>"; };
+		F1C2A0631BDE4558008E9BE0 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		F1C2A0651BDE4558008E9BE0 /* robot02.lod0.mesh.json.z */ = {isa = PBXFileReference; lastKnownFileType = file; path = robot02.lod0.mesh.json.z; sourceTree = "<group>"; };
+		F1C2A0661BDE4558008E9BE0 /* robot02.lod1.mesh.json.z */ = {isa = PBXFileReference; lastKnownFileType = file; path = robot02.lod1.mesh.json.z; sourceTree = "<group>"; };
+		F1C2A0671BDE4558008E9BE0 /* robot02_diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = robot02_diffuse.png; sourceTree = "<group>"; };
+		F1C2A0691BDE4558008E9BE0 /* robot02.lod0.mesh.json.z */ = {isa = PBXFileReference; lastKnownFileType = file; path = robot02.lod0.mesh.json.z; sourceTree = "<group>"; };
+		F1C2A06A1BDE4558008E9BE0 /* robot02.lod1.mesh.json.z */ = {isa = PBXFileReference; lastKnownFileType = file; path = robot02.lod1.mesh.json.z; sourceTree = "<group>"; };
+		F1C2A06B1BDE4558008E9BE0 /* robot02_diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = robot02_diffuse.png; sourceTree = "<group>"; };
+		F1C2A06D1BDE4558008E9BE0 /* fsh_model.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_model.glsl; sourceTree = "<group>"; };
+		F1C2A06E1BDE4558008E9BE0 /* fsh_quad.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_quad.glsl; sourceTree = "<group>"; };
+		F1C2A06F1BDE4558008E9BE0 /* vsh_model.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_model.glsl; sourceTree = "<group>"; };
+		F1C2A0701BDE4558008E9BE0 /* vsh_quad.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vsh_quad.glsl; sourceTree = "<group>"; };
+		F1C2A0721BDE4558008E9BE0 /* terrain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = terrain.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +202,9 @@
 			isa = PBXGroup;
 			children = (
 				F1190ED11B97A549002C4607 /* glutapp3d */,
+				F1C2A0621BDE4558008E9BE0 /* meshes */,
+				F1C2A06C1BDE4558008E9BE0 /* shaders */,
+				F1C2A0711BDE4558008E9BE0 /* textures */,
 				F1190EFA1B97A5AA002C4607 /* lib */,
 				F1190ED01B97A549002C4607 /* Products */,
 			);
@@ -343,6 +358,55 @@
 			);
 			path = "destructo-base";
 			sourceTree = SOURCE_ROOT;
+		};
+		F1C2A0621BDE4558008E9BE0 /* meshes */ = {
+			isa = PBXGroup;
+			children = (
+				F1C2A0631BDE4558008E9BE0 /* manifest.json */,
+				F1C2A0641BDE4558008E9BE0 /* robot02 */,
+				F1C2A0681BDE4558008E9BE0 /* robot02_rocket */,
+			);
+			path = meshes;
+			sourceTree = "<group>";
+		};
+		F1C2A0641BDE4558008E9BE0 /* robot02 */ = {
+			isa = PBXGroup;
+			children = (
+				F1C2A0651BDE4558008E9BE0 /* robot02.lod0.mesh.json.z */,
+				F1C2A0661BDE4558008E9BE0 /* robot02.lod1.mesh.json.z */,
+				F1C2A0671BDE4558008E9BE0 /* robot02_diffuse.png */,
+			);
+			path = robot02;
+			sourceTree = "<group>";
+		};
+		F1C2A0681BDE4558008E9BE0 /* robot02_rocket */ = {
+			isa = PBXGroup;
+			children = (
+				F1C2A0691BDE4558008E9BE0 /* robot02.lod0.mesh.json.z */,
+				F1C2A06A1BDE4558008E9BE0 /* robot02.lod1.mesh.json.z */,
+				F1C2A06B1BDE4558008E9BE0 /* robot02_diffuse.png */,
+			);
+			path = robot02_rocket;
+			sourceTree = "<group>";
+		};
+		F1C2A06C1BDE4558008E9BE0 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F1C2A06D1BDE4558008E9BE0 /* fsh_model.glsl */,
+				F1C2A06E1BDE4558008E9BE0 /* fsh_quad.glsl */,
+				F1C2A06F1BDE4558008E9BE0 /* vsh_model.glsl */,
+				F1C2A0701BDE4558008E9BE0 /* vsh_quad.glsl */,
+			);
+			path = shaders;
+			sourceTree = "<group>";
+		};
+		F1C2A0711BDE4558008E9BE0 /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				F1C2A0721BDE4558008E9BE0 /* terrain.png */,
+			);
+			path = textures;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 

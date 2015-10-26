@@ -12,6 +12,8 @@ uniform int textured;
 //Texture input
 uniform sampler2D diffuse;
 
+uniform int shadowMode;
+
 // Color output
 out vec4 fragmentColor;
 
@@ -24,6 +26,11 @@ void main ()
     if(textured > 0)
     {
         finalColor = finalColor * texture(diffuse, texture_coordinates);
+    }
+    
+    if(shadowMode == 1)
+    {
+        finalColor = vec4(0,0,0,1);
     }
     
     fragmentColor = vec4(finalColor.rgb, 1.0);
