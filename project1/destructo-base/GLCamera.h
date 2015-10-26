@@ -26,6 +26,7 @@ public:
 	void CopyMatricies(mat4 * viewMatrix, mat4 * projectionMatrix) const;
 
 	void SetViewMatrix(mat4 viewMatrix);
+    void SetProjectionMatrix(mat4 projMatrix);
 
 	//Retrieve the facing axis of the camera
 	vec3 GetZAxis();

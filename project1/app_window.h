@@ -3,13 +3,26 @@
 #ifndef APP_WINDOW_H
 #define APP_WINDOW_H
 
-# include "ogl_tools.h"
+# include <destructo-base/stdafx.h>
+# include <destructo-base/TextureCache.h>
+# include <destructo-base/MaterialProgram.h>
+# include <destructo-base/ModelGroup.h>
+# include <destructo-base/ModelInstance.h>
+
 # include "glut_window.h"
 # include "so_axis.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
- { private :
+{
+    // OpenGL Resources
+    TextureCache      textureCache;
+    ModelGroup        modelGroup;
+    MaterialProgram   materialProgram;
+    
+    // My scene objects
+    ModelInstance    *mechwarriorInstance;
+    
     // OpenGL shaders and programs:
     GlShader _vertexsh, _fragsh;
     GlProgram _prog;
@@ -23,12 +36,12 @@ class AppWindow : public GlutWindow
     bool  _viewaxis;
     float _w, _h;
 
-   public :
+public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();
     vec2 windowToScene ( const vec2& v );
 
-   private : // functions derived from the base class
+    private : // functions derived from the base class
     virtual void glutMenu ( int m );
     virtual void glutKeyboard ( unsigned char key, int x, int y );
     virtual void glutSpecial ( int key, int x, int y );
@@ -36,6 +49,7 @@ class AppWindow : public GlutWindow
     virtual void glutMotion ( int x, int y );
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
- };
+    virtual void glutIdle ();
+};
 
 #endif // APP_WINDOW_H

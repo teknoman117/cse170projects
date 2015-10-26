@@ -19,8 +19,8 @@
 #include <sstream>
 
 // Get the mesh related shader properties
-MaterialProgram::MaterialProgram(GLCommonShaderFile * commonShader, string vertexShaderPath, string fragmentShaderPath)
-    : GL3DProgram(commonShader, vertexShaderPath, fragmentShaderPath)
+MaterialProgram::MaterialProgram(string vertexShaderPath, string fragmentShaderPath)
+    : GL3DProgram(vertexShaderPath, fragmentShaderPath)
 {
     attributeBoneWeights[0] = glGetAttribLocation(programId, "boneWeight0");
     attributeBoneWeights[1] = glGetAttribLocation(programId, "boneWeight1");

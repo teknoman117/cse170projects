@@ -20,7 +20,7 @@ class GL3DProgram : public GLProgram {
     GLint uniformMatrixModelViewProjection;
 
 public:
-	GL3DProgram(GLCommonShaderFile * commonShader, string vertexShaderPath, string fragmentShaderPath);
+	GL3DProgram(string vertexShaderPath, string fragmentShaderPath);
 
 	void UseProgram(void) override;
 

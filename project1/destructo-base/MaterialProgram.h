@@ -45,7 +45,7 @@ class MaterialProgram : public GL3DProgram
     GLint uniformColorDiffuse;
     
 public:
-	MaterialProgram(GLCommonShaderFile * commonShader, string vertexShaderPath, string fragmentShaderPath);
+	MaterialProgram(string vertexShaderPath, string fragmentShaderPath);
     
     // Get the attribute for a bone weight
 	const GLint AttributeBoneWeight(int idx) const;

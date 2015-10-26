@@ -22,6 +22,11 @@ void GLCamera::SetViewMatrix(mat4 viewMatrix) {
 	this->viewMatrix = viewMatrix;	
 }
 
+void GLCamera::SetProjectionMatrix(mat4 projMatrix)
+{
+    this->projectionMatrix = projMatrix;
+}
+
 //Apply the camera projection/view matrix
 void GLCamera::Apply()
 {

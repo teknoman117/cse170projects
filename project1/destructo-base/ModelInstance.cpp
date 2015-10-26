@@ -31,7 +31,7 @@ ModelInstance::ModelInstance(Model *_model)
     //controller->Bind(_model->Skeleton());
     
     // Bind the animator
-    //animation.Bind(_model->Skeleton());
+    animation.Bind(_model->Skeleton());
 }
 
 /**

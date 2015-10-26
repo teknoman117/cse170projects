@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GL3DProgram.h"
 
-GL3DProgram::GL3DProgram(GLCommonShaderFile * commonShader, string vertexShaderPath, string fragmentShaderPath) :
+GL3DProgram::GL3DProgram(string vertexShaderPath, string fragmentShaderPath) :
 	GLProgram(vertexShaderPath,fragmentShaderPath),
 	Lights(programId),
 	Model(glGetUniformLocation(programId,"M")),

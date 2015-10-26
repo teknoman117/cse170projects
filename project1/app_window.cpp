@@ -1,3 +1,4 @@
+# include <destructo-base/OS.h>
 
 # include <iostream>
 # include <cmath>
@@ -5,17 +6,29 @@
 # include "app_window.h"
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-          :GlutWindow ( label, x, y, w, h )
- {
-   initPrograms ();
-   addMenuEntry ( "Option 0", evOption0 );
-   addMenuEntry ( "Option 1", evOption1 );
-   _viewaxis = true;
-   _fovy = M_PI / 3.0f;
-   _rotx = _roty = _rotz = 0;
-   _w = w;
-   _h = h;
- }
+    : GlutWindow ( label, x, y, w, h ),
+      textureCache(),
+      modelGroup("meshes/manifest.json", textureCache),
+      materialProgram("shaders/vsh_model.glsl", "shaders/fsh_model.glsl")
+{
+    initPrograms ();
+    
+    // Create an instance of the mechwarrior model
+    mechwarriorInstance = modelGroup.NewInstance("robot02");
+    
+    // Add the animations as menu options
+    int animationId = 0;
+    addMenuEntry( "Stop Animations", animationId++);
+    for( auto animation : mechwarriorInstance->GetModel()->Animations() )
+        addMenuEntry(animation.second->Id().c_str(), animationId++);
+    
+    // Initialize some shit
+    _viewaxis = true;
+    _fovy = M_PI / 3.0f;
+    _rotx = _roty = _rotz = 0;
+    _w = w;
+    _h = h;
+}
 
 void AppWindow::initPrograms ()
  {
@@ -45,30 +58,32 @@ vec2 AppWindow::windowToScene ( const vec2& v )
 
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
- {
-   switch ( key )
-    { case ' ': _viewaxis = !_viewaxis; redraw(); break;
-	  case 27 : exit(1); // Esc was pressed
-	}
- }
+{
+    switch ( key )
+    {
+        case ' ': _viewaxis = !_viewaxis; break;
+        case 27 : exit(1); // Esc was pressed
+    }
+}
 
 void AppWindow::glutSpecial ( int key, int x, int y )
- {
-   bool rd=true;
-   const float incr=2.5f * (M_PI / 180.0f);
-   const float incf=0.05f;
-   switch ( key )
-    { case GLUT_KEY_LEFT:      _roty-=incr; break;
-      case GLUT_KEY_RIGHT:     _roty+=incr; break;
-      case GLUT_KEY_UP:        _rotx-=incr; break;
-      case GLUT_KEY_DOWN:      _rotx+=incr; break;
-      case GLUT_KEY_PAGE_UP:   _fovy-=incf; break;
-      case GLUT_KEY_PAGE_DOWN: _fovy+=incf; break;
-      case GLUT_KEY_HOME:      _fovy=(M_PI / 3.0f); _rotx=_roty=0; break;
-      default: return; // return without rendering
-	}
-   if (rd) redraw(); // ask the window to be rendered when possible
- }
+{
+    const float incr=2.5f * (M_PI / 180.0f);
+    const float incf=0.05f;
+    
+    switch ( key )
+    {
+        case GLUT_KEY_LEFT:      _roty-=incr; break;
+        case GLUT_KEY_RIGHT:     _roty+=incr; break;
+        case GLUT_KEY_UP:        _rotx-=incr; break;
+        case GLUT_KEY_DOWN:      _rotx+=incr; break;
+        case GLUT_KEY_PAGE_UP:   _fovy-=incf; break;
+        case GLUT_KEY_PAGE_DOWN: _fovy+=incf; break;
+        case GLUT_KEY_HOME:      _fovy=(M_PI / 3.0f); _rotx=_roty=0; break;
+        
+        default: return; // return without rendering
+    }
+}
 
 void AppWindow::glutMouse ( int b, int s, int x, int y )
  {
@@ -82,9 +97,15 @@ void AppWindow::glutMotion ( int x, int y )
  }
 
 void AppWindow::glutMenu ( int m )
- {
-   std::cout<<"Menu Event: "<<m<<std::endl;
- }
+{
+    if(!m)
+        mechwarriorInstance->Animation().Stop();
+    else
+    {
+        auto animationId = std::next(mechwarriorInstance->GetModel()->Animations().begin(), m - 1);
+        mechwarriorInstance->PlayAnimation(animationId->second->Id());
+    }
+}
 
 void AppWindow::glutReshape ( int w, int h )
  {
@@ -95,41 +116,54 @@ void AppWindow::glutReshape ( int w, int h )
 
 // here we will redraw the scene according to the current state of the application.
 void AppWindow::glutDisplay ()
- {
-   // Clear the rendering window
-   glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-   // Build a cross with some lines (if not built yet):
-   if ( _axis.changed ) // needs update
-    { _axis.build(1.0f); // axis has radius 1.0
+{
+    static double previousTime = OS::Now();
+    double        currentTime  = OS::Now();
+    double        delta        = currentTime - previousTime;
+    
+    // Any processing for the frame
+    textureCache.Refresh();
+    mechwarriorInstance->Update(delta, currentTime);
+    
+    // Define our camera matrix
+    vec3 eye(0,0,2), center(0,0,0), up(0,1,0);
+    mat4 camview = glm::lookAt(eye, center, up);
+    
+    // Define our projection transformation:
+    float znear=0.1f, zfar=50.0f;
+    mat4 persp = glm::perspectiveFov(_fovy, _w, _h, znear, zfar);
+    mat4 sproj = persp * camview; // set final scene projection
+    
+    // Define our scene transformation:
+    mat4 stransf = glm::eulerAngleXY(_rotx, _roty);
+    
+    // Build a cross with some lines (if not built yet):
+    if ( _axis.changed ) // needs update
+    {
+        _axis.build(1.0f); // axis has radius 1.0
     }
+    
+    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    
+    if ( _viewaxis )
+        _axis.draw ( stransf, sproj );
+    
+    materialProgram.UseProgram();
+    
+    materialProgram.Camera.SetProjectionMatrix(persp);
+    materialProgram.Camera.SetViewMatrix(camview);
+    materialProgram.Camera.Apply();
+    
+    mechwarriorInstance->GetTransform().Scale() = vec3(0.33, 0.33, 0.33);
+    mechwarriorInstance->GetTransform().Rotation() = glm::angleAxis(_rotx, vec3(1,0,0)) * glm::angleAxis(_roty, vec3(0,1,0));
+    mechwarriorInstance->Draw(&materialProgram);
+    
+    previousTime = currentTime;
+    glutSwapBuffers();
+}
 
-   // Define our scene transformation:
-   mat4 stransf = glm::eulerAngleXY(_rotx, _roty);
-
-   // Define our projection transformation:
-   // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
-
-   vec3 eye(0,0,2), center(0,0,0), up(0,1,0);
-   mat4 camview = glm::lookAt(eye, center, up);
-
-   float znear=0.1f, zfar=50.0f;
-   mat4 persp = glm::perspectiveFov(_fovy, _w, _h, znear, zfar);
-
-   // Our matrices are in "line-major" format, so vertices should be multiplied on the 
-   // right side of a matrix multiplication, therefore in the expression below camview will
-   // affect the vertex before persp, because v' = (persp*camview)*v = (persp)*(camview*v).
-   mat4 sproj = persp * camview; // set final scene projection
-
-   //  Note however that when the shader receives a matrix it will store it in column-major 
-   //  format, what will cause our values to be transposed, and we will then have in our 
-   //  shaders vectors on the left side of a multiplication to a matrix.
-
-   // Draw:
-   if ( _viewaxis ) _axis.draw ( stransf, sproj );
-
-   // Swap buffers and draw:
-   glFlush();         // flush the pipeline (usually not necessary)
-   glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
+void AppWindow::glutIdle()
+{
+    redraw();
 }
 
