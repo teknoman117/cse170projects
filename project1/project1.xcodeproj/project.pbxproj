@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F118D2FE1BDF11160005418F /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F118D2FD1BDF11160005418F /* jsoncpp.cpp */; };
 		F1190EEF1B97A598002C4607 /* app_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190ED91B97A598002C4607 /* app_main.cpp */; };
 		F1190EF01B97A598002C4607 /* app_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDA1B97A598002C4607 /* app_window.cpp */; };
 		F1190EF11B97A598002C4607 /* glut_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1190EDC1B97A598002C4607 /* glut_window.cpp */; };
@@ -14,21 +15,6 @@
 		F1190EFE1B97A5AA002C4607 /* libGLEWmx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */; };
 		F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
 		F1190F021B97A5EF002C4607 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190F011B97A5EF002C4607 /* GLUT.framework */; };
-		F1C29FED1BDBEF0D008E9BE0 /* assertions.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FDD1BDBEF0D008E9BE0 /* assertions.h */; };
-		F1C29FEE1BDBEF0D008E9BE0 /* autolink.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FDE1BDBEF0D008E9BE0 /* autolink.h */; };
-		F1C29FEF1BDBEF0D008E9BE0 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FDF1BDBEF0D008E9BE0 /* config.h */; };
-		F1C29FF01BDBEF0D008E9BE0 /* features.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE01BDBEF0D008E9BE0 /* features.h */; };
-		F1C29FF11BDBEF0D008E9BE0 /* forwards.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE11BDBEF0D008E9BE0 /* forwards.h */; };
-		F1C29FF21BDBEF0D008E9BE0 /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE21BDBEF0D008E9BE0 /* json.h */; };
-		F1C29FF31BDBEF0D008E9BE0 /* reader.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE31BDBEF0D008E9BE0 /* reader.h */; };
-		F1C29FF41BDBEF0D008E9BE0 /* value.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE41BDBEF0D008E9BE0 /* value.h */; };
-		F1C29FF51BDBEF0D008E9BE0 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE51BDBEF0D008E9BE0 /* version.h */; };
-		F1C29FF61BDBEF0D008E9BE0 /* writer.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE61BDBEF0D008E9BE0 /* writer.h */; };
-		F1C29FF71BDBEF0D008E9BE0 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C29FE81BDBEF0D008E9BE0 /* json_reader.cpp */; };
-		F1C29FF81BDBEF0D008E9BE0 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = F1C29FE91BDBEF0D008E9BE0 /* json_tool.h */; };
-		F1C29FF91BDBEF0D008E9BE0 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C29FEA1BDBEF0D008E9BE0 /* json_value.cpp */; };
-		F1C29FFA1BDBEF0D008E9BE0 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C29FEC1BDBEF0D008E9BE0 /* json_writer.cpp */; };
-		F1C29FFB1BDBEF2A008E9BE0 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1C29FD61BDBEEDF008E9BE0 /* libjson.a */; };
 		F1C2A02F1BDC308B008E9BE0 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A0011BDC308B008E9BE0 /* Animation.cpp */; };
 		F1C2A0301BDC308B008E9BE0 /* GL3DProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A0031BDC308B008E9BE0 /* GL3DProgram.cpp */; };
 		F1C2A0311BDC308B008E9BE0 /* GLLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1C2A0051BDC308B008E9BE0 /* GLLight.cpp */; };
@@ -74,7 +60,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F1190ECF1B97A549002C4607 /* glutapp3d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = glutapp3d; sourceTree = BUILT_PRODUCTS_DIR; };
+		F118D2FB1BDF11160005418F /* json-forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "json-forwards.h"; sourceTree = "<group>"; };
+		F118D2FC1BDF11160005418F /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
+		F118D2FD1BDF11160005418F /* jsoncpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsoncpp.cpp; sourceTree = "<group>"; };
+		F1190ECF1B97A549002C4607 /* project1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = project1; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1190ED91B97A598002C4607 /* app_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_main.cpp; sourceTree = SOURCE_ROOT; };
 		F1190EDA1B97A598002C4607 /* app_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app_window.cpp; sourceTree = SOURCE_ROOT; };
 		F1190EDB1B97A598002C4607 /* app_window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app_window.h; sourceTree = SOURCE_ROOT; };
@@ -84,22 +73,6 @@
 		F1190EFC1B97A5AA002C4607 /* libGLEWmx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEWmx.a; sourceTree = "<group>"; };
 		F1190EFF1B97A5EA002C4607 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
-		F1C29FD61BDBEEDF008E9BE0 /* libjson.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjson.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F1C29FDD1BDBEF0D008E9BE0 /* assertions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assertions.h; sourceTree = "<group>"; };
-		F1C29FDE1BDBEF0D008E9BE0 /* autolink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autolink.h; sourceTree = "<group>"; };
-		F1C29FDF1BDBEF0D008E9BE0 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		F1C29FE01BDBEF0D008E9BE0 /* features.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = features.h; sourceTree = "<group>"; };
-		F1C29FE11BDBEF0D008E9BE0 /* forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = forwards.h; sourceTree = "<group>"; };
-		F1C29FE21BDBEF0D008E9BE0 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
-		F1C29FE31BDBEF0D008E9BE0 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
-		F1C29FE41BDBEF0D008E9BE0 /* value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = value.h; sourceTree = "<group>"; };
-		F1C29FE51BDBEF0D008E9BE0 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
-		F1C29FE61BDBEF0D008E9BE0 /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
-		F1C29FE81BDBEF0D008E9BE0 /* json_reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_reader.cpp; sourceTree = "<group>"; };
-		F1C29FE91BDBEF0D008E9BE0 /* json_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_tool.h; sourceTree = "<group>"; };
-		F1C29FEA1BDBEF0D008E9BE0 /* json_value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_value.cpp; sourceTree = "<group>"; };
-		F1C29FEB1BDBEF0D008E9BE0 /* json_valueiterator.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_valueiterator.inl; sourceTree = "<group>"; };
-		F1C29FEC1BDBEF0D008E9BE0 /* json_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_writer.cpp; sourceTree = "<group>"; };
 		F1C2A0011BDC308B008E9BE0 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
 		F1C2A0021BDC308B008E9BE0 /* Animation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Animation.h; sourceTree = "<group>"; };
 		F1C2A0031BDC308B008E9BE0 /* GL3DProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GL3DProgram.cpp; sourceTree = "<group>"; };
@@ -180,18 +153,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1C29FFB1BDBEF2A008E9BE0 /* libjson.a in Frameworks */,
 				F1190F021B97A5EF002C4607 /* GLUT.framework in Frameworks */,
 				F1190F001B97A5EA002C4607 /* OpenGL.framework in Frameworks */,
 				F1190EFD1B97A5AA002C4607 /* libGLEW.a in Frameworks */,
 				F1190EFE1B97A5AA002C4607 /* libGLEWmx.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F1C29FD31BDBEEDF008E9BE0 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,8 +178,7 @@
 		F1190ED01B97A549002C4607 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F1190ECF1B97A549002C4607 /* glutapp3d */,
-				F1C29FD61BDBEEDF008E9BE0 /* libjson.a */,
+				F1190ECF1B97A549002C4607 /* project1 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -237,7 +201,6 @@
 		F1190EFA1B97A5AA002C4607 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				F1C29FDA1BDBEF0D008E9BE0 /* jsoncpp */,
 				F1190F011B97A5EF002C4607 /* GLUT.framework */,
 				F1190EFF1B97A5EA002C4607 /* OpenGL.framework */,
 				F1190EFB1B97A5AA002C4607 /* libGLEW.a */,
@@ -245,52 +208,6 @@
 			);
 			name = lib;
 			path = osx/glew/lib;
-			sourceTree = "<group>";
-		};
-		F1C29FDA1BDBEF0D008E9BE0 /* jsoncpp */ = {
-			isa = PBXGroup;
-			children = (
-				F1C29FDB1BDBEF0D008E9BE0 /* include */,
-				F1C29FE71BDBEF0D008E9BE0 /* src */,
-			);
-			path = jsoncpp;
-			sourceTree = SOURCE_ROOT;
-		};
-		F1C29FDB1BDBEF0D008E9BE0 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				F1C29FDC1BDBEF0D008E9BE0 /* json */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		F1C29FDC1BDBEF0D008E9BE0 /* json */ = {
-			isa = PBXGroup;
-			children = (
-				F1C29FDD1BDBEF0D008E9BE0 /* assertions.h */,
-				F1C29FDE1BDBEF0D008E9BE0 /* autolink.h */,
-				F1C29FDF1BDBEF0D008E9BE0 /* config.h */,
-				F1C29FE01BDBEF0D008E9BE0 /* features.h */,
-				F1C29FE11BDBEF0D008E9BE0 /* forwards.h */,
-				F1C29FE21BDBEF0D008E9BE0 /* json.h */,
-				F1C29FE31BDBEF0D008E9BE0 /* reader.h */,
-				F1C29FE41BDBEF0D008E9BE0 /* value.h */,
-				F1C29FE51BDBEF0D008E9BE0 /* version.h */,
-				F1C29FE61BDBEF0D008E9BE0 /* writer.h */,
-			);
-			path = json;
-			sourceTree = "<group>";
-		};
-		F1C29FE71BDBEF0D008E9BE0 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				F1C29FE81BDBEF0D008E9BE0 /* json_reader.cpp */,
-				F1C29FE91BDBEF0D008E9BE0 /* json_tool.h */,
-				F1C29FEA1BDBEF0D008E9BE0 /* json_value.cpp */,
-				F1C29FEB1BDBEF0D008E9BE0 /* json_valueiterator.inl */,
-				F1C29FEC1BDBEF0D008E9BE0 /* json_writer.cpp */,
-			);
-			path = src;
 			sourceTree = "<group>";
 		};
 		F1C2A0001BDC308B008E9BE0 /* destructo-base */ = {
@@ -326,6 +243,9 @@
 				F1C2A0111BDC308B008E9BE0 /* GLTexture.h */,
 				F1C2A0121BDC308B008E9BE0 /* GLTextureCubeMap.cpp */,
 				F1C2A0131BDC308B008E9BE0 /* GLTextureCubeMap.h */,
+				F118D2FB1BDF11160005418F /* json-forwards.h */,
+				F118D2FC1BDF11160005418F /* json.h */,
+				F118D2FD1BDF11160005418F /* jsoncpp.cpp */,
 				F1C2A0151BDC308B008E9BE0 /* lodepng.h */,
 				F1C2A05A1BDC373E008E9BE0 /* lodepng.cpp */,
 				F1C2A0161BDC308B008E9BE0 /* Material.cpp */,
@@ -410,31 +330,10 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		F1C29FD41BDBEEDF008E9BE0 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F1C29FF21BDBEF0D008E9BE0 /* json.h in Headers */,
-				F1C29FED1BDBEF0D008E9BE0 /* assertions.h in Headers */,
-				F1C29FF81BDBEF0D008E9BE0 /* json_tool.h in Headers */,
-				F1C29FF41BDBEF0D008E9BE0 /* value.h in Headers */,
-				F1C29FF61BDBEF0D008E9BE0 /* writer.h in Headers */,
-				F1C29FEE1BDBEF0D008E9BE0 /* autolink.h in Headers */,
-				F1C29FF51BDBEF0D008E9BE0 /* version.h in Headers */,
-				F1C29FF31BDBEF0D008E9BE0 /* reader.h in Headers */,
-				F1C29FEF1BDBEF0D008E9BE0 /* config.h in Headers */,
-				F1C29FF11BDBEF0D008E9BE0 /* forwards.h in Headers */,
-				F1C29FF01BDBEF0D008E9BE0 /* features.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		F1190ECE1B97A549002C4607 /* glutapp3d */ = {
+		F1190ECE1B97A549002C4607 /* project1 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F1190ED61B97A549002C4607 /* Build configuration list for PBXNativeTarget "glutapp3d" */;
+			buildConfigurationList = F1190ED61B97A549002C4607 /* Build configuration list for PBXNativeTarget "project1" */;
 			buildPhases = (
 				F1190ECB1B97A549002C4607 /* Sources */,
 				F1190ECC1B97A549002C4607 /* Frameworks */,
@@ -444,27 +343,10 @@
 			);
 			dependencies = (
 			);
-			name = glutapp3d;
+			name = project1;
 			productName = glutapp3d;
-			productReference = F1190ECF1B97A549002C4607 /* glutapp3d */;
+			productReference = F1190ECF1B97A549002C4607 /* project1 */;
 			productType = "com.apple.product-type.tool";
-		};
-		F1C29FD51BDBEEDF008E9BE0 /* json */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F1C29FD71BDBEEE0008E9BE0 /* Build configuration list for PBXNativeTarget "json" */;
-			buildPhases = (
-				F1C29FD21BDBEEDF008E9BE0 /* Sources */,
-				F1C29FD31BDBEEDF008E9BE0 /* Frameworks */,
-				F1C29FD41BDBEEDF008E9BE0 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = json;
-			productName = json;
-			productReference = F1C29FD61BDBEEDF008E9BE0 /* libjson.a */;
-			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -478,12 +360,9 @@
 					F1190ECE1B97A549002C4607 = {
 						CreatedOnToolsVersion = 6.4;
 					};
-					F1C29FD51BDBEEDF008E9BE0 = {
-						CreatedOnToolsVersion = 7.1;
-					};
 				};
 			};
-			buildConfigurationList = F1190ECA1B97A549002C4607 /* Build configuration list for PBXProject "glutapp3d" */;
+			buildConfigurationList = F1190ECA1B97A549002C4607 /* Build configuration list for PBXProject "project1" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -495,8 +374,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F1190ECE1B97A549002C4607 /* glutapp3d */,
-				F1C29FD51BDBEEDF008E9BE0 /* json */,
+				F1190ECE1B97A549002C4607 /* project1 */,
 			);
 		};
 /* End PBXProject section */
@@ -517,6 +395,7 @@
 				F1C2A03D1BDC308B008E9BE0 /* ModelGroup.cpp in Sources */,
 				F1190EF01B97A598002C4607 /* app_window.cpp in Sources */,
 				F1C2A0531BDC3285008E9BE0 /* AnimationClip.cpp in Sources */,
+				F118D2FE1BDF11160005418F /* jsoncpp.cpp in Sources */,
 				F1C2A03A1BDC308B008E9BE0 /* MaterialProgram.cpp in Sources */,
 				F1C2A0421BDC308B008E9BE0 /* TextureCache.cpp in Sources */,
 				F1C2A0411BDC308B008E9BE0 /* Semaphore.cpp in Sources */,
@@ -539,16 +418,6 @@
 				F1C2A0441BDC308B008E9BE0 /* VertexAttributes.cpp in Sources */,
 				F1C2A0311BDC308B008E9BE0 /* GLLight.cpp in Sources */,
 				F1C2A0341BDC308B008E9BE0 /* GLProgram.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F1C29FD21BDBEEDF008E9BE0 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F1C29FF71BDBEF0D008E9BE0 /* json_reader.cpp in Sources */,
-				F1C29FFA1BDBEF0D008E9BE0 /* json_writer.cpp in Sources */,
-				F1C29FF91BDBEF0D008E9BE0 /* json_value.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -642,7 +511,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/osx/glew/lib",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = project1;
 			};
 			name = Debug;
 		};
@@ -653,39 +522,14 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/osx/glew/lib",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		F1C29FD81BDBEEE0008E9BE0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_TESTABILITY = YES;
-				EXECUTABLE_PREFIX = lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		F1C29FD91BDBEEE0008E9BE0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = project1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F1190ECA1B97A549002C4607 /* Build configuration list for PBXProject "glutapp3d" */ = {
+		F1190ECA1B97A549002C4607 /* Build configuration list for PBXProject "project1" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F1190ED41B97A549002C4607 /* Debug */,
@@ -694,20 +538,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F1190ED61B97A549002C4607 /* Build configuration list for PBXNativeTarget "glutapp3d" */ = {
+		F1190ED61B97A549002C4607 /* Build configuration list for PBXNativeTarget "project1" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F1190ED71B97A549002C4607 /* Debug */,
 				F1190ED81B97A549002C4607 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F1C29FD71BDBEEE0008E9BE0 /* Build configuration list for PBXNativeTarget "json" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F1C29FD81BDBEEE0008E9BE0 /* Debug */,
-				F1C29FD91BDBEEE0008E9BE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

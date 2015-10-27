@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:glutapp3d.xcodeproj">
+      location = "self:/Users/nathaniel/Desktop/cse170projects/project1/project1.xcodeproj">
    </FileRef>
 </Workspace>
