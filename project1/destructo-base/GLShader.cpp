@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GLShader.h"
 #include "OS.h"
 #include <fstream>

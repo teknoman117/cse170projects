@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GLProgram.h"
 #include "GLShader.h"
 

@@ -66,13 +66,6 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
 
 void AppWindow::initPrograms ()
 {
-    // Load your shaders and link your programs here:
-#ifdef WIN32
-
-#else
-
-#endif
-    
     // Load the program for the model shader
     modelProgram = new MaterialProgram("shaders/vsh_model.glsl", "shaders/fsh_model.glsl");
     groundProgram = new GL3DProgram("shaders/vsh_quad.glsl", "shaders/fsh_quad.glsl");

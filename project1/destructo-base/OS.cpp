@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "OS.h"
 
 //These are universal

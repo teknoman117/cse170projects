@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Utilities.h"
 
 //Check if a string is very basic A-Z a-z 0-9

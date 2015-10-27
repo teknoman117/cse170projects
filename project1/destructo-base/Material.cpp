@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-#include "stdafx.h"
 #include "Material.h"
 
 //#define __MATERIAL_PRINT_LOGS__

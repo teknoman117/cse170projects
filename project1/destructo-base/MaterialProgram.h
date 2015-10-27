@@ -17,6 +17,7 @@
 #ifndef __MATERIAL_PROGRAM_H__
 #define __MATERIAL_PROGRAM_H__
 
+#include "stdafx.h"
 #include "GL3DProgram.h"
 #include "Material.h"
 

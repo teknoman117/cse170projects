@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GLTexture.h"
 #include "lodepng.h"
 

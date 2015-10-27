@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-#include "stdafx.h"
 #include "Model.h"
 #include "OS.h"
 #include "lodepng.h"

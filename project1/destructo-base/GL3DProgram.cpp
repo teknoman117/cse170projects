@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GL3DProgram.h"
 
 GL3DProgram::GL3DProgram(string vertexShaderPath, string fragmentShaderPath) :

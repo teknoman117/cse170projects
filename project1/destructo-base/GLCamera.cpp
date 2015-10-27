@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GLCamera.h"
 #include "GLCombinedMatrix.h"
 

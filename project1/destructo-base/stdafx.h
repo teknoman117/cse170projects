@@ -3,7 +3,8 @@
 // are changed infrequently
 //
 
-#pragma once
+#ifndef __DERP__
+#define __DERP__
 
 
 //Basic I/O
@@ -25,6 +26,7 @@
 #include <cmath>
 #include <functional>
 #include <limits>
+#include <stack>
 
 //for threading
 #include <mutex>
@@ -101,3 +103,5 @@ inline float clamp(T x, T a, T b)
 {
     return x < a ? a : (x > b ? b : x);
 }
+
+#endif

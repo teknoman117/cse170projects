@@ -17,8 +17,8 @@
 #ifndef __ANIMATION_H__
 #define __ANIMATION_H__
 
+#include "json.h"
 #include "stdafx.h"
-#include <json/json.h>
 
 #include "Transform.h"
 

@@ -17,8 +17,8 @@
 #ifndef __VERTEX_ATTRIBUTES_H__
 #define __VERTEX_ATTRIBUTES_H__
 
+#include "json.h"
 #include "stdafx.h"
-#include <json/json.h>
 
 /**
  * The G3DJ mesh format defines a multitude of vertex attributes that will

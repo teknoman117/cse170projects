@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-#include "stdafx.h"
 #include "ModelInstance.h"
 #include "AnimationTransition.h"
 #include "OS.h"

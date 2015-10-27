@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-#include "stdafx.h"
 #include "Mesh.h"
 
 // Empty mesh constructor, doesn't do much of anything

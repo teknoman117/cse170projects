@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GLLighting.h"
 
 GLLighting::GLLighting(GLuint programId) {

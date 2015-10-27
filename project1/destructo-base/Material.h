@@ -18,7 +18,7 @@
 #define __MATERIAL_H__
 
 #include "stdafx.h"
-#include <json/json.h>
+#include "json.h"
 
 // The mesh is an object which
 class Material

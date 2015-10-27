@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GLModel.h"
 
 GLModel::GLModel(GLint uniformMatrixModel) {

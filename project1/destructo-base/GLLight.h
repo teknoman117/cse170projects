@@ -1,4 +1,6 @@
 #pragma once
+#include "stdafx.h"
+
 
 class GLLight {
 	//Light intensities: constant,linear,quadratic

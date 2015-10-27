@@ -1,5 +1,8 @@
 
 #pragma once
+
+#include "stdafx.h"
+
 #include "GLCamera.h"
 #include "GLProgram.h"
 #include "GLModel.h"

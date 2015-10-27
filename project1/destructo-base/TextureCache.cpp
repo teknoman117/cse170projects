@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "TextureCache.h"
 #include "OS.h"
 
