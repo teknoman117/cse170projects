@@ -11,7 +11,7 @@
 /** \file gs_array.h 
  * fast resizeable array template */
 
-# include <gsim/gs.h> 
+# include <gsim/gs.h>
 
 /*! \class GsArrayBase gs_array.h
     \brief Fast resizeable array base class
@@ -159,8 +159,12 @@ class GsArray : protected GsArrayBase
     GsArray ( X* pt, int s, int c ) : GsArrayBase ( sizeof(X), s, c ) {}
 
     /*! Constructor from a string with values to initialize the array. */
-    GsArray ( const char* values, int s=0, int c=0 ) : GsArrayBase ( sizeof(X), s, c )
-     { GsInput inp; inp.init(values); inp>>*this; }
+    /*GsArray ( const char* values, int s=0, int c=0 ) : GsArrayBase ( sizeof(X), s, c )
+     {
+         std::istream inp;
+         inp.init(values);
+         inp>>*this;
+     }*/
 
     /*! Destructor frees the array calling the base class free_data() method.
         Attention: elements' destructors are not called ! */

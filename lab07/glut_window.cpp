@@ -30,6 +30,7 @@ GlutWindow::GlutWindow ( const char* label, int x, int y, int w, int h )
    glutCreateWindow ( label );
 
    // Init glew library (after a glut window is created!):
+     glewExperimental = GL_TRUE;
    GLenum res = glewInit();
    if ( res!=GLEW_OK ) std::cout<<glewGetString(GLEW_VERSION)<<", Error: "<<glewGetErrorString(res)<<"\n";
    glPrintInfo();

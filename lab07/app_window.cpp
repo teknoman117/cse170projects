@@ -33,12 +33,20 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
 void AppWindow::initPrograms ()
  {
    // Load your shaders and link your programs here:
-   _flatvsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
-   _flatfsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
-   _prog.init_and_link ( _flatvsh, _flatfsh );
-
-   _linevsh.load_and_compile(GL_VERTEX_SHADER, "../vsh_lineshape.glsl");
-   _linefsh.load_and_compile(GL_FRAGMENT_SHADER, "../fsh_lineshape.glsl");
+#ifdef WIN32
+    _flatvsh.load_and_compile ( GL_VERTEX_SHADER, "../vsh_mcol_flat.glsl" );
+    _flatfsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
+    _linevsh.load_and_compile(GL_VERTEX_SHADER, "../vsh_lineshape.glsl");
+    _linefsh.load_and_compile(GL_FRAGMENT_SHADER, "../fsh_lineshape.glsl");
+#else
+    _flatvsh.load_and_compile ( GL_VERTEX_SHADER, "vsh_mcol_flat.glsl" );
+    _flatfsh.load_and_compile ( GL_FRAGMENT_SHADER, "fsh_flat.glsl" );
+    _linevsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lineshape.glsl");
+    _linefsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lineshape.glsl");
+#endif
+     
+     
+     _prog.init_and_link ( _flatvsh, _flatfsh );
    _lineprog.init_and_link(_linevsh, _linefsh);
 
    // Init my scene objects:
@@ -128,7 +136,7 @@ void AppWindow::glutSpecial ( int key, int x, int y )
    const float incr=GS_TORAD(2.5f);
    const float inct=0.05f;
    const float incf=0.05f;
-   bool ctrl = glutGetModifiers()&GLUT_ACTIVE_CTRL? true:false;
+   bool ctrl = glutGetModifiers()&GLUT_ACTIVE_CTRL || glutGetModifiers()&GLUT_ACTIVE_SHIFT? true:false;
    bool alt = glutGetModifiers()&GLUT_ACTIVE_ALT? true:false;
    //std::cout<<ctrl<<gsnl;
 

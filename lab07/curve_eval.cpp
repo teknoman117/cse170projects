@@ -1,4 +1,5 @@
 #include "curve_eval.h"
+#include <cmath>
 
 namespace
 {

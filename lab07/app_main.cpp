@@ -10,9 +10,13 @@ int main ( int argc, char** argv )
  {
    // Init freeglut library:
    glutInit ( &argc, argv );
+#ifndef __APPLE__
    glutInitDisplayMode ( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
    glutInitContextProfile ( GLUT_CORE_PROFILE );
-
+#else
+   glutInitDisplayMode ( GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+#endif
+     
    // Now create the window of your application:
    AppWindow* w = new AppWindow ( "GlutApp3D CSE 170 Support Code", 300, 300, 640, 480 );
 

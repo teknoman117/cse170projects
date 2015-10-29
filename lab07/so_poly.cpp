@@ -1,5 +1,6 @@
 
 # include "so_poly.h"
+# include <cmath>
 
 SoPoly::SoPoly()
  {
@@ -82,7 +83,7 @@ void SoPoly::make_selection ()
    int n=12;
    float a=0, da = (2*3.1415f)/n;
    while ( n-->=0 )
-    { V.push().set ( c.x+_selr*cos(a), c.y+_selr*sin(a), 0 );
+    { V.push().set ( float(c.x+_selr*cos(a)), float(c.y+_selr*sin(a)), 0.0f );
       C.push() = _selcolor;
       a+=da;
     }
