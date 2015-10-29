@@ -24,6 +24,10 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _up.set(0,1,0);
    _aspect=1.0f; _znear=0.1f; _zfar=50.0f;
    _updated = true;
+   _curveType = None;
+   _autoUpdate3D = true;
+   _forcedUpdate = false;
+   _segments = 10;
  }
 
 void AppWindow::initPrograms ()
@@ -33,9 +37,14 @@ void AppWindow::initPrograms ()
    _flatfsh.load_and_compile ( GL_FRAGMENT_SHADER, "../fsh_flat.glsl" );
    _prog.init_and_link ( _flatvsh, _flatfsh );
 
+   _linevsh.load_and_compile(GL_VERTEX_SHADER, "../vsh_lineshape.glsl");
+   _linefsh.load_and_compile(GL_FRAGMENT_SHADER, "../fsh_lineshape.glsl");
+   _lineprog.init_and_link(_linevsh, _linefsh);
+
    // Init my scene objects:
    _axis.init ( _prog );
    _line.init ( _prog );
+   _lineShape.init(_lineprog);
    _poly.init ( _prog, GsColor::darkblue, GsColor::darkred );
 
    // Build some of my scene objects:
@@ -71,6 +80,45 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
          } 
         else exit(1);
         break;
+
+	  case '0':
+		  _curveType = None;
+		  _updated = true;
+		  redraw();
+		  break;
+
+	  case '1':
+		  _curveType = Lagrange;
+		  _updated = true;
+		  redraw();
+		  break;
+
+	  case '2':
+		  _curveType = Bezier;
+		  _updated = true;
+		  redraw();
+		  break;
+
+	  case 'z':
+		  _updated = true;
+		  _forcedUpdate = true;
+		  redraw();
+		  break;
+
+	  case 'x':
+		  _autoUpdate3D = !_autoUpdate3D;
+		  break;
+
+	  case 'q':
+		  _segments++;
+		  _updated = true;
+		  redraw();
+		  break;
+	  case 'a':
+		  _segments = _segments > 3 ? _segments - 1 : _segments;
+		  _updated = true;
+		  redraw();
+		  break;
     }
  }
 
@@ -193,18 +241,35 @@ void AppWindow::glutDisplay ()
    _spr = _proj * _cam; // final scene projection
 
    // Is the polygon up to date
-   if (_updated && _poly.vertexarray().size() > 1)
+   if (_updated && _poly.vertexarray().size() > 1 && _curveType != None)
    {
 	   GsArray<GsVec> curve;
-	   evaluate_bezier(100, curve, _poly.vertexarray());
-	   _line.build(curve, GsColor::black);
+	   if (_curveType == Lagrange)
+		   evaluate_lagrange(_segments, curve, _poly.vertexarray());
+	   else
+           evaluate_bezier(_segments, curve, _poly.vertexarray());
+
+	   _line.build(curve, GsColor::orange);
+
+	   // Build the 3d figure
+	   if (_autoUpdate3D || _forcedUpdate)
+	   {
+		   _lineShape.build(curve, GsColor::cyan);
+	   }
    }
    _updated = false;
+   _forcedUpdate = false;
 
    // Draw:
    if ( _viewaxis ) _axis.draw ( _str, _spr );
-   _line.draw(_str, _spr);
-   _poly.draw ( _str, _spr );
+  
+   if (_curveType != None)
+   {
+	   _line.draw(_str, _spr);
+	   _lineShape.draw(_str, _spr);
+   }
+
+	_poly.draw ( _str, _spr );
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)

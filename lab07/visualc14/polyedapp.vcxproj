@@ -129,6 +129,7 @@
     <ClCompile Include="..\gsim\gs_vec2.cpp" />
     <ClCompile Include="..\ogl_tools.cpp" />
     <ClCompile Include="..\so_line.cpp" />
+    <ClCompile Include="..\so_lineshape.cpp" />
     <ClCompile Include="..\so_poly.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,10 +146,13 @@
     <ClInclude Include="..\gsim\gs_vec2.h" />
     <ClInclude Include="..\ogl_tools.h" />
     <ClInclude Include="..\so_line.h" />
+    <ClInclude Include="..\so_lineshape.h" />
     <ClInclude Include="..\so_poly.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\fsh_flat.glsl" />
+    <None Include="..\fsh_lineshape.glsl" />
+    <None Include="..\vsh_lineshape.glsl" />
     <None Include="..\vsh_mcol_flat.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

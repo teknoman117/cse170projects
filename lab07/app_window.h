@@ -11,21 +11,24 @@
 # include "so_axis.h"
 # include "so_poly.h"
 # include "so_line.h"
+# include "so_lineshape.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
  { private :
     // OpenGL shaders and programs:
-    GlShader _flatvsh, _flatfsh;
-    GlProgram _prog;
+	 GlShader _flatvsh, _flatfsh, _linevsh, _linefsh;
+	 GlProgram _prog, _lineprog;
 
     // My scene objects:
     SoAxis _axis;
     SoPoly _poly;
 	SoLine _line;
+	SoLineShape _lineShape;
 
     // App data:
     enum MenuEv { evOption0, evOption1 };
+	enum CurveType { None, Lagrange, Bezier};
 
     float _rotx, _roty; // scene transformation data
     GsVec _trans;       // scene transformation data
@@ -42,6 +45,10 @@ class AppWindow : public GlutWindow
     bool _oktodrag;
     int _w, _h;
 	bool _updated;
+	CurveType _curveType;
+	bool _autoUpdate3D;
+	int _segments;
+	bool _forcedUpdate;
 
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );

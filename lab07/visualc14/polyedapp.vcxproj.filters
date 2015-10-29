@@ -46,6 +46,9 @@
     <ClCompile Include="..\curve_eval.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\so_lineshape.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -90,6 +93,9 @@
     <ClInclude Include="..\curve_eval.h">
       <Filter>myapp</Filter>
     </ClInclude>
+    <ClInclude Include="..\so_lineshape.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="myapp">
@@ -110,6 +116,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\vsh_mcol_flat.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_lineshape.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\fsh_lineshape.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
