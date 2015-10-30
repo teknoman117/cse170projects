@@ -7,8 +7,11 @@
 # include <gsim/gs_vec.h>
 # include "ogl_tools.h"
 # include "glut_window.h"
+
 # include "so_axis.h"
 # include "so_sphere.h"
+
+# include "so_texture.h"
 
 # include <map>
 
@@ -16,7 +19,7 @@
 class AppWindow : public GlutWindow
 {
     // OpenGL shaders and programs:
-    GlShader _vertexsh, _fragsh, _flatvsh;
+    GlShader _vertexsh, _fragsh, _flatvsh, _flatfsh;
     GlShader _lightvsh, _lightfsh;
     
     GlProgram _prog;
@@ -25,6 +28,7 @@ class AppWindow : public GlutWindow
 
     // My scene objects:
     SoAxis _axis;
+    SoTexture _texture;
     SoSphere::Renderer _sphereRenderer;
     std::map<int, const SoSphere *> _sphereLODs;
     
@@ -36,6 +40,8 @@ class AppWindow : public GlutWindow
     float  _rotx, _roty, _fovy, _lightpos;
     bool   _viewaxis;
     int    _w, _h;
+    
+    
     
     // App options:
     int  resolution;

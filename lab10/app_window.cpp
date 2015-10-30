@@ -28,6 +28,8 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     wireframe = false;
     textured = false;
     flat = false;
+    
+    _texture.Load("earth.bmp");
 }
 
 void AppWindow::initPrograms ()
@@ -42,13 +44,14 @@ void AppWindow::initPrograms ()
 #else
 	_vertexsh.load_and_compile(GL_VERTEX_SHADER, "vsh_mcol_flat.glsl");
 	_fragsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_flat.glsl");
-	_flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_flat.glsl");
+	_flatvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_flat_textured.glsl");
+    _flatfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_flat_textured.glsl");
 	_lightvsh.load_and_compile(GL_VERTEX_SHADER, "vsh_lighting.glsl");
 	_lightfsh.load_and_compile(GL_FRAGMENT_SHADER, "fsh_lighting.glsl");
 #endif
 
     _prog.init_and_link ( _vertexsh, _fragsh );
-    _flatprog.init_and_link (  _flatvsh, _fragsh );
+    _flatprog.init_and_link (  _flatvsh, _flatfsh );
     _lightprog.init_and_link ( _lightvsh, _lightfsh );
     
     // Init my scene objects:
@@ -181,6 +184,7 @@ void AppWindow::glutDisplay ()
     }
     
     _sphereRenderer.SetSphere(lod->second);
+    _texture.Bind(GL_TEXTURE0);
     _sphereRenderer.draw(stransf, sproj, _sun, _material);
     
     // Swap buffers and draw:
