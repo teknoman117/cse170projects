@@ -8,7 +8,9 @@
 # include "ogl_tools.h"
 # include "glut_window.h"
 # include "so_axis.h"
-# include "so_cylinder.h"
+# include "so_sphere.h"
+
+# include <map>
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -23,21 +25,24 @@ class AppWindow : public GlutWindow
 
     // My scene objects:
     SoAxis _axis;
-    SoCylinder _cylinder;
-    SoCylinder _flatcylinder;
+    SoSphere::Renderer _sphereRenderer;
+    std::map<int, const SoSphere *> _sphereLODs;
     
     Light _sun;
     Material _material;
     
     // App data:
     enum MenuEv { evOption0, evOption1 };
-    float _rotx, _roty, _fovy;
-    bool  _viewaxis;
-    int _w, _h;
-    int nfaces;
-    bool normals;
+    float  _rotx, _roty, _fovy, _lightpos;
+    bool   _viewaxis;
+    int    _w, _h;
+    
+    // App options:
+    int  resolution;
+    bool wireframe;
+    bool textured;
     bool flat;
-    double lightpos;
+    
     
 public :
     AppWindow ( const char* label, int x, int y, int w, int h );

@@ -1,7 +1,7 @@
 #version 400
 
 in vec3 Norm;
-in vec4 Pos;
+in vec3 Pos;
 out vec4 FragColor;
 
 uniform vec3 lPos;
@@ -17,18 +17,18 @@ uniform float sh;
 
 void main()
 {
-    vec3 p = Pos.xyz / Pos.w;
+    vec3 p = Pos;
     
     // Compute the lighting vectors
     vec3 l = normalize(lPos - p);
-    vec3 n = Norm;
-    vec3 v = vec3(0,0,1);
+    vec3 n = normalize(Norm);
+    vec3 v = normalize(vec3(0,0,2) - p);
     vec3 r = reflect(-l, n);
     
     // Compute ambient lighting
     vec4 a = la * ka;
     vec4 d = ld * kd * dot(l, n);
-    vec4 s = ls * ks * pow(max(r.z, 0), sh);
+    vec4 s = ls * ks * pow(max(dot(r, v), 0), sh);
     if(dot(l,n) < 0)
     {
         s = vec4(0,0,0,1);

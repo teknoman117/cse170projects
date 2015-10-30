@@ -7,13 +7,12 @@ uniform mat4 vTransf;
 uniform mat4 vProj;
 
 out vec3 Norm;
-out vec4 Pos;
+out vec3 Pos;
 
 void main ()
 {
-    Norm = normalize(vNorm * mat3(vTransf));
+    Norm = (vec4(vNorm,0.0) * vTransf).xyz;
+    Pos = (vec4(vPos,1.0) * vTransf).xyz;
     
-    Pos = vec4(vPos,1.0) * vTransf;
-    
-    gl_Position = Pos * vProj;
+    gl_Position = vec4(vPos,1.0) * vTransf * vProj;
 }

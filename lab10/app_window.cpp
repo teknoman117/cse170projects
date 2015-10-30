@@ -9,7 +9,9 @@
 #endif
 
 AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
-    : GlutWindow ( label, x, y, w, h ), _sun(GsVec(2, 2, 2), GsColor(128, 128, 0), GsColor::white, GsColor::white), _material(GsColor(128, 128, 0), GsColor(255, 255, 0), GsColor::white, 3.0f)
+    : GlutWindow ( label, x, y, w, h ),
+    _sun(GsVec(2, 2, 2), GsColor::white, GsColor::white, GsColor::white),
+    _material(GsColor(16,16,16), GsColor::blue, GsColor::cyan, 32.f)
 {
     initPrograms ();
     addMenuEntry ( "Option 0", evOption0 );
@@ -20,11 +22,12 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
     _rotx = _roty = 0;
     _w = w;
     _h = h;
+    _lightpos = 0.0f;
     
-    nfaces = 16;
+    resolution = 0;
+    wireframe = false;
+    textured = false;
     flat = false;
-    normals = false;
-    lightpos = 0.0;
 }
 
 void AppWindow::initPrograms ()
@@ -50,8 +53,7 @@ void AppWindow::initPrograms ()
     
     // Init my scene objects:
     _axis.init ( _prog );
-    _cylinder.init ( _lightprog, _prog, true );
-    _flatcylinder.init( _flatprog, _prog, false );
+    _sphereRenderer.init( _lightprog );
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -69,14 +71,14 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
     switch ( key )
     {
       case ' ': _viewaxis = !_viewaxis; break;
-      case 'q': nfaces++; _cylinder.changed = 1; break;
-      case 'a': nfaces = (nfaces > 3) ? nfaces - 1 : 3; _cylinder.changed = 1; break;
-      case 'z': flat = true; break;
-      case 'x': flat = false; break;
-      case 'c': normals = true; break;
-      case 'v': normals = false; break;
-      case 'w': lightpos += (M_PI / 36.0); break;
-      case 's': lightpos -= (M_PI / 36.0); break;
+      case 'q': resolution++; break;
+      case 'a': resolution = (resolution > 0) ? resolution - 1 : 0; break;
+      case 'z': wireframe = !wireframe; break;
+      case 'x': _sphereRenderer.init(_flatprog); break;
+      case 'c': textured = !textured; break;
+      case 'v': _sphereRenderer.init(_lightprog); break;
+      case 'w': _lightpos += (M_PI / 36.0f); break;
+      case 's': _lightpos -= (M_PI / 36.0f); break;
       case 27 : exit(1); // Esc was pressed
     }
 }
@@ -125,16 +127,15 @@ void AppWindow::glutDisplay ()
 {
     // Clear the rendering window
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+    glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
 
     // Build a cross with some lines (if not built yet):
     if ( _axis.changed ) // needs update
     {
         _axis.build(1.0f); // axis has radius 1.0
-    }
-    if ( _cylinder.changed )
-    {
-        _cylinder.build(1.0f, 0.25f, nfaces);
-        _flatcylinder.build(1.0f, 0.25f, nfaces);
     }
 
     // Define our scene transformation:
@@ -142,6 +143,7 @@ void AppWindow::glutDisplay ()
     rx.rotx ( _rotx );
     ry.roty ( _roty );
     stransf = rx*ry; // set the scene transformation matrix
+    _sun.pos = stransf * GsVec(100.0f * std::cosf(_lightpos), 100.0f, 100.0f * std::sinf(_lightpos));
 
     // Define our projection transformation:
     // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
@@ -163,26 +165,23 @@ void AppWindow::glutDisplay ()
     //  shaders vectors on the left side of a multiplication to a matrix.
 
     // Draw:
-    if ( _viewaxis ) _axis.draw ( stransf, sproj );
+    if ( _viewaxis )
+        _axis.draw ( stransf, sproj );
     
-    _sun.pos = stransf * GsVec(2.0 * std::cos(lightpos), 2.0, 2.0 * std::sin(lightpos));
+    // Get the LOD for the sphere
+    auto lod = _sphereLODs.find(resolution);
+    if(lod == _sphereLODs.end())
+    {
+        std::cout << "Constructing Sphere LOD level " << resolution << std::endl;
+        SoSphere *sphere = new SoSphere;
+        sphere->init();
+        sphere->build(0.75, resolution);
+        
+        lod = _sphereLODs.insert(std::make_pair(resolution, (const SoSphere *) sphere)).first;
+    }
     
-    if(flat)
-    {
-        _flatcylinder.draw(stransf, sproj);
-        if(normals)
-        {
-            _flatcylinder.drawNormals(stransf, sproj);
-        }
-    }
-    else
-    {
-        _cylinder.draw(stransf, sproj, _sun, _material);
-        if(normals)
-        {
-            _cylinder.drawNormals(stransf, sproj);
-        }
-    }
+    _sphereRenderer.SetSphere(lod->second);
+    _sphereRenderer.draw(stransf, sproj, _sun, _material);
     
     // Swap buffers and draw:
     glFlush();         // flush the pipeline (usually not necessary)
