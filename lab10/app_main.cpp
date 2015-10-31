@@ -18,7 +18,7 @@ int main ( int argc, char** argv )
 #endif
 
    // Now create the window of your application:
-   AppWindow* w = new AppWindow ( "GlutApp3D CSE 170 Support Code", 300, 300, 640, 480 );
+   AppWindow* w = new AppWindow ( "Nathaniel R. Lewis - Lab 10 (Optional)", 300, 300, 1820, 1024 );
 
    // Finally start the main loop:
    w->run ();

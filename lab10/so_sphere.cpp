@@ -133,6 +133,8 @@ void SoSphere::build ( float radius, unsigned short resolution )
     f.nc = GsVec(0,0,radius); f.nc.normalize(); f.c = f.nc * radius;
     f.build(V, N, radius, resolution);
     
+    // figure out the area of one triangle
+    _crossDistance = dist(V[1], V[2]);
     
     // send data to OpenGL buffers:
     glBindBuffer ( GL_ARRAY_BUFFER, _buffers[0] );

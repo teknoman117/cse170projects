@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F120850B1BE41E6700AB3A49 /* earth.bmp in Resources */ = {isa = PBXBuildFile; fileRef = F120850A1BE41E6700AB3A49 /* earth.bmp */; };
+		F120850D1BE422ED00AB3A49 /* neptune.bmp in Resources */ = {isa = PBXBuildFile; fileRef = F120850C1BE422ED00AB3A49 /* neptune.bmp */; };
 		F14569801BE30E57002E4E69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F145697E1BE30E57002E4E69 /* Assets.xcassets */; };
 		F14569821BE30E7D002E4E69 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190F011B97A5EF002C4607 /* GLUT.framework */; };
 		F14569831BE30E81002E4E69 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1190EFF1B97A5EA002C4607 /* OpenGL.framework */; };
@@ -62,6 +63,7 @@
 		F1190EFF1B97A5EA002C4607 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		F1190F011B97A5EF002C4607 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		F120850A1BE41E6700AB3A49 /* earth.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = earth.bmp; sourceTree = SOURCE_ROOT; };
+		F120850C1BE422ED00AB3A49 /* neptune.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = neptune.bmp; sourceTree = SOURCE_ROOT; };
 		F12CD1CF1BAC902F000B7688 /* material.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = material.h; sourceTree = SOURCE_ROOT; };
 		F12CD1D11BAC91AA000B7688 /* light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = SOURCE_ROOT; };
 		F12CD1D21BACBFB0000B7688 /* fsh_lighting.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fsh_lighting.glsl; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 		F145699B1BE30EE0002E4E69 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F120850C1BE422ED00AB3A49 /* neptune.bmp */,
 				F120850A1BE41E6700AB3A49 /* earth.bmp */,
 				F145697E1BE30E57002E4E69 /* Assets.xcassets */,
 				F145697F1BE30E57002E4E69 /* Info.plist */,
@@ -258,6 +261,7 @@
 				F120850B1BE41E6700AB3A49 /* earth.bmp in Resources */,
 				F14569A81BE408D6002E4E69 /* vsh_flat_textured.glsl in Resources */,
 				F145699A1BE30ED7002E4E69 /* vsh_mcol_flat.glsl in Resources */,
+				F120850D1BE422ED00AB3A49 /* neptune.bmp in Resources */,
 				F14569801BE30E57002E4E69 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

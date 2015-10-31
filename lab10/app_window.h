@@ -29,11 +29,14 @@ class AppWindow : public GlutWindow
     // My scene objects:
     SoAxis _axis;
     SoTexture _texture;
+    SoTexture _white;
     SoSphere::Renderer _sphereRenderer;
     std::map<int, const SoSphere *> _sphereLODs;
     
     Light _sun;
     Material _material;
+    Material _texturedmaterial;
+    Material _texturedmaterialflat;
     
     // App data:
     enum MenuEv { evOption0, evOption1 };
@@ -41,14 +44,17 @@ class AppWindow : public GlutWindow
     bool   _viewaxis;
     int    _w, _h;
     
-    
-    
     // App options:
     int  resolution;
+    int  sizeOnScreen;
     bool wireframe;
     bool textured;
     bool flat;
+    bool adaptive;
+    double timeWarp;
     
+    const SoSphere* GetSphereLOD(int resolution);
+    int GetPixelsOnScreen(float length, float distance, GsMat& persp);
     
 public :
     AppWindow ( const char* label, int x, int y, int w, int h );

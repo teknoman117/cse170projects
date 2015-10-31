@@ -33,13 +33,16 @@ public:
     
 private:
     size_t _numpoints;
+    float  _crossDistance;
     GLuint _buffers[2];
     
     friend Renderer;
     
 public:
-    void init ();
-    void build ( float radius, unsigned short resolution );
+    void  init ();
+    void  build ( float radius, unsigned short resolution );
+    float GetCrossDistance() const { return _crossDistance; }
+    
 };
 
 #endif // SO_AXIS_H
