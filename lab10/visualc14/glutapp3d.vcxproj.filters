@@ -34,10 +34,13 @@
     <ClCompile Include="..\so_axis.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
-    <ClCompile Include="..\so_cylinder.cpp">
+    <ClCompile Include="..\gs_image.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
-    <ClCompile Include="..\so_segments.cpp">
+    <ClCompile Include="..\so_sphere.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\so_texture.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
   </ItemGroup>
@@ -72,10 +75,19 @@
     <ClInclude Include="..\so_axis.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\so_cylinder.h">
+    <ClInclude Include="..\gs_image.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\so_segments.h">
+    <ClInclude Include="..\light.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\material.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_sphere.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_texture.h">
       <Filter>myapp</Filter>
     </ClInclude>
   </ItemGroup>
@@ -97,16 +109,19 @@
     <None Include="..\fsh_flat.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\vsh_mcol_flat.glsl">
+    <None Include="..\fsh_flat_textured.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\fsh_lighting.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\vsh_flat.glsl">
+    <None Include="..\vsh_flat_textured.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\vsh_lighting.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_mcol_flat.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\app_main.cpp" />
+    <ClCompile Include="..\gs_image.cpp" />
     <ClCompile Include="..\so_axis.cpp" />
     <ClCompile Include="..\app_window.cpp" />
     <ClCompile Include="..\glut_window.cpp" />
@@ -139,10 +140,13 @@
     <ClCompile Include="..\gsim\gs_vec.cpp" />
     <ClCompile Include="..\gsim\gs_vec2.cpp" />
     <ClCompile Include="..\ogl_tools.cpp" />
-    <ClCompile Include="..\so_cylinder.cpp" />
-    <ClCompile Include="..\so_segments.cpp" />
+    <ClCompile Include="..\so_sphere.cpp" />
+    <ClCompile Include="..\so_texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\gs_image.h" />
+    <ClInclude Include="..\light.h" />
+    <ClInclude Include="..\material.h" />
     <ClInclude Include="..\so_axis.h" />
     <ClInclude Include="..\app_window.h" />
     <ClInclude Include="..\glut_window.h" />
@@ -153,13 +157,14 @@
     <ClInclude Include="..\gsim\gs_vec.h" />
     <ClInclude Include="..\gsim\gs_vec2.h" />
     <ClInclude Include="..\ogl_tools.h" />
-    <ClInclude Include="..\so_cylinder.h" />
-    <ClInclude Include="..\so_segments.h" />
+    <ClInclude Include="..\so_sphere.h" />
+    <ClInclude Include="..\so_texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\fsh_flat.glsl" />
+    <None Include="..\fsh_flat_textured.glsl" />
     <None Include="..\fsh_lighting.glsl" />
-    <None Include="..\vsh_flat.glsl" />
+    <None Include="..\vsh_flat_textured.glsl" />
     <None Include="..\vsh_lighting.glsl" />
     <None Include="..\vsh_mcol_flat.glsl" />
   </ItemGroup>
