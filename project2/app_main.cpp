@@ -18,7 +18,7 @@ int main ( int argc, char** argv )
 #endif
 
    // Now create the window of your application:
-   AppWindow* w = new AppWindow ( "Nathaniel R. Lewis - Lab 10 (Optional)", 300, 300, 1820, 1024 );
+   AppWindow* w = new AppWindow ( "Project 2 - Terrain Visualization", 300, 300, 800, 600 );
 
    // Finally start the main loop:
    w->run ();

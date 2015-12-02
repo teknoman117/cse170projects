@@ -51,7 +51,12 @@ void AppWindow::initPrograms ()
     // Init my scene objects:
     _axis.init ( _prog );
     _terrain.init ( _terrainprog );
+
+#ifdef WIN32
+	_terrain.build("../terrain.raw", 1024, 1024, GsVec(10.f * 0.76f, 1.f, 10.f));
+#else
     _terrain.build("terrain.raw", 1024, 1024, GsVec(10.f * 0.76f, 1.f, 10.f));
+#endif
 }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],

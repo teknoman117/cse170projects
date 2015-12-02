@@ -141,6 +141,7 @@
     <ClCompile Include="..\ogl_tools.cpp" />
     <ClCompile Include="..\so_cylinder.cpp" />
     <ClCompile Include="..\so_segments.cpp" />
+    <ClCompile Include="..\so_terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\so_axis.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\ogl_tools.h" />
     <ClInclude Include="..\so_cylinder.h" />
     <ClInclude Include="..\so_segments.h" />
+    <ClInclude Include="..\so_terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\fsh_flat.glsl" />

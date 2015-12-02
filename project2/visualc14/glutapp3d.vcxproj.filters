@@ -40,6 +40,9 @@
     <ClCompile Include="..\so_segments.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\so_terrain.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -76,6 +79,9 @@
       <Filter>myapp</Filter>
     </ClInclude>
     <ClInclude Include="..\so_segments.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_terrain.h">
       <Filter>myapp</Filter>
     </ClInclude>
   </ItemGroup>

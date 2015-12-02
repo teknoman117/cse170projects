@@ -1,9 +1,14 @@
 #include "so_terrain.h"
 #include <cmath>
 #include <fstream>
+#include <cinttypes>
 
 #ifndef M_PI
 #define M_PI 3.14159f
+#endif
+
+#ifdef WIN32
+#define ssize_t int32_t
 #endif
 
 void SoTerrain::build ( std::string filename, size_t width, size_t height, GsVec convertToMeters)
@@ -122,8 +127,8 @@ void SoTerrain::build ( std::string filename, size_t width, size_t height, GsVec
     _numpoints = E.size();
     
     // Deallocate
-    V.resize(0);
     N.resize(0);
+	E.resize(0);
 }
 
 void SoTerrain::init ( const GlProgram& prog )
@@ -172,6 +177,9 @@ void SoTerrain::draw ( const GsMat& tr, const GsMat& pr )
 // Sample the heigth at a point
 float SoTerrain::sampleHeightAtPoint(GsVec2 p)
 {
+	if (V.size() == 0)
+		return 0;
+
     GsVec2 point = GsVec2(p.x / convertToMeters.x, p.y / convertToMeters.z);
     
     size_t x1 = floor(point.x);
