@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BE3DDA17-F918-42E2-B822-4C8A6EF632C9}</ProjectGuid>
     <RootNamespace>glutapp</RootNamespace>
-    <ProjectName>glutapp3d</ProjectName>
+    <ProjectName>polyedapp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -79,14 +79,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) .</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copying executable to project folder...</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -120,52 +113,46 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) .</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copying executable to project folder...</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\app_main.cpp" />
-    <ClCompile Include="..\gs_image.cpp" />
+    <ClCompile Include="..\curve_eval.cpp" />
     <ClCompile Include="..\so_axis.cpp" />
     <ClCompile Include="..\app_window.cpp" />
     <ClCompile Include="..\glut_window.cpp" />
     <ClCompile Include="..\gsim\gs.cpp" />
+    <ClCompile Include="..\gsim\gs_array.cpp" />
     <ClCompile Include="..\gsim\gs_color.cpp" />
     <ClCompile Include="..\gsim\gs_mat.cpp" />
     <ClCompile Include="..\gsim\gs_quat.cpp" />
     <ClCompile Include="..\gsim\gs_vec.cpp" />
     <ClCompile Include="..\gsim\gs_vec2.cpp" />
     <ClCompile Include="..\ogl_tools.cpp" />
-    <ClCompile Include="..\so_sphere.cpp" />
-    <ClCompile Include="..\so_texture.cpp" />
+    <ClCompile Include="..\so_line.cpp" />
+    <ClCompile Include="..\so_lineshape.cpp" />
+    <ClCompile Include="..\so_poly.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\gs_image.h" />
-    <ClInclude Include="..\light.h" />
-    <ClInclude Include="..\material.h" />
+    <ClInclude Include="..\curve_eval.h" />
     <ClInclude Include="..\so_axis.h" />
     <ClInclude Include="..\app_window.h" />
     <ClInclude Include="..\glut_window.h" />
     <ClInclude Include="..\gsim\gs.h" />
+    <ClInclude Include="..\gsim\gs_array.h" />
     <ClInclude Include="..\gsim\gs_color.h" />
     <ClInclude Include="..\gsim\gs_mat.h" />
     <ClInclude Include="..\gsim\gs_quat.h" />
     <ClInclude Include="..\gsim\gs_vec.h" />
     <ClInclude Include="..\gsim\gs_vec2.h" />
     <ClInclude Include="..\ogl_tools.h" />
-    <ClInclude Include="..\so_sphere.h" />
-    <ClInclude Include="..\so_texture.h" />
+    <ClInclude Include="..\so_line.h" />
+    <ClInclude Include="..\so_lineshape.h" />
+    <ClInclude Include="..\so_poly.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\fsh_flat.glsl" />
-    <None Include="..\fsh_flat_textured.glsl" />
-    <None Include="..\fsh_lighting.glsl" />
-    <None Include="..\vsh_flat_textured.glsl" />
-    <None Include="..\vsh_lighting.glsl" />
+    <None Include="..\fsh_lineshape.glsl" />
+    <None Include="..\vsh_lineshape.glsl" />
     <None Include="..\vsh_mcol_flat.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -4,6 +4,9 @@
     <ClCompile Include="..\gsim\gs.cpp">
       <Filter>graphsim tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\gsim\gs_array.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
     <ClCompile Include="..\gsim\gs_color.cpp">
       <Filter>graphsim tools</Filter>
     </ClCompile>
@@ -34,18 +37,24 @@
     <ClCompile Include="..\so_axis.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
-    <ClCompile Include="..\gs_image.cpp">
+    <ClCompile Include="..\so_poly.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
-    <ClCompile Include="..\so_sphere.cpp">
+    <ClCompile Include="..\so_line.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
-    <ClCompile Include="..\so_texture.cpp">
+    <ClCompile Include="..\curve_eval.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\so_lineshape.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_array.h">
       <Filter>graphsim tools</Filter>
     </ClInclude>
     <ClInclude Include="..\gsim\gs_color.h">
@@ -75,19 +84,16 @@
     <ClInclude Include="..\so_axis.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\gs_image.h">
+    <ClInclude Include="..\so_poly.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\light.h">
+    <ClInclude Include="..\so_line.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\material.h">
+    <ClInclude Include="..\curve_eval.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\so_sphere.h">
-      <Filter>myapp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\so_texture.h">
+    <ClInclude Include="..\so_lineshape.h">
       <Filter>myapp</Filter>
     </ClInclude>
   </ItemGroup>
@@ -109,19 +115,13 @@
     <None Include="..\fsh_flat.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\fsh_flat_textured.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\fsh_lighting.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\vsh_flat_textured.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\vsh_lighting.glsl">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\vsh_mcol_flat.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_lineshape.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\fsh_lineshape.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
