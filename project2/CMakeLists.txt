@@ -39,25 +39,26 @@ include_directories("include")
 # Are we compiling on Mac OS X?
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Make sure Xcode uses Clang set for libc++ and c++ version 2011
-	#set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    #set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.8" CACHE STRING "Deployment target for OSX" FORCE)
 
-	# Needed for performing Makefile build on OS X, as above parameters are Xcode specific
-	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++ -g -Wall")
+    # Needed for performing Makefile build on OS X, as above parameters are Xcode specific
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++ -g -Wall")
 
-	# Setup the names for things
+    # Setup the names for things
     set( EXE_NAME "Project2")
     set( MACOSX_BUNDLE_BUNDLE_VERSION 1 )
     #set( MACOSX_BUNDLE_ICON_FILE "destructo.icns" )
     set( MACOSX_BUNDLE_GUI_IDENTIFIER "net.teknoman117.cse170.project2" )
 
     # Find libraries
-	find_library(OPENGL_FRAMEWORK     NAMES OpenGL     PATHS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks)
-	find_library(SDL2_FRAMEWORK       NAMES SDL2       PATHS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks)
+    find_library(OPENGL_FRAMEWORK     NAMES OpenGL     PATHS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks)
+    find_library(SDL2_FRAMEWORK       NAMES SDL2       PATHS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks)
 
 	# Copy the resources into the app bundle
-	file(GLOB MACOSX_RESOURCES ${PROJECT_SOURCE_DIR}/content/* )
+	file(GLOB MACOSX_RESOURCES ${PROJECT_SOURCE_DIR}/content )
 	set_source_files_properties(${MACOSX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 	# Copy the frameworks into the app bundle
