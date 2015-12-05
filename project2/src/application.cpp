@@ -23,14 +23,14 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
 {
     SDL_GetWindowSize(window, &width, &height);
     
-    std::shared_ptr<Shader> vs1 = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/vs1.glsl", GL_VERTEX_SHADER);
-    std::shared_ptr<Shader> fs1 = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/fs1.glsl", GL_FRAGMENT_SHADER);
+    std::shared_ptr<Shader>  vs1  = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/vs1.glsl", GL_VERTEX_SHADER  );
+    std::shared_ptr<Shader>  fs1  = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/fs1.glsl", GL_FRAGMENT_SHADER);
+    std::shared_ptr<Program> test = (programs["test"] = std::make_shared<Program>());
+    test->Attach(vs1)
+         .Attach(fs1)
+         .Link();
     
-    std::shared_ptr<Program> test = std::make_shared<Program>();
-    test->Attach(vs1);
-    test->Attach(fs1);
-    test->Link();
-    programs["test"] = test;
+    glClearColor(0.f, 0.f, 0.f, 1.f);
 }
 
 Application::~Application()
@@ -39,8 +39,9 @@ Application::~Application()
 
 void Application::OnDisplay(float frameTime, float frameDelta)
 {
+    // Update window title with fps
     std::ostringstream windowTitle;
-   windowTitle << std::setprecision(2) << "ENGR 180 Final Project - FPS = " << (1.f / frameDelta);
+    windowTitle << std::setprecision(2) << "ENGR 180 Final Project - FPS = " << (1.f / frameDelta);
     SDL_SetWindowTitle(window, windowTitle.str().c_str());
     
     glClearColor(randomColor(), randomColor(), randomColor(), 1.0f);
