@@ -30,11 +30,11 @@ int main(int argc, char *argv[])
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
     
     //we use deferred rendering, no depth test in final buffer
-    //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
-    //SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
     
     // Setup OpenGL Accelerated Window
     mainwindow = SDL_CreateWindow("ENGR 180 Final Project - Terrain Visualization", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     
     // Enable vsync
     SDL_GL_SetSwapInterval(1);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
     
     Application *app = new Application(mainwindow, maincontext);
     

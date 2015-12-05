@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include <glm/glm.hpp>
+
 #include <project2/common.hpp>
 #include <project2/program.hpp>
 
@@ -14,6 +16,9 @@ class Application
     GLint           width;
     GLint           height;
     float           aspect;
+
+    GLuint          vao;
+    GLuint          buf;
     
     std::map<std::string, std::shared_ptr<Program>> programs;
     

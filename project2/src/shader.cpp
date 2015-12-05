@@ -51,7 +51,7 @@ Shader::Shader(const std::string& path, const GLenum type)
         throw std::runtime_error("Shader failed to compile");
     }
     
-    std::cout << "[INFO] [SHADER \"" << path << "\"] Shader compilation successful (handle = " << handle << ")" << std::endl;
+    std::cout << "[INFO] [SHADER \"" << path << "\" ==> " << handle << "] Shader compilation successful" << std::endl;
 }
 
 Shader::~Shader()

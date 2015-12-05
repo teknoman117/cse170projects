@@ -44,8 +44,8 @@ Program& Program::Attach(const std::shared_ptr<Shader>& shader)
         std::cerr << "[WARNING] [PROGRAM " << handle << "] attempted to attach invalid shader" << std::endl;
         return *this;
     }
-    
-    glAttachShader(shader->GetHandle(), shader->GetType());
+   
+    glAttachShader(handle, shader->GetHandle());
     shaders.push_back(shader);
     
     // Return a reference to ourself for chaining
@@ -60,19 +60,26 @@ Program& Program::Link()
     glGetProgramiv(handle, GL_LINK_STATUS, &r);
     if(r == GL_FALSE)
     {
-        GLchar messages[256];
+        GLchar messages[2048];
         glGetProgramInfoLog(handle, sizeof(messages), 0, &messages[0]);
         glDeleteProgram(handle);
 
-        std::cerr << "[FATAL] [PROGRAM " << handle << "] Program linking failed with error" << messages << std::endl;
+        std::cerr << "[FATAL] [PROGRAM " << handle << "] Program linking failed with error: " << messages << std::endl;
         handle = 0;
         
         throw std::runtime_error("Program linking failed");
         return *this;
     }
     
+    // Log
+    std::cout << "[INFO] [PROGRAM " << handle << "] Program linking successful [";
+    for(auto shader : shaders)
+    {
+        std::cout << shader->GetHandle() << ",";
+    }
+    std::cout << "]" << std::endl;
+
     // Return a reference to ourself for chaining
-    std::cout << "[INFO] [PROGRAM " << handle << "] Program linking successful" << std::endl;
     linked = true;
     return *this;
 }
