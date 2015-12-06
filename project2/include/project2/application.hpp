@@ -7,6 +7,8 @@
 
 #include <project2/common.hpp>
 #include <project2/program.hpp>
+#include <project2/texture.hpp>
+#include <project2/objects/glfullscreenquad.hpp>
 
 class Application
 {
@@ -19,8 +21,13 @@ class Application
 
     GLuint          vao;
     GLuint          buf;
+    GLuint          fbo;
     
     std::map<std::string, std::shared_ptr<Program>> programs;
+    std::map<std::string, std::shared_ptr<Texture>> textures;
+
+    // Scene objects
+    GLFullscreenQuad fullscreenQuad;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context);

@@ -13,4 +13,6 @@
 #include <GL/glu.h>
 #endif
 
+#include <glm/glm.hpp>
+
 #endif

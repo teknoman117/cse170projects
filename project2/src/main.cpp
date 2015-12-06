@@ -20,11 +20,12 @@ int main(int argc, char *argv[])
     
     // Setup OpenGL context settings
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    //SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    
+
     // Setup window manager frame buffer settings
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
     
     // Setup OpenGL Accelerated Window
-    mainwindow = SDL_CreateWindow("ENGR 180 Final Project - Terrain Visualization", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    mainwindow = SDL_CreateWindow("ENGR 180 Final Project - Terrain Visualization", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!mainwindow)
     {
         std::cerr << "[FATAL] SDL: " << SDL_GetError() << std::endl;
@@ -52,6 +53,11 @@ int main(int argc, char *argv[])
     if (GLEW_OK != rev)
     {
         std::cerr << "[FATAL] " << glewGetErrorString(rev) << std::endl;
+        
+        SDL_GL_DeleteContext(maincontext);
+        SDL_DestroyWindow(mainwindow);
+        SDL_Quit();
+
         return 1;
     }
     

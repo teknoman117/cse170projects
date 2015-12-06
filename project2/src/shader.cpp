@@ -47,11 +47,11 @@ Shader::Shader(const std::string& path, const GLenum type)
         glDeleteShader(handle);
         handle = 0;
         
-        std::cerr << "[FATAL] [SHADER \"" << path << "\" ==> " << handle << "] Shader compilation failed with error: " << messages << std::endl;
+        std::cerr << "[FATAL] [SHADER \"" << path << "\" ==> " << handle << "] Compilation failed with error: " << messages << std::endl;
         throw std::runtime_error("Shader failed to compile");
     }
     
-    std::cout << "[INFO] [SHADER \"" << path << "\" ==> " << handle << "] Shader compilation successful" << std::endl;
+    std::cout << "[INFO] [SHADER \"" << path << "\" ==> " << handle << "] Compilation successful" << std::endl;
 }
 
 Shader::~Shader()

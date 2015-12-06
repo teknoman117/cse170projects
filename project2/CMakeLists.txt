@@ -3,7 +3,10 @@ project (Project2)
 
 file(GLOB Sources
 	"src/*.cpp"
+    "src/objects/*.cpp"
+    
     "include/project2/*.hpp"
+    "include/project2/objects/*.hpp"
 )
 
 # Add universal includes

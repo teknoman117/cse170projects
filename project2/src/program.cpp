@@ -64,7 +64,7 @@ Program& Program::Link()
         glGetProgramInfoLog(handle, sizeof(messages), 0, &messages[0]);
         glDeleteProgram(handle);
 
-        std::cerr << "[FATAL] [PROGRAM " << handle << "] Program linking failed with error: " << messages << std::endl;
+        std::cerr << "[FATAL] [PROGRAM " << handle << "] Linking failed with error: " << messages << std::endl;
         handle = 0;
         
         throw std::runtime_error("Program linking failed");
@@ -72,7 +72,7 @@ Program& Program::Link()
     }
     
     // Log
-    std::cout << "[INFO] [PROGRAM " << handle << "] Program linking successful [";
+    std::cout << "[INFO] [PROGRAM " << handle << "] Linking successful [";
     for(auto shader : shaders)
     {
         std::cout << shader->GetHandle() << ",";
