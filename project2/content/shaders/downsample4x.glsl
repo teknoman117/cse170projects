@@ -1,6 +1,6 @@
 #version 430
 
-layout (rgba16f, binding = 0) writeonly uniform image2D destinationImage; 
+layout (rgba16f, binding = 1) writeonly uniform image2D destinationImage; 
 
 uniform sampler2D sourceImage;
 uniform int       sourceLevel;

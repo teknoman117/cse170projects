@@ -139,6 +139,9 @@ void Application::OnDisplay(float frameTime, float frameDelta)
     SDL_SetWindowTitle(window, windowTitle.str().c_str());
 
     glGetError();
+    glBeginQuery(GL_TIME_ELAPSED, queries[frontBuffer]);
+
+    // --------------- OBJECT DRAWING PHASE ----------------------------
 
     // Bind the HDR framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -152,19 +155,12 @@ void Application::OnDisplay(float frameTime, float frameDelta)
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    // Bind window manager framebuffer, tonemap and gamma correct the HDR image
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0 , width, height);
-    glDisable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // generate mipmap of the HDR buffer so we can determine max luminosity
+    // ---------------- LUMINOSITY CALCULATION, COMPUTE AVERAGE PIXEL VALUE -------------
 
     // downsample image until we can do parallel reduction
-    glBeginQuery(GL_TIME_ELAPSED, queries[frontBuffer]);
     programs["downsample4x"]->Bind();
-    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
-    glUniform1i(programs["downsample4x"]->GetUniform("sourceImage"), 1);
+    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
+    glUniform1i(programs["downsample4x"]->GetUniform("sourceImage"), 0);
 
     glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
     GLuint currentLevel = 0;
@@ -172,7 +168,7 @@ void Application::OnDisplay(float frameTime, float frameDelta)
     while( float(width>height ? width : height) / float(1<<currentLevel) > 256 )
     {
         glUniform1i(programs["downsample4x"]->GetUniform("sourceLevel"), currentLevel);
-        glBindImageTexture(0, textures["hdr-color"]->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+        glBindImageTexture(1, textures["hdr-color"]->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 
         // compute dispatch size
         GLuint x = ceilf(float(width / (1<<currentLevel)) / 128.f);
@@ -186,28 +182,36 @@ void Application::OnDisplay(float frameTime, float frameDelta)
 
     // parallel reduction
     programs["downsample4x_reduce"]->Bind();
-    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
-    glUniform1i(programs["downsample4x_reduce"]->GetUniform("sourceImage"), 1);
+    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
+    glUniform1i(programs["downsample4x_reduce"]->GetUniform("sourceImage"), 0);
     glUniform1i(programs["downsample4x_reduce"]->GetUniform("sourceLevel"), currentLevel);
-    glBindImageTexture(0, textures["luminosity"]->GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+    glBindImageTexture(1, textures["luminosity"]->GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
     glDispatchCompute(textures["luminosity"]->GetWidth(), textures["luminosity"]->GetHeight(), 1);
 
-    glEndQuery(GL_TIME_ELAPSED);
-    std::swap(frontBuffer, backBuffer);
 
-    // Prepare for tonemapping
+    // ---------------- TONE MAPPING, GAMMA CORRECTION -------------------------
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0 , width, height);
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     programs["tonemap"]->Bind();
-    textures["luminosity"]->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
+    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
+    textures["luminosity"]->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
 
     const float gammaCorrectionFactor = 1.f/ 2.2f;
     glUniform1f(programs["tonemap"]->GetUniform("correctionFactor"), gammaCorrectionFactor);
     glUniform1i(programs["tonemap"]->GetUniform("renderHDR"), 0);
+    glUniform1i(programs["tonemap"]->GetUniform("luminosity"), 1);
     fullscreenQuad.Draw();
+
+    glEndQuery(GL_TIME_ELAPSED);
+    std::swap(frontBuffer, backBuffer);
 
     // Get previous query result
     GLuint elapsed;
     glGetQueryObjectuiv(queries[frontBuffer], GL_QUERY_RESULT, &elapsed);
-    //std::cout << "[INFO] Generate mipmaps took " << float(elapsed)/1000.f << " us" << std::endl;
+    //std::cout << "[INFO] Scene Render Took: " << float(elapsed)/1000.f << " us" << std::endl;
 }
 
 void Application::OnResize(GLint _width, GLint _height)
