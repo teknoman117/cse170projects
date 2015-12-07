@@ -14,7 +14,7 @@ namespace
     }
 }
 
-Texture::Texture(size_t width, size_t height, size_t levels, GLenum format)
+Texture::Texture(GLuint width, GLuint height, GLuint levels, GLenum format)
     : width(width), height(height), levels(levels), format(format)
 {
     glGenTextures(1, &handle);
@@ -156,12 +156,12 @@ GLuint Texture::GetHandle() const
     return handle;
 }
 
-size_t Texture::GetWidth()  const
+GLuint Texture::GetWidth()  const
 {
     return width;
 }
 
-size_t Texture::GetHeight() const
+GLuint Texture::GetHeight() const
 {
     return height;
 }

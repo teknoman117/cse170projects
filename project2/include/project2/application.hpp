@@ -8,7 +8,7 @@
 #include <project2/common.hpp>
 #include <project2/program.hpp>
 #include <project2/texture.hpp>
-#include <project2/objects/glfullscreenquad.hpp>
+#include <project2/renderpipeline.hpp>
 
 class Application
 {
@@ -21,7 +21,6 @@ class Application
 
     GLuint          vao;
     GLuint          buf;
-    GLuint          fbo;
 
     GLuint          queries[2];
     GLuint          frontBuffer;
@@ -30,8 +29,7 @@ class Application
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;
 
-    // Scene objects
-    GLFullscreenQuad fullscreenQuad;
+    RenderPipeline  renderer;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context);

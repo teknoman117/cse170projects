@@ -7,13 +7,13 @@ class Texture
 {
     GLuint handle;
 
-    size_t width;
-    size_t height;
-    size_t levels;
+    GLuint width;
+    GLuint height;
+    GLuint levels;
     GLint  format;
 
 public:
-    Texture(size_t width, size_t height, size_t levels = 1, GLenum format = GL_RGBA8);
+    Texture(GLuint width, GLuint height, GLuint levels = 1, GLenum format = GL_RGBA8);
     Texture(const std::string& path, GLint format, bool mipmapped = true);
     ~Texture();
 
@@ -22,8 +22,8 @@ public:
     void SetWrapMode(GLint mode);
 
     GLuint GetHandle() const;
-    size_t GetWidth()  const;
-    size_t GetHeight() const;
+    GLuint GetWidth()  const;
+    GLuint GetHeight() const;
     GLenum GetFormat() const;
 };
 
