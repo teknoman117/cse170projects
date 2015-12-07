@@ -26,7 +26,8 @@ vec3 Uncharted2Tonemap(vec3 x)
 void main()
 {
 	// Tonemap
-	vec4 colorHDR = textureLod(renderHDR, textureCoordinate, 10);
+	//vec4 colorHDR = textureLod(renderHDR, textureCoordinate, 10);
+	vec4 colorHDR = textureLod(renderHDR, vec2(0.5,0.5), 10);
 	vec3 colorTonemapped = Uncharted2Tonemap(colorHDR.rgb);
 
 	// Gamma correct

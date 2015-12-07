@@ -29,6 +29,29 @@ namespace
         size_t maxDim = w > h ? w : h;
         return (size_t) floorf(::log2f(float(maxDim))) + 1;
     }
+
+    // Function given an image computes the size of the luminosity image (1->2)x(1->2)
+    void luminositySize(GLuint w, GLuint h, GLuint& lw, GLuint& lh)
+    {
+        // find the base decomposition level
+        GLuint maxDimension = (w>h)?w:h;
+
+        // 65536 texture is huge, move by 4 because thats what our shader does
+        for(GLuint i = 0; i <= 16; i+=2)
+        {
+            // is this the luminosity level
+            if((maxDimension / (1 << i)) <= 256)
+            {
+                lw = (GLuint) ceilf(float(w / (1<<i)) / 128.f);
+                lh = (GLuint) ceilf(float(h / (1<<i)) / 128.f);
+
+                return;
+            }
+        }
+
+        lw=0;
+        lh=0;
+    }
 }
 
 Application::Application(SDL_Window *_window, SDL_GLContext& _context)
@@ -92,33 +115,16 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
 
     glBindVertexArray(0);
 
-
-
     // setup a frame buffer
     glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    textures["hdr-color"] = std::make_shared<Texture>(width, height, numberOfMipLevels(width,height), GL_RGBA16F);
-    textures["test2"] = std::make_shared<Texture>(width/4, height/4, numberOfMipLevels(width/4,height/4), GL_RGBA16F);
-    textures["hdr-depth"] = std::make_shared<Texture>(width, height, 1, GL_DEPTH24_STENCIL8);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures["hdr-color"]->GetHandle(), 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textures["hdr-depth"]->GetHandle(), 0);
-
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cerr << "[FATAL] Unable to construct HDR framebuffer" << std::endl;
-        SDL_Quit();
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-
-
+    // runtime queries for mips
     glGenQueries(2, queries);
     frontBuffer = 0;
     backBuffer = 1;
+
+    // allocate pipeline buffers
+    OnResize(width, height);
 }
 
 Application::~Application()
@@ -153,19 +159,17 @@ void Application::OnDisplay(float frameTime, float frameDelta)
     glClear(GL_COLOR_BUFFER_BIT);
 
     // generate mipmap of the HDR buffer so we can determine max luminosity
-    // reduce image until we can do parallel reduction
+
+    // downsample image until we can do parallel reduction
+    glBeginQuery(GL_TIME_ELAPSED, queries[frontBuffer]);
     programs["downsample4x"]->Bind();
     textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
     glUniform1i(programs["downsample4x"]->GetUniform("sourceImage"), 1);
 
-    glBeginQuery(GL_TIME_ELAPSED, queries[frontBuffer]);
     glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
     GLuint currentLevel = 0;
 
-
-
-
-    while( (width>height ? width : height) / (1<<currentLevel) > 2 )
+    while( float(width>height ? width : height) / float(1<<currentLevel) > 256 )
     {
         glUniform1i(programs["downsample4x"]->GetUniform("sourceLevel"), currentLevel);
         glBindImageTexture(0, textures["hdr-color"]->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
@@ -180,12 +184,20 @@ void Application::OnDisplay(float frameTime, float frameDelta)
         currentLevel+=2;
     }
 
+    // parallel reduction
+    programs["downsample4x_reduce"]->Bind();
+    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
+    glUniform1i(programs["downsample4x_reduce"]->GetUniform("sourceImage"), 1);
+    glUniform1i(programs["downsample4x_reduce"]->GetUniform("sourceLevel"), currentLevel);
+    glBindImageTexture(0, textures["luminosity"]->GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+    glDispatchCompute(textures["luminosity"]->GetWidth(), textures["luminosity"]->GetHeight(), 1);
+
     glEndQuery(GL_TIME_ELAPSED);
     std::swap(frontBuffer, backBuffer);
 
     // Prepare for tonemapping
     programs["tonemap"]->Bind();
-    textures["hdr-color"]->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
+    textures["luminosity"]->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
 
     const float gammaCorrectionFactor = 1.f/ 2.2f;
     glUniform1f(programs["tonemap"]->GetUniform("correctionFactor"), gammaCorrectionFactor);
@@ -195,7 +207,7 @@ void Application::OnDisplay(float frameTime, float frameDelta)
     // Get previous query result
     GLuint elapsed;
     glGetQueryObjectuiv(queries[frontBuffer], GL_QUERY_RESULT, &elapsed);
-    std::cout << "[INFO] Generate mipmaps took " << float(elapsed)/1000.f << " us" << std::endl;
+    //std::cout << "[INFO] Generate mipmaps took " << float(elapsed)/1000.f << " us" << std::endl;
 }
 
 void Application::OnResize(GLint _width, GLint _height)
@@ -209,7 +221,11 @@ void Application::OnResize(GLint _width, GLint _height)
     // Reallocate framebuffer storage
     textures["hdr-color"] = std::make_shared<Texture>(width, height, numberOfMipLevels(width,height), GL_RGBA16F);
     textures["hdr-depth"] = std::make_shared<Texture>(width, height, 1, GL_DEPTH24_STENCIL8);
-    textures["test2"] = std::make_shared<Texture>(width/4, height/4, numberOfMipLevels(width/4,height/4), GL_RGBA16F);
+
+    GLuint luminosityWidth, luminosityHeight;
+    luminositySize(width, height, luminosityWidth, luminosityHeight);
+    textures["luminosity"] = std::make_shared<Texture>(luminosityWidth, luminosityHeight, 1, GL_RGBA16F);
+    std::cout << "[INFO] New luminosity texture size = " << luminosityWidth << "," << luminosityHeight << std::endl;
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures["hdr-color"]->GetHandle(), 0);
