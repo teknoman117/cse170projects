@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
     
     // Setup OpenGL Accelerated Window
-    mainwindow = SDL_CreateWindow("ENGR 180 Final Project - Terrain Visualization", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    mainwindow = SDL_CreateWindow("ENGR 180 Final Project - Terrain Visualization", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!mainwindow)
     {
         std::cerr << "[FATAL] SDL: " << SDL_GetError() << std::endl;

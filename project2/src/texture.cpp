@@ -5,177 +5,169 @@
 
 namespace
 {
-	// lovingly borrowed from http://www.geeksforgeeks.org/write-one-line-c-function-to-find-whether-a-no-is-power-of-two/
-	template <typename T>
-	static bool isPowerOfTwo (T x) 
-	{
-  		/* First x in the below expression is for the case when x is 0 */
-  		return x && (!(x&(x-1)));
-	}
+    // lovingly borrowed from http://www.geeksforgeeks.org/write-one-line-c-function-to-find-whether-a-no-is-power-of-two/
+    template <typename T>
+    static bool isPowerOfTwo (T x) 
+    {
+        /* First x in the below expression is for the case when x is 0 */
+        return x && (!(x&(x-1)));
+    }
 }
 
 Texture::Texture(size_t width, size_t height, size_t levels, GLenum format)
-	: width(width), height(height), format(format)
+    : width(width), height(height), levels(levels), format(format)
 {
-	glGenTextures(1, &handle);
-	glBindTexture(GL_TEXTURE_2D, handle);
+    glGenTextures(1, &handle);
+    glBindTexture(GL_TEXTURE_2D, handle);
 
-	glTexStorage2D(GL_TEXTURE_2D, levels, format, width, height);
-	
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexStorage2D(GL_TEXTURE_2D, levels, format, width, height);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 Texture::Texture(const std::string& path, GLint format, bool mipmapped)
 {
-	glGenTextures(1, &handle);
-	glBindTexture(GL_TEXTURE_2D, handle);
-	
-	// Determine the lodepng format
-	LodePNGColorType colorFormat;
-	unsigned         colorDepth;
-	GLenum           textureFormat;
+    glGenTextures(1, &handle);
+    glBindTexture(GL_TEXTURE_2D, handle);
 
-	switch(format)
-	{
-		// 8 bit types
-		case GL_RGBA8:
-		case GL_SRGB8_ALPHA8:
-			colorFormat = LCT_RGBA;
-			textureFormat = GL_RGBA;
-			colorDepth = 8;
-			break;
-		case GL_RGB8:
-		case GL_SRGB8:
-			colorFormat = LCT_RGB;
-			textureFormat = GL_RGB;
-			colorDepth = 8;
-			break;
-		case GL_RG8:
-			colorFormat = LCT_GREY_ALPHA;
-			textureFormat = GL_RG;
-			colorDepth = 8;
-			break;
-		case GL_R8:
-			colorFormat = LCT_GREY;
-			textureFormat = GL_RED;
-			colorDepth = 8;
-			break;
+    // Determine the lodepng format
+    LodePNGColorType colorFormat;
+    unsigned         colorDepth;
+    GLenum           textureFormat;
 
-		// 16 bit types
-		case GL_RGBA16:
-			colorFormat = LCT_RGBA;
-			textureFormat = GL_RGBA;
-			colorDepth = 16;
-			break;
-		case GL_RGB16:
-			colorFormat = LCT_RGB;
-			textureFormat = GL_RGB;
-			colorDepth = 16;
-			break;
-		case GL_RG16:
-			colorFormat = LCT_GREY_ALPHA;
-			textureFormat = GL_RG;
-			colorDepth = 16;
-			break;
-		case GL_R16:
-			colorFormat = LCT_GREY;
-			textureFormat = GL_RED;
-			colorDepth = 16;
-			break;
+    switch(format)
+    {
+        // 8 bit types
+        case GL_RGBA8:
+        case GL_SRGB8_ALPHA8:
+            colorFormat = LCT_RGBA;
+            textureFormat = GL_RGBA;
+            colorDepth = 8;
+            break;
+        case GL_RGB8:
+        case GL_SRGB8:
+            colorFormat = LCT_RGB;
+            textureFormat = GL_RGB;
+            colorDepth = 8;
+            break;
+        case GL_RG8:
+            colorFormat = LCT_GREY_ALPHA;
+            textureFormat = GL_RG;
+            colorDepth = 8;
+            break;
+        case GL_R8:
+            colorFormat = LCT_GREY;
+            textureFormat = GL_RED;
+            colorDepth = 8;
+            break;
 
-		default:
-			std::cerr << "[FATAL] [TEXTURE \"" << path << "\"] Unknown OpenGL => LodePNG type conversion" << std::endl;
-			throw std::runtime_error("Unsupported texture format");
-	}
+        // 16 bit types
+        case GL_RGBA16:
+            colorFormat = LCT_RGBA;
+            textureFormat = GL_RGBA;
+            colorDepth = 16;
+            break;
+        case GL_RGB16:
+            colorFormat = LCT_RGB;
+            textureFormat = GL_RGB;
+            colorDepth = 16;
+            break;
+        case GL_RG16:
+            colorFormat = LCT_GREY_ALPHA;
+            textureFormat = GL_RG;
+            colorDepth = 16;
+            break;
+        case GL_R16:
+            colorFormat = LCT_GREY;
+            textureFormat = GL_RED;
+            colorDepth = 16;
+            break;
 
-	// Load the PNG
-	std::vector<unsigned char> storage;
-	unsigned w, h;
-	unsigned error = lodepng::decode(storage, w, h, path, colorFormat, colorDepth);
-	if(error)
-	{
-		std::cerr << "[FATAL] [TEXTURE \"" << path << "\"] Failed to load file with error: " << error << std::endl;
-		throw std::runtime_error("Texture load failed");
-	}
-    
+        default:
+            std::cerr << "[FATAL] [TEXTURE \"" << path << "\"] Unknown OpenGL => LodePNG type conversion" << std::endl;
+            throw std::runtime_error("Unsupported texture format");
+    }
+
+    // Load the PNG
+    std::vector<unsigned char> storage;
+    unsigned w, h;
+    unsigned error = lodepng::decode(storage, w, h, path, colorFormat, colorDepth);
+    if(error)
+    {
+        std::cerr << "[FATAL] [TEXTURE \"" << path << "\"] Failed to load file with error: " << error << std::endl;
+        throw std::runtime_error("Texture load failed");
+    }
+
     // Upload the texture data
     this->width = w;
     this->height = h;
     this->format = format;
-	glTexImage2D( GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, (colorDepth == 16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_BYTE), storage.data() );
+    glTexImage2D( GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, (colorDepth == 16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_BYTE), storage.data() );
 
-	// Default behavior is to clamp
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // Default behavior is to clamp
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	// Generate mipmaps if supported
-	std::cout << "[INFO] [TEXTURE \"" << path << "\"] Loaded (" << width << "," << height << ") Texture, ";
-	if(mipmapped && isPowerOfTwo(width) && isPowerOfTwo(height))
-	{
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-		glGenerateMipmap(GL_TEXTURE_2D);
+    // Generate mipmaps if supported
+    std::cout << "[INFO] [TEXTURE \"" << path << "\"] Loaded (" << width << "," << height << ") Texture, ";
+    if(mipmapped && isPowerOfTwo(width) && isPowerOfTwo(height))
+    {
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+        glGenerateMipmap(GL_TEXTURE_2D);
 
-		// use anisotropic filtering
-		GLfloat fLargest;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
-		std::cout << "Filtering = " << fLargest << "xAF" << std::endl;
-	}
-	else
-	{
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		std::cout << "Filtering = Bilinear" << std::endl;
-	}
-
+        // use anisotropic filtering
+        GLfloat fLargest;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
+        std::cout << "Filtering = " << fLargest << "xAF" << std::endl;
+    }
+    else
+    {
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        std::cout << "Filtering = Bilinear" << std::endl;
+    }
 }
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &handle);
+    glDeleteTextures(1, &handle);
     std::cout << "[INFO] [TEXTURE " << handle << "] Destroyed" << std::endl;
 }
 
-void Texture::Bind(GLenum target)
+void Texture::Bind(GLenum target, GLenum unit)
 {
-	glBindTexture(target, handle);
-}
-
-void Texture::Resize(size_t width, size_t height, size_t levels)
-{
-	this->width = width;
-	this->height = height;
-
-	glBindTexture(GL_TEXTURE_2D, handle);
-	glTexStorage2D(GL_TEXTURE_2D, levels, format, width, height);
+    glActiveTexture(unit);
+    glBindTexture(target, handle);
 }
 
 void Texture::SetWrapMode(GLint mode)
 {
-	glBindTexture(GL_TEXTURE_2D, handle);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+    glBindTexture(GL_TEXTURE_2D, handle);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
 }
 
 GLuint Texture::GetHandle() const
 {
-	return handle;
+    return handle;
 }
 
 size_t Texture::GetWidth()  const
 {
-	return width;
+    return width;
 }
 
 size_t Texture::GetHeight() const
 {
-	return height;
+    return height;
 }
 
 GLenum Texture::GetFormat() const
 {
-	return format;
+    return format;
 }
 

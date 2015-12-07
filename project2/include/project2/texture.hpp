@@ -5,26 +5,26 @@
 
 class Texture
 {
-	GLuint handle;
+    GLuint handle;
 
-	size_t width;
-	size_t height;
-	GLint  format;
+    size_t width;
+    size_t height;
+    size_t levels;
+    GLint  format;
 
 public:
-	Texture(size_t width, size_t height, size_t levels = 1, GLenum format = GL_RGBA8);
-	Texture(const std::string& path, GLint format, bool mipmapped = true);
-	~Texture();
+    Texture(size_t width, size_t height, size_t levels = 1, GLenum format = GL_RGBA8);
+    Texture(const std::string& path, GLint format, bool mipmapped = true);
+    ~Texture();
 
-	void Bind(GLenum target);
-	void Resize(size_t width, size_t height, size_t levels);
+    void Bind(GLenum target, GLenum unit);
 
-	void SetWrapMode(GLint mode);
+    void SetWrapMode(GLint mode);
 
-	GLuint GetHandle() const;
-	size_t GetWidth()  const;
-	size_t GetHeight() const;
-	GLenum GetFormat() const;
+    GLuint GetHandle() const;
+    size_t GetWidth()  const;
+    size_t GetHeight() const;
+    GLenum GetFormat() const;
 };
 
 #endif

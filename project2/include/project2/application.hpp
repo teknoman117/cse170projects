@@ -22,6 +22,10 @@ class Application
     GLuint          vao;
     GLuint          buf;
     GLuint          fbo;
+
+    GLuint          queries[2];
+    GLuint          frontBuffer;
+    GLuint          backBuffer;
     
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;

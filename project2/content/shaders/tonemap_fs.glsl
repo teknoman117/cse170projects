@@ -5,7 +5,7 @@
 
 #version 410
 
-uniform sampler2D inputTexture;
+uniform sampler2D renderHDR;
 uniform float     correctionFactor;
 
 smooth in vec2 textureCoordinate;
@@ -26,7 +26,7 @@ vec3 Uncharted2Tonemap(vec3 x)
 void main()
 {
 	// Tonemap
-	vec4 colorHDR = texture(inputTexture, textureCoordinate);
+	vec4 colorHDR = textureLod(renderHDR, textureCoordinate, 10);
 	vec3 colorTonemapped = Uncharted2Tonemap(colorHDR.rgb);
 
 	// Gamma correct

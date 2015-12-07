@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8)
 project (Project2)
 
 file(GLOB Sources
-	"src/*.cpp"
+    "src/*.cpp"
     "src/objects/*.cpp"
     
     "include/project2/*.hpp"
@@ -15,8 +15,8 @@ include_directories("include")
 # Are we compiling on Window?
 #IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-	# Project2 Executable
-#	add_executable(Project2 ${Sources} "icon/Project2Icon.rc" )
+    # Project2 Executable
+#   add_executable(Project2 ${Sources} "icon/Project2Icon.rc" )
 
     # Windows should consume headers bundles with source
 #    include_directories("includes/SDL")
@@ -28,21 +28,20 @@ include_directories("include")
 #    target_link_libraries(Project2 "../libs/windows/SDL/SDL2")
 #    target_link_libraries(Project2 "opengl32.lib")
 
-	#enable Multiprocessor build
-#	SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP" )
-	
-	#copy game and dlls
-#	file(COPY ${PROJECT_SOURCE_DIR}/game/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-#	file(COPY ${PROJECT_SOURCE_DIR}/libs/windows/_alldlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-#	file(COPY ${PROJECT_SOURCE_DIR}/libs/windows/_alldlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+    #enable Multiprocessor build
+#   SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP" )
+    
+    #copy game and dlls
+#   file(COPY ${PROJECT_SOURCE_DIR}/game/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+#   file(COPY ${PROJECT_SOURCE_DIR}/libs/windows/_alldlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+#   file(COPY ${PROJECT_SOURCE_DIR}/libs/windows/_alldlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 
-	
+    
 #ENDIF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # Are we compiling on Mac OS X?
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Make sure Xcode uses Clang set for libc++ and c++ version 2011
-    #set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.8" CACHE STRING "Deployment target for OSX" FORCE)
@@ -53,25 +52,24 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Setup the names for things
     set( EXE_NAME "Project2")
     set( MACOSX_BUNDLE_BUNDLE_VERSION 1 )
-    #set( MACOSX_BUNDLE_ICON_FILE "destructo.icns" )
     set( MACOSX_BUNDLE_GUI_IDENTIFIER "net.teknoman117.cse170.project2" )
 
     # Find libraries
     find_library(OPENGL_FRAMEWORK     NAMES OpenGL     PATHS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks)
     find_library(SDL2_FRAMEWORK       NAMES SDL2       PATHS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks)
 
-	# Copy the resources into the app bundle
-	file(GLOB MACOSX_RESOURCES ${PROJECT_SOURCE_DIR}/content )
-	set_source_files_properties(${MACOSX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    # Copy the resources into the app bundle
+    file(GLOB MACOSX_RESOURCES ${PROJECT_SOURCE_DIR}/content )
+    set_source_files_properties(${MACOSX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-	# Copy the frameworks into the app bundle
-	file(GLOB MACOSX_FRAMEWORKS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks/* )
-	set(MACOSX_FRAMEWORKS ${SDL2_FRAMEWORK})
-	set_source_files_properties(${MACOSX_FRAMEWORKS} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+    # Copy the frameworks into the app bundle
+    file(GLOB MACOSX_FRAMEWORKS ${PROJECT_SOURCE_DIR}/dependencies/osx/frameworks/* )
+    set(MACOSX_FRAMEWORKS ${SDL2_FRAMEWORK})
+    set_source_files_properties(${MACOSX_FRAMEWORKS} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 
-	add_executable(Project2 MACOSX_BUNDLE ${Sources} src/apple-compat.mm ${MACOSX_RESOURCES} ${MACOSX_FRAMEWORKS})
+    add_executable(Project2 MACOSX_BUNDLE ${Sources} src/apple-compat.mm ${MACOSX_RESOURCES} ${MACOSX_FRAMEWORKS})
 
-	set_target_properties(Project2 PROPERTIES XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@loader_path @loader_path/../Frameworks")
+    set_target_properties(Project2 PROPERTIES XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@loader_path @loader_path/../Frameworks")
     set_target_properties(Project2 PROPERTIES XCODE_ATTRIBUTE_COPY_PHASE_STRIP "No")
 
     # Link the frameworks to destructo
