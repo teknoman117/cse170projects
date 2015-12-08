@@ -1,17 +1,17 @@
 #include <project2/objects/glfullscreenquad.hpp>
 
-using glm::vec2;
+using glm::vec3;
 
 GLFullscreenQuad::GLFullscreenQuad()
 	: GLObject(1)
 {
 	// Coordinates for a fullscreen quad in TRIANGLE_STRIPS
-	const vec2 vertices[]
+	const vec3 vertices[]
 	{
-		vec2(-1.f,  1.f),
-		vec2(-1.f, -1.f),
-		vec2( 1.f,  1.f),
-		vec2( 1.f, -1.f),
+		vec3(-1.f,  1.f, 0.f),
+		vec3(-1.f, -1.f, 0.f),
+		vec3( 1.f,  1.f, 0.f),
+		vec3( 1.f, -1.f, 0.f),
 	};
 
 	glBindVertexArray(vertexArrayObject);
@@ -19,7 +19,7 @@ GLFullscreenQuad::GLFullscreenQuad()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
 
 	glBindVertexArray(0);
 }

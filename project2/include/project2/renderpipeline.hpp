@@ -11,6 +11,8 @@ class RenderPipeline
     GLuint width;
     GLuint height;
 
+    std::shared_ptr<Shader>  lighting_vs;
+
     std::shared_ptr<Program> tonemap;
     std::shared_ptr<Program> downsample4x;
     std::shared_ptr<Program> downsample4x_reduce;
@@ -37,9 +39,26 @@ public:
     void BeginLightPass();
     void EndLightPass();
 
+    // Point lights, spot lights, etc.
+    void BeginLocalLightMask();
+    void EndLocalLightMask();
+    void BeginLocalLightRender();
+    void EndLocalLightRender();
+
+    // Directional lights
+    void BeginGlobalLightRender();
+    void EndGlobalLightRender();
+
     void PerformFinalRender();
 
     void ResizeRenderPipeline(GLuint width, GLuint height);
+
+    std::shared_ptr<Program> CompileLightingProgram(const std::string& path)
+    {
+        std::shared_ptr<Program> p = std::make_shared<Program>();
+        p->Attach(path, GL_FRAGMENT_SHADER).Attach(lighting_vs).Link();
+        return p;
+    }
 };
 
 #endif

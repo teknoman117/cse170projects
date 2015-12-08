@@ -4,6 +4,8 @@
 #include <cmath>
 #include <tuple>
 
+using glm::mat4;
+
 namespace
 {
     GLuint numberOfMipLevels(GLuint w, GLuint h)
@@ -35,11 +37,13 @@ namespace
 
 RenderPipeline::RenderPipeline()
 {
+    // Lighting shader
+    lighting_vs = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/lighting_vs.glsl", GL_VERTEX_SHADER);
+
     // Tonemapping shader
-    auto tonemap_vs = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/tonemap_vs.glsl", GL_VERTEX_SHADER);
     auto tonemap_fs = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/tonemap_fs.glsl", GL_FRAGMENT_SHADER);
     tonemap = std::make_shared<Program>();
-    tonemap->Attach(tonemap_vs).Attach(tonemap_fs).Link();
+    tonemap->Attach(lighting_vs).Attach(tonemap_fs).Link();
 
     // Downsampling shaders
     auto downsample4x_cs = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/downsample4x.glsl", GL_COMPUTE_SHADER);
@@ -96,10 +100,36 @@ void RenderPipeline::BeginLightPass()
 void RenderPipeline::EndLightPass()
 {
     glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
+}
 
-    // Perform final blend of accumulation buffer and diffuse buffer
+void RenderPipeline::BeginLocalLightMask()
+{
 
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+}
+
+void RenderPipeline::EndLocalLightMask()
+{
+
+}
+
+void RenderPipeline::BeginLocalLightRender()
+{
+
+}
+
+void RenderPipeline::EndLocalLightRender()
+{
+
+}
+
+void RenderPipeline::BeginGlobalLightRender()
+{
+
+}
+
+void RenderPipeline::EndGlobalLightRender()
+{
+
 }
 
 void RenderPipeline::PerformFinalRender()
@@ -107,14 +137,14 @@ void RenderPipeline::PerformFinalRender()
     // --------------------- SCENE LUMINOSITY --------------------------
     // downsample image until we can do parallel reduction
     downsample4x->Bind();
-    gBufferDiffuseSpecular->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
+    gBufferLightAccumulation->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
     glUniform1i(downsample4x->GetUniform("sourceImage"), 0);
 
     GLuint currentLevel = 0;
     while( float(width>height ? width : height) / float(1<<currentLevel) > 256 )
     {
         glUniform1i(downsample4x->GetUniform("sourceLevel"), currentLevel);
-        glBindImageTexture(1, gBufferDiffuseSpecular->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+        glBindImageTexture(1, gBufferLightAccumulation->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 
         // compute dispatch size
         GLuint x = ceilf(float(width / (1<<currentLevel)) / 128.f);
@@ -137,7 +167,7 @@ void RenderPipeline::PerformFinalRender()
 
     // ---------------- BLOOM ----------------------------
 
-    
+
 
     // ---------------- TONE MAPPING, GAMMA CORRECTION -------------------------
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -147,10 +177,14 @@ void RenderPipeline::PerformFinalRender()
     sceneLuminosity->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
 
     const float gammaCorrectionFactor = 1.f/ 2.2f;
+    const mat4  nullTransform;
+    
+    glUniformMatrix4fv(tonemap->GetUniform("MVP"), 1, GL_FALSE, glm::value_ptr(nullTransform));
+
     glUniform1f(tonemap->GetUniform("correctionFactor"), gammaCorrectionFactor);
     glUniform1i(tonemap->GetUniform("renderHDR"), 0);
     glUniform1i(tonemap->GetUniform("luminosity"), 1);
-
+    
     fullscreenQuad.Draw();
 }
 
@@ -162,10 +196,10 @@ void RenderPipeline::ResizeRenderPipeline(GLuint width, GLuint height)
     // Reallocate framebuffer storage
     GLuint gBufferMipLevels = numberOfMipLevels(width, height);
 
-    gBufferDiffuseSpecular   = std::make_shared<Texture>(width, height, gBufferMipLevels, GL_RGBA16F);
+    gBufferDiffuseSpecular   = std::make_shared<Texture>(width, height, 1,                GL_RGBA16F);
     gBufferNormals           = std::make_shared<Texture>(width, height, 1,                GL_RGB16F);
     gBufferPosition          = std::make_shared<Texture>(width, height, 1,                GL_RGB16F);
-    gBufferLightAccumulation = std::make_shared<Texture>(width, height, 1,                GL_RGB16F);
+    gBufferLightAccumulation = std::make_shared<Texture>(width, height, gBufferMipLevels, GL_RGBA16F);
     gBufferDepthStencil      = std::make_shared<Texture>(width, height, 1,                GL_DEPTH24_STENCIL8);
 
     // Reallocate luminosity texture

@@ -9,8 +9,7 @@ uniform sampler2D renderHDR;
 uniform sampler2D luminosity;
 uniform float     correctionFactor;
 
-smooth in vec2 textureCoordinate;
-out vec4 fragmentColor;
+layout (location = 0) out vec4 fragmentColor;
 
 vec3 Uncharted2Tonemap(vec3 x)
 {
@@ -30,7 +29,7 @@ void main()
 	vec4 luminosityHDR = texture(luminosity, vec2(0.5,0.5));
 
 	// Tonemap
-	vec4 colorHDR = texture(renderHDR, textureCoordinate);
+	vec4 colorHDR = texelFetch(renderHDR, ivec2(gl_FragCoord.xy), 0);
 	vec3 colorTonemapped = Uncharted2Tonemap(colorHDR.rgb);
 
 	// Gamma correct

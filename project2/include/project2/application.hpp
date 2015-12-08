@@ -10,6 +10,9 @@
 #include <project2/texture.hpp>
 #include <project2/renderpipeline.hpp>
 
+#include <project2/objects/glfullscreenquad.hpp>
+#include <project2/objects/glsphere.hpp>
+
 class Application
 {
     SDL_Window     *window;
@@ -19,9 +22,6 @@ class Application
     GLint           height;
     float           aspect;
 
-    GLuint          vao;
-    GLuint          buf;
-
     GLuint          queries[2];
     GLuint          frontBuffer;
     GLuint          backBuffer;
@@ -29,7 +29,10 @@ class Application
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;
 
-    RenderPipeline  renderer;
+    RenderPipeline    renderer;
+    GLFullscreenQuad  directionalLight;
+
+    std::unique_ptr<GLSphere> testSphere;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context);
