@@ -13,6 +13,8 @@
 #include <project2/objects/glfullscreenquad.hpp>
 #include <project2/objects/glsphere.hpp>
 
+#include <project2/terrain.hpp>
+
 class Application
 {
     SDL_Window     *window;
@@ -22,9 +24,10 @@ class Application
     GLint           height;
     float           aspect;
 
-    GLuint          queries[2];
-    GLuint          frontBuffer;
-    GLuint          backBuffer;
+    glm::vec2       viewRotation;
+    glm::vec4       viewPosition;
+
+    bool            wireframe;
     
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;
@@ -33,14 +36,15 @@ class Application
     GLFullscreenQuad  directionalLight;
 
     std::unique_ptr<GLSphere> testSphere;
+    std::unique_ptr<GLTerrain> testTerrain;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context);
     ~Application();
     
-    void OnDisplay(float frameTime, float frameDelta);
-    void OnResize(GLint width, GLint height);
-    void OnEvent(SDL_Event event);
+    bool OnDisplay(float frameTime, float frameDelta);
+    bool OnResize(GLint width, GLint height);
+    bool OnEvent(SDL_Event event);
 };
 
 #endif

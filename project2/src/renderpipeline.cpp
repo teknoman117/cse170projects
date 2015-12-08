@@ -6,6 +6,8 @@
 
 using glm::mat4;
 
+//#define __DEBUG__
+
 namespace
 {
     GLuint numberOfMipLevels(GLuint w, GLuint h)
@@ -66,6 +68,8 @@ RenderPipeline::~RenderPipeline()
 
 void RenderPipeline::BeginGBufferPass()
 {
+    PushTimer("GBuffer");
+
     glBindFramebuffer(GL_FRAMEBUFFER, gBufferFramebuffer);
 
     glDepthMask(GL_TRUE);
@@ -76,11 +80,13 @@ void RenderPipeline::BeginGBufferPass()
 
 void RenderPipeline::EndGBufferPass()
 {
-
+    PopTimer();
 }
 
 void RenderPipeline::BeginLightPass()
 {
+    PushTimer("Light Pass");
+
     glBindFramebuffer(GL_FRAMEBUFFER, LightFramebuffer);
 
     glDepthMask(GL_FALSE);
@@ -100,6 +106,7 @@ void RenderPipeline::BeginLightPass()
 void RenderPipeline::EndLightPass()
 {
     glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
+    PopTimer();
 }
 
 void RenderPipeline::BeginLocalLightMask()
@@ -132,8 +139,14 @@ void RenderPipeline::EndGlobalLightRender()
 
 }
 
-void RenderPipeline::PerformFinalRender()
+void RenderPipeline::BeginRendering()
 {
+    PushTimer("Scene Render");
+}
+
+void RenderPipeline::EndRendering()
+{
+    PushTimer("Post Processing");
     // --------------------- SCENE LUMINOSITY --------------------------
     // downsample image until we can do parallel reduction
     downsample4x->Bind();
@@ -168,8 +181,10 @@ void RenderPipeline::PerformFinalRender()
     // ---------------- BLOOM ----------------------------
 
 
+    PopTimer();
 
     // ---------------- TONE MAPPING, GAMMA CORRECTION -------------------------
+    PushTimer("Tonemapping + Gamma");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -186,6 +201,22 @@ void RenderPipeline::PerformFinalRender()
     glUniform1i(tonemap->GetUniform("luminosity"), 1);
     
     fullscreenQuad.Draw();
+    PopTimer();
+    PopTimer();
+}
+
+void RenderPipeline::PushTimer(const std::string& name)
+{
+#ifdef __DEBUG__
+    timerStack.PushTimer(name);
+#endif
+}
+
+void RenderPipeline::PopTimer()
+{
+#ifdef __DEBUG__
+    timerStack.PopTimer();
+#endif
 }
 
 void RenderPipeline::ResizeRenderPipeline(GLuint width, GLuint height)

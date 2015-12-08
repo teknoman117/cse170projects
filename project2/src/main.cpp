@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
         std::cerr << "[FATAL] SDL: Unable to initialize" << std::endl;
         return 1;
     }
+    SDL_SetRelativeMouseMode(SDL_TRUE);
     
     // Setup OpenGL context settings
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -98,18 +99,23 @@ int main(int argc, char *argv[])
                 {
                     int w,h;
                     SDL_GetWindowSize(mainwindow,&w,&h);
-                    app->OnResize(w, h);
+                    running = app->OnResize(w, h);
                 }
             }
             
             else
             {
-                app->OnEvent(event);
+                running = app->OnEvent(event);
             }
+        }
+
+        if(!running)
+        {
+            break;
         }
         
         // Render the simulation
-        app->OnDisplay(simulationTime.count(), simulationDelta.count());
+        running = app->OnDisplay(simulationTime.count(), simulationDelta.count());
         simulationPrevious = simulationCurrent;
         SDL_GL_SwapWindow(mainwindow);
     }

@@ -4,6 +4,8 @@
 #include <project2/common.hpp>
 #include <project2/program.hpp>
 #include <project2/texture.hpp>
+#include <project2/timerstack.hpp>
+
 #include <project2/objects/glfullscreenquad.hpp>
 
 class RenderPipeline
@@ -29,6 +31,7 @@ class RenderPipeline
     GLuint LightFramebuffer;
 
     GLFullscreenQuad fullscreenQuad;
+    GLTimerStack     timerStack;
 
 public:
     RenderPipeline();
@@ -49,7 +52,11 @@ public:
     void BeginGlobalLightRender();
     void EndGlobalLightRender();
 
-    void PerformFinalRender();
+    void BeginRendering();
+    void EndRendering();
+
+    void PushTimer(const std::string& name);
+    void PopTimer();
 
     void ResizeRenderPipeline(GLuint width, GLuint height);
 
