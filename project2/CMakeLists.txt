@@ -105,6 +105,7 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     # A graphics card and driver supporting at least OpenGL 2.0, recommended 3.3+
     #
     # Graphics cards known to work
+    #     Nvidia GeForce GTX 980 (4.5.0 NVIDIA 352.63)
     #
 
     # Project2 Executable
@@ -121,6 +122,12 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     include_directories(${OPENGL_INCLUDE_DIR})
     find_library(OPENGL_LIBRARY NAMES GL)
     target_link_libraries(Project2 ${OPENGL_LIBRARY})
+
+    # Discover the include path and library for the GLU Library
+    find_path(GLU_INCLUDE_DIR NAMES GL/glu.h)
+    include_directories(${GLU_INCLUDE_DIR})
+    find_library(GLU_LIBRARY NAMES GLU)
+    target_link_libraries(Project2 ${GLU_LIBRARY})
 
     # Discover the include path and library for the OpenGL Extension Wrangler
     find_path(GLEW_INCLUDE_DIR NAMES GL/glew.h)

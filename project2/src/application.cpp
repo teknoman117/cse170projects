@@ -62,6 +62,19 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
 
     // allocate pipeline buffers
     OnResize(width, height);
+
+    ChunkedTerrain t(GetApplicationResourcesDirectory() + "/content/terrain.raw", 
+                     1024, 
+                     1024, 
+                     glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
+                     glm::dvec2(glm::pi<double>()*(-121.3697/180.0), glm::pi<double>()*(40.5848/180.0)));
+
+    glm::vec3 p = t.GetLocationOfCoordinate(glm::dvec2(
+        glm::pi<double>()*(-121.3697/180.0), 
+        glm::pi<double>()*(40.5848/180.0))
+    );
+    std::cout << p.x << " " << p.y << " " << p.z << std::endl;
+    t.GetElevationAt(p);
 }
 
 Application::~Application()
@@ -85,7 +98,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
         moveDirection.z = 1.f;
 
     if(state[SDL_SCANCODE_A])
-        moveDirection.x = -1.3858f;
+        moveDirection.x = -1.0f;
     else if(state[SDL_SCANCODE_D])
         moveDirection.x = 1.f;
 
@@ -110,7 +123,6 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
         
         renderer.BeginGBufferPass();
         {
-            glEnable(GL_CULL_FACE);
             glm::mat4 MV = V * glm::translate(glm::vec3(0.f,0.f,0.f));
 
             programs["diffuse"]->Bind();

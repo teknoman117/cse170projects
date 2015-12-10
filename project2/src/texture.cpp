@@ -138,10 +138,15 @@ Texture::~Texture()
     std::cout << "[INFO] [TEXTURE " << handle << "] Destroyed" << std::endl;
 }
 
-void Texture::Bind(GLenum target, GLenum unit)
+void Texture::Bind()
+{
+    glBindTexture(GL_TEXTURE_2D, handle);
+}
+
+void Texture::Bind(GLenum unit)
 {
     glActiveTexture(unit);
-    glBindTexture(target, handle);
+    Bind();
 }
 
 void Texture::SetWrapMode(GLint mode)

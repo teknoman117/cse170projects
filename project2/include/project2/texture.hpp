@@ -17,7 +17,8 @@ public:
     Texture(const std::string& path, GLint format, bool mipmapped = true);
     ~Texture();
 
-    void Bind(GLenum target, GLenum unit);
+    void Bind();
+    void Bind(GLenum unit);
 
     void SetWrapMode(GLint mode);
 

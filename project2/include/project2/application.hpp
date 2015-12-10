@@ -14,6 +14,7 @@
 #include <project2/objects/glsphere.hpp>
 
 #include <project2/terrain.hpp>
+#include <project2/chunkedterrain.hpp>
 
 class Application
 {

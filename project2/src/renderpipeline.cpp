@@ -75,6 +75,7 @@ void RenderPipeline::BeginGBufferPass()
     glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     glDisable(GL_BLEND);
 }
 
@@ -91,6 +92,7 @@ void RenderPipeline::BeginLightPass()
 
     glDepthMask(GL_FALSE);
     glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_ONE,GL_ONE);
@@ -98,9 +100,9 @@ void RenderPipeline::BeginLightPass()
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Bind gbuffer into texture units
-    gBufferDiffuseSpecular->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
-    gBufferNormals->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
-    gBufferPosition->Bind(GL_TEXTURE_2D, GL_TEXTURE2);
+    gBufferDiffuseSpecular->Bind(GL_TEXTURE0);
+    gBufferNormals->Bind(GL_TEXTURE1);
+    gBufferPosition->Bind(GL_TEXTURE2);
 }
 
 void RenderPipeline::EndLightPass()
@@ -141,67 +143,79 @@ void RenderPipeline::EndGlobalLightRender()
 
 void RenderPipeline::BeginRendering()
 {
+    GLenum previousError = glGetError();
+    if(previousError != GL_NO_ERROR)
+    {
+        auto message = gluErrorString(previousError);
+        std::cerr << "[WARNING] [RENDERER] GL error in BeginRendering(): " << message << std::endl;
+    }
+
     PushTimer("Scene Render");
 }
 
 void RenderPipeline::EndRendering()
 {
     PushTimer("Post Processing");
-    // --------------------- SCENE LUMINOSITY --------------------------
-    // downsample image until we can do parallel reduction
-    downsample4x->Bind();
-    gBufferLightAccumulation->Bind(GL_TEXTURE_2D, GL_TEXTURE0);
-    glUniform1i(downsample4x->GetUniform("sourceImage"), 0);
-
-    GLuint currentLevel = 0;
-    while( float(width>height ? width : height) / float(1<<currentLevel) > 256 )
     {
-        glUniform1i(downsample4x->GetUniform("sourceLevel"), currentLevel);
-        glBindImageTexture(1, gBufferLightAccumulation->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+        // --------------------- SCENE LUMINOSITY --------------------------
+        // downsample image until we can do parallel reduction
+        downsample4x->Bind();
+        gBufferLightAccumulation->Bind(GL_TEXTURE0);
+        glUniform1i(downsample4x->GetUniform("sourceImage"), 0);
 
-        // compute dispatch size
-        GLuint x = ceilf(float(width / (1<<currentLevel)) / 128.f);
-        GLuint y = ceilf(float(height / (1<<currentLevel)) / 128.f);
+        GLuint currentLevel = 0;
+        while( float(width>height ? width : height) / float(1<<currentLevel) > 256 )
+        {
+            glUniform1i(downsample4x->GetUniform("sourceLevel"), currentLevel);
+            glBindImageTexture(1, gBufferLightAccumulation->GetHandle(), currentLevel+2, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 
-        glDispatchCompute(x, y, 1);
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            // compute dispatch size
+            GLuint x = ceilf(float(width / (1<<currentLevel)) / 128.f);
+            GLuint y = ceilf(float(height / (1<<currentLevel)) / 128.f);
 
-        currentLevel+=2;
+            glDispatchCompute(x, y, 1);
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+            currentLevel+=2;
+        }
+
+        // parallel reduction
+        downsample4x_reduce->Bind();
+        glUniform1i(downsample4x_reduce->GetUniform("sourceImage"), 0);
+        glUniform1i(downsample4x_reduce->GetUniform("sourceLevel"), currentLevel);
+        glBindImageTexture(1, sceneLuminosity->GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+        glDispatchCompute(sceneLuminosity->GetWidth(), sceneLuminosity->GetHeight(), 1);
+
+        // need to figure out how to control running average from a shader perspective
+
+        // ---------------- BLOOM ----------------------------
+
     }
-
-    // parallel reduction
-    downsample4x_reduce->Bind();
-    glUniform1i(downsample4x_reduce->GetUniform("sourceImage"), 0);
-    glUniform1i(downsample4x_reduce->GetUniform("sourceLevel"), currentLevel);
-    glBindImageTexture(1, sceneLuminosity->GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
-    glDispatchCompute(sceneLuminosity->GetWidth(), sceneLuminosity->GetHeight(), 1);
-
-    // need to figure out how to control running average from a shader perspective
-
-    // ---------------- BLOOM ----------------------------
-
-
     PopTimer();
 
     // ---------------- TONE MAPPING, GAMMA CORRECTION -------------------------
     PushTimer("Tonemapping + Gamma");
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    tonemap->Bind();
-    sceneLuminosity->Bind(GL_TEXTURE_2D, GL_TEXTURE1);
+        tonemap->Bind();
+        sceneLuminosity->Bind(GL_TEXTURE1);
 
-    const float gammaCorrectionFactor = 1.f/ 2.2f;
-    const mat4  nullTransform;
-    
-    glUniformMatrix4fv(tonemap->GetUniform("MVP"), 1, GL_FALSE, glm::value_ptr(nullTransform));
+        const float gammaCorrectionFactor = 1.f/ 2.2f;
+        const mat4  nullTransform;
+        
+        glUniformMatrix4fv(tonemap->GetUniform("MVP"), 1, GL_FALSE, glm::value_ptr(nullTransform));
 
-    glUniform1f(tonemap->GetUniform("correctionFactor"), gammaCorrectionFactor);
-    glUniform1i(tonemap->GetUniform("renderHDR"), 0);
-    glUniform1i(tonemap->GetUniform("luminosity"), 1);
-    
-    fullscreenQuad.Draw();
+        glUniform1f(tonemap->GetUniform("correctionFactor"), gammaCorrectionFactor);
+        glUniform1i(tonemap->GetUniform("renderHDR"), 0);
+        glUniform1i(tonemap->GetUniform("luminosity"), 1);
+        
+        fullscreenQuad.Draw();
+    }   
     PopTimer();
+    
+    // Whole scene timer
     PopTimer();
 }
 
