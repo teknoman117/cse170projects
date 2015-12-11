@@ -6,7 +6,7 @@
 
 using glm::mat4;
 
-//#define __DEBUG__
+#define __DEBUG__
 
 namespace
 {
@@ -72,10 +72,12 @@ void RenderPipeline::BeginGBufferPass()
 
     glBindFramebuffer(GL_FRAMEBUFFER, gBufferFramebuffer);
 
+    glPrimitiveRestartIndex((GLuint) -1);
     glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_PRIMITIVE_RESTART);
     glDisable(GL_BLEND);
 }
 

@@ -3,6 +3,7 @@
 
 #include <project2/objects/globject.hpp>
 #include <project2/program.hpp>
+#include <project2/persistentbuffer.hpp>
 
 #include <vector>
 
@@ -28,25 +29,34 @@ class ChunkedTerrain : public GLObject
         // axis aligned bounding box
         glm::vec3 a;
         glm::vec3 b;
+
+        // Build the chunk
+        void Build(const std::vector<Vertex>& data, size_t dataWidth, size_t dataHeight, size_t x, size_t y);
     };
 
-    size_t width;
-    size_t height;
-    size_t elementsPerRow;
+    size_t dataWidth;
+    size_t dataHeight;
 
     size_t chunkGridWidth;
     size_t chunkGridHeight;
 
-    std::vector<Chunk> chunks;
+    PersistentBuffer<GLuint> commandBuffer;
 
-    // Corners, boundary normals, midpoint
+    std::vector<Vertex> vertices;
+    std::vector<Chunk>  chunks;
+    std::vector<GLuint> indices;
+
+    // Corners, cardinal directions, boundary normals, midpoint
     glm::dvec3 ne, nw, se, sw;
     glm::dvec3 n,  w,  s,  e;
     glm::dvec3 nn, wn, sn, en;
     glm::dvec3 midpoint;
 
-    // rotate points into projected region
+    // Quaternion describing rotation into flattened plane
     glm::dquat projector;
+
+    // Compute all the projection data from defined input
+    void ComputeBounds(size_t width, size_t height, glm::dvec2 resolution, glm::dvec2 corner);
 
 public:
     /**

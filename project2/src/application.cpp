@@ -14,15 +14,6 @@
 #include <project2/directories.hpp>
 #include <project2/shader.hpp>
 
-namespace
-{
-    struct vertex
-    {
-        glm::vec3 position;
-        glm::vec3 normal;
-    };
-}
-
 Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     : window(_window), context(_context)
 {
@@ -34,12 +25,6 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     std::shared_ptr<Program> diffuse = (programs["diffuse"] = std::make_shared<Program>());
     diffuse->Attach(diffuse_vs).Attach(diffuse_fs).Link();
 
-    // Test triangle shader
-    std::shared_ptr<Shader>  vs1  = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/vs1.glsl", GL_VERTEX_SHADER  );
-    std::shared_ptr<Shader>  fs1  = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/fs1.glsl", GL_FRAGMENT_SHADER);
-    std::shared_ptr<Program> test = (programs["test"] = std::make_shared<Program>());
-    test->Attach(vs1).Attach(fs1).Link();
-
     // Lighting shaders
     programs["directionalLight"] = renderer.CompileLightingProgram(GetApplicationResourcesDirectory() + "/content/shaders/directionallight_fs.glsl");
 
@@ -50,31 +35,29 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     textures["grass_normals"]->SetWrapMode(GL_REPEAT);
 
     // Test objects
-    std::unique_ptr<GLSphere> sphere(new GLSphere(.33f,4));
-    testSphere = std::move(sphere);
+    //std::unique_ptr<GLSphere> sphere(new GLSphere(.33f,4));
+    //testSphere = std::move(sphere);
 
-    std::unique_ptr<GLTerrain> terrain(new GLTerrain(GetApplicationResourcesDirectory() + "/content/terrain.raw", 1024, 1024, glm::vec3(10.f * 0.76f, 1.f, 10.f)));
-    testTerrain = std::move(terrain);
+    std::unique_ptr<ChunkedTerrain> t(
+        new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/terrain.raw", 
+                           1024, 
+                           1024, 
+                           glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
+                           glm::dvec2(glm::pi<double>()*(-121.3697/180.0), glm::pi<double>()*(40.5848/180.0))
+        )
+    );
+    chunkedTerrain = std::move(t);
 
     // Initialize view position
+    glm::vec3 p = chunkedTerrain->GetLocationOfCoordinate(glm::dvec2(
+        glm::pi<double>()*(-121.3697/180.0) + (512.5/10800.0)*(glm::pi<double>()/180.0), 
+        glm::pi<double>()*(40.5848/180.0) - (512.5/10800.0)*(glm::pi<double>()/180.0))
+    );
+    viewPosition = glm::vec4(p.x, 0, p.z, 0);
     viewRotation = glm::vec2(0,glm::pi<float>());
-    viewPosition = glm::vec4((5120 - 2740) * 0.76f, 0, (5120 - 2640), 0);
 
     // allocate pipeline buffers
     OnResize(width, height);
-
-    ChunkedTerrain t(GetApplicationResourcesDirectory() + "/content/terrain.raw", 
-                     1024, 
-                     1024, 
-                     glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
-                     glm::dvec2(glm::pi<double>()*(-121.3697/180.0), glm::pi<double>()*(40.5848/180.0)));
-
-    glm::vec3 p = t.GetLocationOfCoordinate(glm::dvec2(
-        glm::pi<double>()*(-121.3697/180.0), 
-        glm::pi<double>()*(40.5848/180.0))
-    );
-    std::cout << p.x << " " << p.y << " " << p.z << std::endl;
-    t.GetElevationAt(p);
 }
 
 Application::~Application()
@@ -107,7 +90,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
 
     // Update position in the current view direction
     viewPosition += (glm::rotate(viewRotation.y, glm::vec3(0.f,1.f,0.f)) * moveDirection) * frameDelta;
-    float h = testTerrain->sampleHeightAtPoint(glm::vec2(viewPosition.x, viewPosition.z)) + 1.8f;
+    float h = chunkedTerrain->GetElevationAt(glm::vec3(viewPosition.x, 0, viewPosition.z)) + 1.8f;
 
     // Compute OpenGL matrices
     glm::mat4 P = glm::perspective(75.f * glm::pi<float>() / 180.f, aspect, 0.01f, 20000.f);
@@ -134,10 +117,14 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
 
             //testSphere->Draw();
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
-            testTerrain->Draw();
+            glFrontFace(GL_CW);
+            
+            chunkedTerrain->Draw(programs["diffuse"]);
+
+            glFrontFace(GL_CCW);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-            glDisable(GL_CULL_FACE);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
         renderer.EndGBufferPass();
 

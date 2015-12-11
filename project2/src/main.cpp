@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
     // Setup OpenGL context settings
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
     //SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     // Setup window manager frame buffer settings
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     // Setup GLEW
     glewExperimental = GL_TRUE;
     GLenum rev = glewInit();
-    if (GLEW_OK != rev)
+    if (GLEW_OK != rev || !GLEW_ARB_direct_state_access)
     {
         std::cerr << "[FATAL] " << glewGetErrorString(rev) << std::endl;
         

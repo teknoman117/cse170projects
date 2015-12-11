@@ -37,7 +37,8 @@ class Application
     GLFullscreenQuad  directionalLight;
 
     std::unique_ptr<GLSphere> testSphere;
-    std::unique_ptr<GLTerrain> testTerrain;
+    //std::unique_ptr<GLTerrain> testTerrain;
+    std::unique_ptr<ChunkedTerrain> chunkedTerrain;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context);
