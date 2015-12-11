@@ -29,7 +29,7 @@ public:
 
         mapping = static_cast<T *>(glMapNamedBufferRange(buffer, 0, sizeof(T)*elements*3, flags));
         std::cout << "[INFO] [PERSISTENT BUFFER " << buffer 
-                  << "] Created with element count: " << elements 
+                  << "] Created with element count per slice: " << elements 
                   << ", total size = " << (sizeof(T)*elements*3) 
                   << std::endl; 
     }

@@ -4,9 +4,11 @@ project (Project2)
 file(GLOB Sources
     "src/*.cpp"
     "src/objects/*.cpp"
+    "src/geometry/*.cpp"
     
     "include/project2/*.hpp"
     "include/project2/objects/*.hpp"
+    "include/project2/geometry/*.hpp"
 )
 
 # Add universal includes

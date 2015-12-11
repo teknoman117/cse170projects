@@ -6,7 +6,7 @@
 
 using glm::mat4;
 
-#define __DEBUG__
+//#define __DEBUG__
 
 namespace
 {

@@ -5,6 +5,9 @@
 #include <project2/program.hpp>
 #include <project2/persistentbuffer.hpp>
 
+#include <project2/geometry/aabox.hpp>
+#include <project2/geometry/frustum.hpp>
+
 #include <vector>
 
 /**
@@ -25,10 +28,7 @@ class ChunkedTerrain : public GLObject
     struct Chunk
     {
         std::vector<GLuint> indices;
-        
-        // axis aligned bounding box
-        glm::vec3 a;
-        glm::vec3 b;
+        AABox               bounds;
 
         // Build the chunk
         void Build(const std::vector<Vertex>& data, size_t dataWidth, size_t dataHeight, size_t x, size_t y);
@@ -70,7 +70,7 @@ public:
     ChunkedTerrain(const std::string& path, size_t width, size_t height, glm::dvec2 resolution, glm::dvec2 corner);
     virtual ~ChunkedTerrain();
 
-    void      Draw(const std::shared_ptr<Program>& program);
+    void      Draw(const Frustum& cameraFrustum);
 
     glm::vec3 GetLocationOfCoordinate(glm::dvec2 coordinate);
     float     GetElevationAt(glm::vec3 location);

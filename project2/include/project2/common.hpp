@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <map>
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>

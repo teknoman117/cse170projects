@@ -143,8 +143,8 @@ void ChunkedTerrain::Chunk::Build(const std::vector<Vertex>& data, size_t dataWi
 
     // rows*(columns*2 verts + 2 end verts) + (rows-1)*1 degenerate vert + primitiverestart
     indices.reserve(16*(16*2 + 2) + (16-1)*1 + 1);
-    a = vec3(std::numeric_limits<float>::infinity(),std::numeric_limits<float>::infinity(),std::numeric_limits<float>::infinity());
-    b = vec3(-std::numeric_limits<float>::infinity(),-std::numeric_limits<float>::infinity(),-std::numeric_limits<float>::infinity());
+    vec3 a = vec3(std::numeric_limits<float>::infinity(),std::numeric_limits<float>::infinity(),std::numeric_limits<float>::infinity());
+    vec3 b = vec3(-std::numeric_limits<float>::infinity(),-std::numeric_limits<float>::infinity(),-std::numeric_limits<float>::infinity());
 
     // Generate the index buffer
     for(size_t j = 0; j < 16; j++)
@@ -191,6 +191,7 @@ void ChunkedTerrain::Chunk::Build(const std::vector<Vertex>& data, size_t dataWi
     }
 
     indices.push_back((GLuint) -1);
+    bounds.setBox(a,b);
 }
 
 // Compute the projection of the chunk into the xz plane
@@ -332,17 +333,29 @@ glm::vec3 ChunkedTerrain::GetLocationOfCoordinate(glm::dvec2 coordinate)
     return projector*(p-midpoint);
 }
 
-void ChunkedTerrain::Draw(const std::shared_ptr<Program>& program)
+void ChunkedTerrain::Draw(const Frustum& cameraFrustum)
 {
     glBindVertexArray(vertexArrayObject);
 
     // Get the current command buffer
-    GLuint *indexData   = commandBuffer.GetBuffer();
-    GLvoid *indexOffset = commandBuffer.GetBufferOffset();
+    GLuint *indexData    = commandBuffer.GetBuffer();
+    GLvoid *indexOffset  = commandBuffer.GetBufferOffset();
+    GLuint *indexDataPtr = indexData;
 
-    memcpy((void *) indexData, (void *) indices.data(), indices.size()*sizeof(GLuint));
+    // Load chunks which are visible
+    for(auto chunk : chunks)
+    {
+        auto result = cameraFrustum.Compare(chunk.bounds);
+        if(result == Frustum::INSIDE || result == Frustum::INTERSECT)
+        {
+            memcpy((void *) indexDataPtr, (void *)chunk.indices.data(), chunk.indices.size()*sizeof(GLuint));
+            indexDataPtr += chunk.indices.size();
+        }
+    }
     commandBuffer.FlushBuffer();
 
+    //std::cout << "Tiles Visible: " << (indexDataPtr - indexData)/chunks[0].indices.size() << "/" << (chunkGridWidth * chunkGridHeight) << std::endl;
+
     commandBuffer.BindBuffer(GL_ELEMENT_ARRAY_BUFFER);
-    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei) chunkGridWidth*chunkGridHeight*560, GL_UNSIGNED_INT, indexOffset);
+    glDrawElements(GL_TRIANGLE_STRIP, (indexDataPtr - indexData), GL_UNSIGNED_INT, indexOffset);
 }

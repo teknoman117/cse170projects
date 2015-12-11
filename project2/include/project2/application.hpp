@@ -1,10 +1,6 @@
 #ifndef __APPLICATION_HPP__
 #define __APPLICATION_HPP__
 
-#include <map>
-
-#include <glm/glm.hpp>
-
 #include <project2/common.hpp>
 #include <project2/program.hpp>
 #include <project2/texture.hpp>
@@ -13,7 +9,6 @@
 #include <project2/objects/glfullscreenquad.hpp>
 #include <project2/objects/glsphere.hpp>
 
-#include <project2/terrain.hpp>
 #include <project2/chunkedterrain.hpp>
 
 class Application
@@ -37,7 +32,6 @@ class Application
     GLFullscreenQuad  directionalLight;
 
     std::unique_ptr<GLSphere> testSphere;
-    //std::unique_ptr<GLTerrain> testTerrain;
     std::unique_ptr<ChunkedTerrain> chunkedTerrain;
     
 public:

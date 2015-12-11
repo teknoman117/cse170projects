@@ -35,8 +35,8 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     textures["grass_normals"]->SetWrapMode(GL_REPEAT);
 
     // Test objects
-    //std::unique_ptr<GLSphere> sphere(new GLSphere(.33f,4));
-    //testSphere = std::move(sphere);
+    std::unique_ptr<GLSphere> sphere(new GLSphere(.33f,4));
+    testSphere = std::move(sphere);
 
     std::unique_ptr<ChunkedTerrain> t(
         new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/terrain.raw", 
@@ -92,12 +92,21 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     viewPosition += (glm::rotate(viewRotation.y, glm::vec3(0.f,1.f,0.f)) * moveDirection) * frameDelta;
     float h = chunkedTerrain->GetElevationAt(glm::vec3(viewPosition.x, 0, viewPosition.z)) + 1.8f;
 
+    // Compute camera parameters
+    glm::quat r      = glm::angleAxis(viewRotation.y, glm::vec3(0,1,0)) * glm::angleAxis(viewRotation.x, glm::vec3(1,0,0));
+    glm::vec3 eye    = glm::vec3(viewPosition.x, h, viewPosition.z);
+    glm::vec3 center = eye + r*glm::vec3(0,0,-1);
+    glm::vec3 up     = glm::vec3(0,1,0);
+    const float yFov = 75.f * glm::pi<float>() / 180.f;
+
+    // Build frustum for culling the terrain
+    Frustum cameraFrustum;
+    cameraFrustum.SetCameraProperties(100.f * glm::pi<float>() / 180.f, aspect, 0.01f, 20000.f);
+    cameraFrustum.SetCameraOrientation(eye, center, up);
+
     // Compute OpenGL matrices
-    glm::mat4 P = glm::perspective(75.f * glm::pi<float>() / 180.f, aspect, 0.01f, 20000.f);
-    glm::mat4 r = glm::translate(glm::vec3(viewPosition.x, h, viewPosition.z)) * 
-                  glm::rotate(viewRotation.y, glm::vec3(0.f, 1.f, 0.f)) * 
-                  glm::rotate(viewRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 V = glm::inverse(r);
+    glm::mat4 P = glm::perspective(yFov, aspect, 0.01f, 20000.f);
+    glm::mat4 V = glm::lookAt(eye, center, up);
 
     // Start rendering
     renderer.BeginRendering();
@@ -119,7 +128,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
             glFrontFace(GL_CW);
             
-            chunkedTerrain->Draw(programs["diffuse"]);
+            chunkedTerrain->Draw(cameraFrustum);
 
             glFrontFace(GL_CCW);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
