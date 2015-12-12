@@ -4,6 +4,7 @@
 #include <project2/objects/globject.hpp>
 #include <project2/program.hpp>
 #include <project2/persistentbuffer.hpp>
+#include <project2/texture.hpp>
 
 #include <project2/geometry/aabox.hpp>
 #include <project2/geometry/frustum.hpp>
@@ -22,7 +23,6 @@ class ChunkedTerrain : public GLObject
     struct Vertex
     {
         glm::vec3 position;
-        glm::vec3 normal;
     };
 
     struct Chunk
@@ -40,11 +40,11 @@ class ChunkedTerrain : public GLObject
     size_t chunkGridWidth;
     size_t chunkGridHeight;
 
-    PersistentBuffer<GLuint> commandBuffer;
-
-    std::vector<Vertex> vertices;
-    std::vector<Chunk>  chunks;
-    std::vector<GLuint> indices;
+    std::vector<PersistentBuffer<GLuint>> commandBuffers;
+    
+    std::shared_ptr<Texture> heightmap;
+    std::vector<Vertex>      vertices;
+    std::vector<Chunk>       chunks;
 
     // Corners, cardinal directions, boundary normals, midpoint
     glm::dvec3 ne, nw, se, sw;
@@ -70,7 +70,7 @@ public:
     ChunkedTerrain(const std::string& path, size_t width, size_t height, glm::dvec2 resolution, glm::dvec2 corner);
     virtual ~ChunkedTerrain();
 
-    void      Draw(const Frustum& cameraFrustum);
+    void      Draw(const Frustum& cameraFrustum, const std::shared_ptr<Program>& program);
 
     glm::vec3 GetLocationOfCoordinate(glm::dvec2 coordinate);
     float     GetElevationAt(glm::vec3 location);

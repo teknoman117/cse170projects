@@ -142,7 +142,7 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     include_directories(${GLM_INCLUDE_DIR})
 
     # Make a define, only used with Linux.  Also, make sure we use c++11
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__LINUX__")
-    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -Wall")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__LINUX__ -fopenmp")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -Wall -fopenmp")
 
 ENDIF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

@@ -4,10 +4,12 @@
 #include <project2/common.hpp>
 #include <project2/program.hpp>
 #include <project2/texture.hpp>
+#include <project2/cubemap.hpp>
 #include <project2/renderpipeline.hpp>
 
 #include <project2/objects/glfullscreenquad.hpp>
 #include <project2/objects/glsphere.hpp>
+#include <project2/objects/glcube.hpp>
 
 #include <project2/chunkedterrain.hpp>
 
@@ -19,11 +21,13 @@ class Application
     GLint           width;
     GLint           height;
     float           aspect;
+    float           timeOfDay;
 
     glm::vec2       viewRotation;
-    glm::vec4       viewPosition;
+    glm::vec3       viewPosition;
 
     bool            wireframe;
+    bool            flying;
     
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;
@@ -31,8 +35,10 @@ class Application
     RenderPipeline    renderer;
     GLFullscreenQuad  directionalLight;
 
-    std::unique_ptr<GLSphere> testSphere;
+    std::unique_ptr<GLSphere>       testSphere;
     std::unique_ptr<ChunkedTerrain> chunkedTerrain;
+    std::unique_ptr<GLCube>         skybox;
+    std::unique_ptr<Cubemap>        skyboxTexture;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context);

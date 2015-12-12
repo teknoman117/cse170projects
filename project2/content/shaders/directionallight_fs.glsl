@@ -7,6 +7,7 @@ uniform sampler2D gBufferPosition;
 uniform vec3 LightColor;
 uniform vec3 LightIntensity;
 uniform vec3 LightDirection;
+uniform vec3 CameraPosition;
 
 layout (location = 0) out vec4 lightingContribution;
 
@@ -28,14 +29,17 @@ void main ()
     {
         DiffuseColor = LightColor * LightIntensity.y * DiffuseFactor;
 
-        vec3 VertexToEye = normalize(-Position);
-        vec3 LightReflect = normalize(reflect(LightDirection, Normal));
-
-        float SpecularFactor = dot(VertexToEye, LightReflect);
-        if(SpecularFactor > 0.0)
+        if(Position != vec3(1.0/0.0, 1.0/0.0, 1.0/0.0))
         {
-            SpecularFactor = pow(SpecularFactor, DiffSpecular.a);
-            SpecularColor = LightColor * LightIntensity.z * SpecularFactor;
+            vec3 VertexToEye = normalize(CameraPosition-Position);
+            vec3 LightReflect = normalize(reflect(LightDirection, Normal));
+
+            float SpecularFactor = dot(VertexToEye, LightReflect);
+            if(SpecularFactor > 0.0)
+            {
+                SpecularFactor = pow(SpecularFactor, DiffSpecular.a);
+                SpecularColor = LightColor * LightIntensity.z * SpecularFactor;
+            }
         }
     }
 

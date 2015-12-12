@@ -34,8 +34,10 @@ void main()
 
 	// Gamma correct
 	vec3 correction = vec3(correctionFactor, correctionFactor, correctionFactor);
-	vec3 colorGammaCorrected = pow(colorTonemapped, correction);
+	//vec3 colorGammaCorrected = pow(colorTonemapped, correction);
 
+	vec3 colorGammaCorrected = colorTonemapped;
+	
 	// Output to screen
 	fragmentColor = vec4(colorGammaCorrected, 1);
 }

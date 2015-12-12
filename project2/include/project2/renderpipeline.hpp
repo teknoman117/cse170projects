@@ -41,6 +41,8 @@ public:
     void EndGBufferPass();
     void BeginLightPass();
     void EndLightPass();
+    void BeginUnlitPass();
+    void EndUnlitPass();
 
     // Point lights, spot lights, etc.
     void BeginLocalLightMask();

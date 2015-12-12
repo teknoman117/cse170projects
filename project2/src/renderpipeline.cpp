@@ -247,7 +247,7 @@ void RenderPipeline::ResizeRenderPipeline(GLuint width, GLuint height)
     gBufferNormals           = std::make_shared<Texture>(width, height, 1,                GL_RGB16F);
     gBufferPosition          = std::make_shared<Texture>(width, height, 1,                GL_RGB16F);
     gBufferLightAccumulation = std::make_shared<Texture>(width, height, gBufferMipLevels, GL_RGBA16F);
-    gBufferDepthStencil      = std::make_shared<Texture>(width, height, 1,                GL_DEPTH24_STENCIL8);
+    gBufferDepthStencil      = std::make_shared<Texture>(width, height, 1,                GL_DEPTH32F_STENCIL8);
 
     // Reallocate luminosity texture
     auto size = luminositySize(width, height);

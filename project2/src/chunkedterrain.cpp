@@ -5,8 +5,13 @@
 #include <cinttypes>
 #include <iomanip>
 #include <limits>
+#include <chrono>
+#include <omp.h>
 
 using namespace glm;
+using namespace std::chrono;
+
+//#define __PARALLELCULL;
 
 namespace
 {
@@ -55,6 +60,7 @@ ChunkedTerrain::ChunkedTerrain(const std::string& path, size_t rasterWidth, size
         // Read all the data from the terrain heightmap
         raster.resize(actualSize/4);
         inputFile.read((char *) raster.data(), actualSize);
+        heightmap = std::make_shared<Texture>(rasterWidth, rasterHeight, GL_R32F, GL_RED, GL_FLOAT, raster.data());
     }
 
     // Compute the chunk grid properties
@@ -79,29 +85,13 @@ ChunkedTerrain::ChunkedTerrain(const std::string& path, size_t rasterWidth, size
             dvec3 location = mix( mix(nw,ne,x), mix(sw,se,x), y);
 
             verticesRow[i].position = vec3(location.x, rasterRow[i], location.z);
-            verticesRow[i].normal = vec3(0,1,0);
-        }
-    }
-
-    // Compute normals of each element in the grid
-    for(size_t j = 1; j < dataHeight-1; j++)
-    {
-        Vertex *verticesRow = vertices.data() + j*dataWidth;
-
-        for(size_t i = 1; i < dataWidth-1; i++)
-        {
-            vec3 tangent   = normalize(verticesRow[i+1].position - verticesRow[i-1].position);
-            vec3 bitangent = normalize(verticesRow[i-dataWidth].position - verticesRow[i+dataWidth].position);
-
-            verticesRow[i].normal = cross(tangent, bitangent);
         }
     }
 
     // Allocate storage for the opengl resources
     chunks.resize(chunkGridWidth*chunkGridHeight);
-    indices.reserve(chunks.size()*560);
 
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(size_t j = 0; j < chunkGridHeight; j++)
     {
         Chunk *chunkRow = chunks.data() + j*chunkGridWidth;
@@ -109,28 +99,39 @@ ChunkedTerrain::ChunkedTerrain(const std::string& path, size_t rasterWidth, size
         for(size_t i = 0; i < chunkGridWidth; i++)
         {
             chunkRow[i].Build(vertices, dataWidth, dataHeight, i, j);
-            indices.insert(indices.end(), chunkRow[i].indices.begin(), chunkRow[i].indices.end());
         }
     }
 
-    // Upload data to GPU and setup vertex array object
+    // Upload dummy data to GPU and setup vertex array object
     glBindVertexArray(vertexArrayObject);
     {
         glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
+        std::vector<GLushort> dummy;
+        dummy.resize(dataWidth*dataHeight);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLushort)*dummy.size(), dummy.data(), GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *) offsetof(Vertex, position));
-
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *) offsetof(Vertex, normal));
+        glVertexAttribPointer(0, 1, GL_UNSIGNED_SHORT, GL_FALSE, sizeof(GLshort), 0);
     }
     glBindVertexArray(0);
 
-    // Command buffer for the terrain index data
-    commandBuffer.CreateBuffer(chunkGridWidth * chunkGridHeight * chunks[0].indices.size());
+    size_t threadCount = 0;
+    #pragma omp parallel
+    {
+        #pragma omp master
+        threadCount = omp_get_num_threads();
+    }
 
-    std::cout << "[INFO] [TERRAIN \"" << path << "\"] Constructed with " << chunkGridWidth << "," << chunkGridHeight << " chunks" << std::endl;
+    // Command buffer for the terrain index data
+    commandBuffers.resize(threadCount);
+    for(size_t i = 0; i < threadCount; i++)
+    {
+        commandBuffers[i].CreateBuffer((chunkGridWidth * chunkGridHeight * chunks[0].indices.size()) / max<size_t>(1, threadCount/2));
+    }
+
+    std::cout << "[INFO] [TERRAIN \"" << path << "\"] Constructed with " << chunkGridWidth << "," << chunkGridHeight << " chunks, ";
+    std::cout << "Culling using " << threadCount << " threads" << std::endl;
 }
 
 ChunkedTerrain::~ChunkedTerrain()
@@ -158,9 +159,6 @@ void ChunkedTerrain::Chunk::Build(const std::vector<Vertex>& data, size_t dataWi
 
                 indices.push_back((GLuint) idxA);
                 indices.push_back((GLuint) idxB);
-
-                //std::cout << data[idxA].position.x << " " << data[idxA].position.y << " " << data[idxA].position.z << " " << std::endl;
-                //std::cout << data[idxB].position.x << " " << data[idxB].position.y << " " << data[idxB].position.z << " " << std::endl;
 
                 a = min(a, min(data[idxA].position, data[idxB].position));
                 b = max(b, max(data[idxA].position, data[idxB].position));
@@ -333,29 +331,51 @@ glm::vec3 ChunkedTerrain::GetLocationOfCoordinate(glm::dvec2 coordinate)
     return projector*(p-midpoint);
 }
 
-void ChunkedTerrain::Draw(const Frustum& cameraFrustum)
+void ChunkedTerrain::Draw(const Frustum& cameraFrustum, const std::shared_ptr<Program>& program)
 {
     glBindVertexArray(vertexArrayObject);
 
-    // Get the current command buffer
-    GLuint *indexData    = commandBuffer.GetBuffer();
-    GLvoid *indexOffset  = commandBuffer.GetBufferOffset();
-    GLuint *indexDataPtr = indexData;
+    size_t maxindex = (chunkGridWidth * chunkGridHeight * chunks[0].indices.size()) / max<size_t>(1, commandBuffers.size()/2);
+
+    heightmap->Bind(GL_TEXTURE0);
+    glUniform1i(program->GetUniform("heightmap"), 0);
+    glUniform3f(program->GetUniform("nw"), nw.x, nw.y, nw.z);
+    glUniform3f(program->GetUniform("ne"), ne.x, ne.y, ne.z);
+    glUniform3f(program->GetUniform("sw"), sw.x, sw.y, sw.z);
+    glUniform3f(program->GetUniform("se"), se.x, se.y, se.z);
+    glUniform2i(program->GetUniform("dataSize"), dataWidth, dataHeight);
+
+    std::vector<GLuint *> indexData;
+    std::vector<GLvoid *> indexOffset; 
+    std::vector<GLuint *> indexDataPtr;
+
+    for(size_t i = 0; i < commandBuffers.size(); i++)
+    {
+        indexData.push_back(commandBuffers[i].GetBuffer());
+        indexOffset.push_back(commandBuffers[i].GetBufferOffset());
+        indexDataPtr.push_back(indexData[i]);
+    }
 
     // Load chunks which are visible
-    for(auto chunk : chunks)
+    #pragma omp parallel for
+    for(size_t i = 0; i < chunks.size(); i++)
     {
-        auto result = cameraFrustum.Compare(chunk.bounds);
+        Frustum::CullResult result = cameraFrustum.Compare(chunks[i].bounds);
         if(result == Frustum::INSIDE || result == Frustum::INTERSECT)
         {
-            memcpy((void *) indexDataPtr, (void *)chunk.indices.data(), chunk.indices.size()*sizeof(GLuint));
-            indexDataPtr += chunk.indices.size();
+            size_t t = omp_get_thread_num();
+            memcpy((void *) indexDataPtr[t], (void *)chunks[i].indices.data(), chunks[i].indices.size()*sizeof(GLuint));
+            indexDataPtr[t] += chunks[i].indices.size();
         }
     }
-    commandBuffer.FlushBuffer();
 
-    //std::cout << "Tiles Visible: " << (indexDataPtr - indexData)/chunks[0].indices.size() << "/" << (chunkGridWidth * chunkGridHeight) << std::endl;
-
-    commandBuffer.BindBuffer(GL_ELEMENT_ARRAY_BUFFER);
-    glDrawElements(GL_TRIANGLE_STRIP, (indexDataPtr - indexData), GL_UNSIGNED_INT, indexOffset);
+    // Draw results
+    for(size_t i = 0; i < commandBuffers.size(); i++)
+    {
+        commandBuffers[i].FlushBuffer();
+        commandBuffers[i].BindBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        glDrawElements(GL_TRIANGLE_STRIP, (indexDataPtr[i] - indexData[i]), GL_UNSIGNED_INT, indexOffset[i]);
+        std::cout << "thread " << i << " wrote " << (indexDataPtr[i] - indexData[i]) << " indices (max " << maxindex << std::endl;
+    }
+    std::cout << std::endl;
 }
