@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 HoodooNet. All rights reserved.
 //
 
+//#define __BIGTERRAIN
+
 #include <sstream>
 #include <iomanip>
 #include <cmath>
@@ -55,7 +57,8 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     std::unique_ptr<GLCube> cube(new GLCube());
     skybox = std::move(cube);
 
-    /*std::unique_ptr<ChunkedTerrain> t(
+#ifndef __BIGTERRAIN
+    std::unique_ptr<ChunkedTerrain> t(
         new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/terrain_2705_2705.raw", 
                            2705, 
                            2705, 
@@ -69,10 +72,10 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     glm::vec3 p = chunkedTerrain->GetLocationOfCoordinate(glm::dvec2(
         glm::pi<double>()*(-121.4044/180.0), 
         glm::pi<double>()*(40.5824/180.0))
-    );*/
-
+    );
+#else
     std::unique_ptr<ChunkedTerrain> t(
-        new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/bigazzfile.raw", 
+        new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/terrain_5009_5009.raw", 
                            5009, 
                            5009, 
                            glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
@@ -86,7 +89,7 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
         glm::pi<double>()*(-121.9/180.0), 
         glm::pi<double>()*(40.9/180.0))
     );
-
+#endif
     viewPosition = glm::vec3(p.x, chunkedTerrain->GetElevationAt(p), p.z);
     viewRotation = glm::vec2(0,glm::pi<float>());
 

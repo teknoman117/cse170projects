@@ -375,7 +375,7 @@ void ChunkedTerrain::Draw(const Frustum& cameraFrustum, const std::shared_ptr<Pr
         commandBuffers[i].FlushBuffer();
         commandBuffers[i].BindBuffer(GL_ELEMENT_ARRAY_BUFFER);
         glDrawElements(GL_TRIANGLE_STRIP, (indexDataPtr[i] - indexData[i]), GL_UNSIGNED_INT, indexOffset[i]);
-        std::cout << "thread " << i << " wrote " << (indexDataPtr[i] - indexData[i]) << " indices (max " << maxindex << std::endl;
+        //std::cout << "thread " << i << " wrote " << (indexDataPtr[i] - indexData[i]) << " indices (max " << maxindex << std::endl;
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
 }
