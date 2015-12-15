@@ -17,7 +17,7 @@ CFLAGS   = -Wall -Wno-format $(OPTFLAGS) -I./ -std=c++11
 ifeq ($(strip $(OS)),Darwin)
 	LDFLAGS = -framework GLUT -framework OpenGL
 else
-	LDFLAGS = -lGL -lglut -lGLU -lGLEW -ljsoncpp
+	LDFLAGS = -pthread -lz -lGL -lglut -lGLU -lGLEW -ljsoncpp
 endif
 
 #######################################################################

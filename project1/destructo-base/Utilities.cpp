@@ -1,4 +1,5 @@
 #include "Utilities.h"
+#include <cstring>
 
 //Check if a string is very basic A-Z a-z 0-9
 bool Utilities::validateBasicString(string toCheck) {

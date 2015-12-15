@@ -1,23 +1,23 @@
 
 # CSE170 glutapp makefile v2.1 - M. Kallmann 2009 (not tested for a long time)
 
-SOURCES := $(shell echo $(./)*.cpp)
+SOURCES := $(shell echo $(./)*.cpp) $(shell echo $(./)*/*.cpp)
 DEPENDS = $(SOURCES:.cpp=.d)
 OBJECTS = $(SOURCES:.cpp=.o)
 OS = $(shell uname) # For Mac OS detection (by Rolando Yanez, Raymond Harris)
-PROGRAM = glutapp
+PROGRAM = lab07
 
 #######################################################################
 
 # OPTFLAGS = -g  # for debug
 OPTFLAGS =  -O3 -s
 CC       = g++
-CFLAGS   = -Wall -Wno-format $(OPTFLAGS)
+CFLAGS   = -Wall -Wno-format $(OPTFLAGS) -I./ -std=c++11
 
 ifeq ($(strip $(OS)),Darwin)
 	LDFLAGS = -framework GLUT -framework OpenGL
 else
-	LDFLAGS = -lGL -lglut
+	LDFLAGS = -lGL -lglut -lGLU -lGLEW
 endif
 
 #######################################################################

@@ -19,12 +19,11 @@
 
 # ifdef GS_WINDOWS
   # include <windows.h>
-  # include <GL/glew.h>
 # elif (defined __APPLE__)
-  # include <GL/glew.h>
 # else
 # endif
 
+  # include <GL/glew.h>
 //====================== GlShader =====================
 
 class GlShader
