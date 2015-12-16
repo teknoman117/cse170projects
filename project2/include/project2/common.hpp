@@ -4,6 +4,9 @@
 #include <iostream>
 #include <memory>
 #include <map>
+#include <cinttypes>
+#include <chrono>
+#include <string>
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
@@ -21,5 +24,9 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_access.hpp>
+
+#ifndef ssize_t
+#define ssize_t int64_t
+#endif
 
 #endif

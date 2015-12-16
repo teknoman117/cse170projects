@@ -2,10 +2,8 @@
 
 #include <cmath>
 #include <fstream>
-#include <cinttypes>
 #include <iomanip>
 #include <limits>
-#include <chrono>
 #include <omp.h>
 
 using namespace glm;

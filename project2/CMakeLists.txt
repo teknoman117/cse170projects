@@ -4,42 +4,43 @@ project (Project2)
 file(GLOB Sources
     "src/*.cpp"
     "src/objects/*.cpp"
-    "src/geometry/*.cpp"
     
     "include/project2/*.hpp"
     "include/project2/objects/*.hpp"
-    "include/project2/geometry/*.hpp"
 )
 
 # Add universal includes
 include_directories("include")
 
 # Are we compiling on Window?
-#IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
+IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # Project2 Executable
-#   add_executable(Project2 ${Sources} "icon/Project2Icon.rc" )
+    add_executable(Project2 ${Sources})
 
-    # Windows should consume headers bundles with source
-#    include_directories("includes/SDL")
-#    include_directories("includes/glew")
-#    include_directories("includes/glm-0.9.4.4")
+    # Find system OpenGL
+    find_package(OpenGL)
+    target_link_libraries(Project2 ${OPENGL_LIBRARIES})
+    include_directories(${OPENGL_INCLUDE_DIRS})
 
-    # Windows Libraries
-#    target_link_libraries(Project2 "../libs/windows/glew/glew32")
-#    target_link_libraries(Project2 "../libs/windows/SDL/SDL2")
-#    target_link_libraries(Project2 "opengl32.lib")
+    get_filename_component(DEPS "dependencies/windows/libs/" ABSOLUTE)
 
+    # Pull in the bundled libraries
+    include_directories(${PROJECT_SOURCE_DIR}/dependencies/common)
+    include_directories(${PROJECT_SOURCE_DIR}/dependencies/common/glew)
+    target_link_libraries(Project2 ${DEPS}/glew32.lib)
+    target_link_libraries(Project2 ${DEPS}/glew32mx.lib)
+    target_link_libraries(Project2 ${DEPS}/SDL2.lib)
+    target_link_libraries(Project2 ${DEPS}/SDL2main.lib)
+    target_link_libraries(Project2 ${DEPS}/SDL2test.lib)
+    
     #enable Multiprocessor build
-#   SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP" )
+    SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP" )
     
     #copy game and dlls
-#   file(COPY ${PROJECT_SOURCE_DIR}/game/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-#   file(COPY ${PROJECT_SOURCE_DIR}/libs/windows/_alldlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-#   file(COPY ${PROJECT_SOURCE_DIR}/libs/windows/_alldlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-
-    
-#ENDIF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file(COPY ${PROJECT_SOURCE_DIR}/content DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+    file(COPY ${PROJECT_SOURCE_DIR}/dependencies/windows/dlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+    file(COPY ${PROJECT_SOURCE_DIR}/dependencies/windows/dlls/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)    
+ENDIF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # Are we compiling on Mac OS X?
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

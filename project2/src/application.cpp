@@ -49,9 +49,9 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     textures["grass_diffuse"]->SetWrapMode(GL_REPEAT);
     textures["grass_normals"] = std::make_shared<Texture>(GetApplicationResourcesDirectory() + "/content/textures/grass_normals.png", GL_RGB8);
     textures["grass_normals"]->SetWrapMode(GL_REPEAT);
-    textures["cliff_diffuse"] = std::make_shared<Texture>(GetApplicationResourcesDirectory() + "/content/textures/cliff_07_diffuse.png", GL_SRGB8_ALPHA8);
+    textures["cliff_diffuse"] = std::make_shared<Texture>(GetApplicationResourcesDirectory() + "/content/textures/cliff_diffuse.png", GL_SRGB8_ALPHA8);
     textures["cliff_diffuse"]->SetWrapMode(GL_REPEAT);
-    textures["cliff_normals"] = std::make_shared<Texture>(GetApplicationResourcesDirectory() + "/content/textures/cliff_07_normal.png", GL_RGB8);
+    textures["cliff_normals"] = std::make_shared<Texture>(GetApplicationResourcesDirectory() + "/content/textures/cliff_normal.png", GL_RGB8);
     textures["cliff_normals"]->SetWrapMode(GL_REPEAT);
 
     std::unique_ptr<Cubemap> cubemap(new Cubemap(GetApplicationResourcesDirectory() + "/content/skybox/skybox"));
