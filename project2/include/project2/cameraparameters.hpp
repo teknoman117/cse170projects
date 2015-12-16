@@ -13,6 +13,8 @@ struct CameraParameters
         glm::mat4 VP;
 
         glm::vec3 CameraPosition;
+        float     padding;
+        
         glm::vec4 frustumPlanes[6];
     } shaderParameters;
 
@@ -49,7 +51,7 @@ struct CameraParameters
 
         // Compute OpenGL matrices
         shaderParameters.CameraPosition = position;
-        shaderParameters.P              = glm::perspective(yFov, aspect, 0.01f, 20000.f);
+        shaderParameters.P              = glm::perspective(yFov, aspect, 0.1f, 70000.f);
         shaderParameters.V              = glm::lookAt(position, center, up);
         shaderParameters.VP             = shaderParameters.P * shaderParameters.V;
 

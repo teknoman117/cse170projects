@@ -25,9 +25,13 @@ class ChunkedTerrain : public GLObject
         glm::ivec2 chunkSize;
 
         glm::vec3 ne;
+        float pada;
         glm::vec3 nw;
+        float padb;
         glm::vec3 se;
+        float padc;
         glm::vec3 sw;
+        float padd;
 
         float triSize;
     } shaderParameters;

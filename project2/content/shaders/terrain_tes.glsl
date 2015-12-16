@@ -48,8 +48,7 @@ vec3 GetVertexAtGridLocation(vec2 location, ivec2 areaSize, vec2 pixelSize)
     vec2 uv    = (location * pixelSize) + (pixelSize / 2.0);
     
     // TODO - fractals
-    //p.y = texture(heightmap, uv).r;
-    p.y = 0;
+    p.y = texture(heightmap, uv).r;
 
     return p;
 }
@@ -73,20 +72,7 @@ void main ()
     vec3 N = normalize(cross(dx,dz));
 
     // Compute output
-    //vec4 n = M * vec4(N, 0);
-    //vec4 p = M * vec4(L11,1);
-
-    //Out.position = p.xyz;
-    //Out.normal   = n.xyz;
-
-    //gl_Position  = VP * p;
-
     Out.position = L11;
-    Out.normal = N;
-
-    gl_Position = VP * vec4(L11, 1);
-    
-    //Out.position = vec3(location.x, 0, location.y);
-    //Out.normal = vec3(0,1,0);
-    //gl_Position = VP * vec4(location.x, 0, location.y, 1);
+    Out.normal   = N;
+    gl_Position  = VP * vec4(L11, 1);
 }

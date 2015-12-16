@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 HoodooNet. All rights reserved.
 //
 
-#define __BIGTERRAIN
+//#define __BIGTERRAIN
 
 #include <sstream>
 #include <iomanip>
@@ -88,28 +88,11 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
         glm::pi<double>()*(40.9/180.0))
     );
 #endif
-    /*std::unique_ptr<ChunkedTerrain> t(
-        new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/flat_33_33.raw", 
-                           33, 
-                           33, 
-                           glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
-                           glm::dvec2(glm::pi<double>()*(-122.0/180.0), glm::pi<double>()*(41.0/180.0))
-        )
-    );
-    chunkedTerrain = std::move(t);
 
-    // Initialize view position
-    glm::vec3 p = chunkedTerrain->GetLocationOfWGS84Coordinate(glm::dvec2(
-        glm::pi<double>()*(-122.0/180.0) + (1.5/10800.0)*(glm::pi<double>()/180.0), 
-        glm::pi<double>()*(41.0/180.0) - (1.5/10800.0)*(glm::pi<double>()/180.0))
-    );*/
-
-    //camera.position = glm::vec3(p.x, chunkedTerrain->GetElevationAt(p), p.z);
-    camera.position = glm::vec3(0,1.8,0);
+    camera.position = glm::vec3(p.x, chunkedTerrain->GetElevationAt(p), p.z);
     camera.rotation = glm::vec2(0,glm::pi<float>());
 
     timeOfDay = 2;
-    flying = true;
 
     // allocate pipeline buffers
     OnResize(camera.width, camera.height);
@@ -173,9 +156,9 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
                             moveDirection.y*lup*frameDelta +
                             moveDirection.z*forward*frameDelta;
 
-        //float h = chunkedTerrain->GetElevationAt(camera.position);
-        //if(camera.position.y < (h + 1.8f) && h != std::numeric_limits<float>::infinity()) 
-            //camera.position.y = h + 1.8f;
+        float h = chunkedTerrain->GetElevationAt(camera.position);
+        if(camera.position.y < (h + 1.8f) && h != std::numeric_limits<float>::infinity()) 
+            camera.position.y = h + 1.8f;
     }
 
     camera.Update();
