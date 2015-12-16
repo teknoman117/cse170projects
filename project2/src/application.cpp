@@ -191,9 +191,9 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             glUniform1i(programs["terrain"]->GetUniform("horizontalTextureNormals"), 3);
             glUniform1i(programs["terrain"]->GetUniform("verticalTextureNormals"),   4);
 
-            glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
+            //glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
             chunkedTerrain->Draw(programs["terrain"]);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
         renderer.EndGBufferPass();
 
@@ -238,6 +238,7 @@ bool Application::OnResize(GLint _width, GLint _height)
     camera.width  = _width;
     camera.height = _height;
     camera.aspect = float(_width) / float(_height);
+    camera.viewport = glm::vec4(0, 0, _width, _height);
 
     // Reallocate framebuffer storage
     renderer.ResizeRenderPipeline(camera.width, camera.height);

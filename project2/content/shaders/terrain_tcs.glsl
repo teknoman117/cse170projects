@@ -10,7 +10,9 @@ layout (std140, binding=0) uniform CameraParameters
     mat4 VP;
 
     vec3 CameraPosition;
+
     vec4 frustumPlanes[6];
+    vec4 viewport;
 };
 
 layout (std140, binding=1) uniform TerrainParameters
@@ -39,54 +41,60 @@ layout(location=1) out block
     vec2 tessLevelInner;
 } Out[];
 
-vec3 GetVertexAtGridLocation(vec2 location, ivec2 gridSize)
+vec3 GetVertexAtGridLocation(vec2 location, ivec2 areaSize)
 {
-    vec2 blend = location / vec2(gridSize - 1);
+    vec2 blend = location / vec2(areaSize - 1);
     vec3 p     = mix(mix(nw, ne, blend.x), mix(sw, se, blend.x), blend.y);
     return p;
 }
 
-// Get the "positive" vertex based on an aabb and normal
-vec3 AABBGetVertexP(vec3 a, vec3 b, vec3 n)
+bool TestSphereInFrustum(vec3 pos, float r, vec4 plane[6])
 {
-    vec3 P = a;
-
-    if(n.x >= 0)
-        P.x = b.x;
-    if(n.y >= 0)
-        P.y = b.y;
-    if(n.z >= 0)
-        P.z = b.z;
-
-    return P;
-}
-
-// Get the "negative" vertex based on an aabb and normal
-vec3 AABBGetVertexN(vec3 a, vec3 b, vec3 n)
-{
-    vec3 P = b;
-
-    if(n.x >= 0)
-        P.x = a.x;
-    if(n.y >= 0)
-        P.y = a.y;
-    if(n.z >= 0)
-        P.z = a.z;
-
-    return P;
-}
-
-// Checks if an AABB is inside a frustum (intersects OR inside returns true)
-bool AABBInFrustum(vec3 a, vec3 b, vec4 plane[6])
-{
-    for(int i = 0; i < 6; i++)
+    for(int i=0; i<6; i++) 
     {
-        vec4 p = vec4(AABBGetVertexP(a,b,plane[i].xyz), 1);
-        if(dot(p, plane[i]) < 0)
+        if (dot(vec4(pos, 1.0), plane[i]) + r < 0.0) 
+        {
             return false;
+        }
     }
-
     return true;
+}
+
+// transform from world to screen coordinates
+vec2 worldToScreen(vec3 p)
+{
+    vec4 r = VP * vec4(p, 1.0);   // to clip space
+    r.xy /= r.w;            // project
+    r.xy = r.xy*0.5 + 0.5;  // to NDC
+    r.xy *= viewport.zw;    // to pixels
+    return r.xy;
+}
+
+// calculate edge tessellation level from two edge vertices in screen space
+float calcEdgeTessellation(vec2 s0, vec2 s1)
+{
+    float d = distance(s0, s1);
+    return clamp(d / 2, 1, 64);
+}
+
+vec2 eyeToScreen(vec4 p)
+{
+    vec4 r = P * p;   // to clip space
+    r.xy /= r.w;            // project
+    r.xy = r.xy*0.5 + 0.5;  // to NDC
+    r.xy *= viewport.zw;    // to pixels
+    return r.xy;
+}
+
+// calculate tessellation level by fitting sphere to edge
+float calcEdgeTessellationSphere(vec3 w0, vec3 w1, float diameter)
+{
+    vec3 centre = (w0 + w1) * 0.5;
+    vec4 view0 = V * vec4(centre, 1.0);
+    vec4 view1 = view0 + vec4(diameter, 0, 0, 0);
+    vec2 s0 = eyeToScreen(view0);
+    vec2 s1 = eyeToScreen(view1);
+    return calcEdgeTessellation(s0, s1);
 }
 
 void main ()
@@ -94,31 +102,51 @@ void main ()
     // Pass the grid coordinates along
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
  
-    // Compute the bounding box
-    vec2 l1 = gl_in[gl_InvocationID].gl_Position.xz;
-    vec2 l2 = gl_in[gl_InvocationID].gl_Position.xz + vec2(chunkSize);
-    vec3 a_ = GetVertexAtGridLocation(l1, dataSize);
-    vec3 b_ = GetVertexAtGridLocation(l2, dataSize);
-    vec3 a = min(a_,b_);
-    vec3 b = max(a_,b_);
-    a.y = In[gl_InvocationID].minHeight;
-    b.y = In[gl_InvocationID].maxHeight;
+    // Compute the indicies of the chunk diagonals borders
+    vec2 i0 = gl_in[gl_InvocationID].gl_Position.xz;
+    vec2 i2 = i0 + vec2(chunkSize);
+    vec3 v0 = GetVertexAtGridLocation(i0, dataSize);
+    vec3 v2 = GetVertexAtGridLocation(i2, dataSize);
+
+    // Compute the bounding sphere of the tile
+    v0.y = In[gl_InvocationID].minHeight;
+    v2.y = In[gl_InvocationID].maxHeight;
+    vec3  p = (v2+v0) * 0.5;
+    float r = length(v2-v0) * 0.5;
 
     // Visibility check
-    //bool visible = AABBInFrustum(a, b, frustumPlanes);
-    //if(visible)
-    //{
-        // force tess for the moment
-        gl_TessLevelOuter[0] = 1;
-        gl_TessLevelOuter[1] = 1;
-        gl_TessLevelOuter[2] = 1;
-        gl_TessLevelOuter[3] = 1;
+    bool visible = TestSphereInFrustum(p, r, frustumPlanes);
+    if(visible)
+    {
+        // Look up other tile points
+        float averageHeight = (In[gl_InvocationID].minHeight + In[gl_InvocationID].maxHeight) * 0.5;
 
-        gl_TessLevelInner[0] = 1;
-        gl_TessLevelInner[1] = 1;
+        vec2 i1 = i0 + vec2(chunkSize.x, 0);
+        vec2 i3 = i0 + vec2(0, chunkSize.y);
+        vec3 v1 = GetVertexAtGridLocation(i1, dataSize);
+        vec3 v3 = GetVertexAtGridLocation(i3, dataSize);
+
+        v0.y = averageHeight;
+        v1.y = averageHeight;
+        v2.y = averageHeight;
+        v3.y = averageHeight;
+
+        float sphereD = chunkSize.x*2;
+        gl_TessLevelOuter[0] = calcEdgeTessellationSphere(v3, v0, sphereD);
+        gl_TessLevelOuter[1] = calcEdgeTessellationSphere(v0, v1, sphereD);
+        gl_TessLevelOuter[2] = calcEdgeTessellationSphere(v1, v2, sphereD);
+        gl_TessLevelOuter[3] = calcEdgeTessellationSphere(v2, v3, sphereD);
+
+        //gl_TessLevelOuter[0] = 2;
+        //gl_TessLevelOuter[1] = 2;
+        //gl_TessLevelOuter[2] = 2;
+        //gl_TessLevelOuter[3] = 2;
+
+        gl_TessLevelInner[0] = 0.5 * (gl_TessLevelOuter[1] + gl_TessLevelOuter[3]);
+        gl_TessLevelInner[1] = 0.5 * (gl_TessLevelOuter[0] + gl_TessLevelOuter[2]);
 
         Out[gl_InvocationID].tessLevelInner = vec2(gl_TessLevelInner[0], gl_TessLevelInner[1]);
-    /*}
+    }
     else
     {
         // cull patch
@@ -129,5 +157,5 @@ void main ()
 
         gl_TessLevelInner[0] = -1;
         gl_TessLevelInner[1] = -1;
-    }*/
+    }
 }

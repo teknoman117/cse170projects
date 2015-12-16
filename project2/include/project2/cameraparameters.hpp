@@ -2,7 +2,6 @@
 #define __CAMERA_PARAMETERS_HPP__
 
 #include <project2/common.hpp>
-#include <project2/geometry/frustum.hpp>
 
 struct CameraParameters
 {
@@ -16,6 +15,7 @@ struct CameraParameters
         float     padding;
         
         glm::vec4 frustumPlanes[6];
+        glm::vec4 viewport;
     } shaderParameters;
 
     GLuint    buffer;
@@ -28,6 +28,7 @@ struct CameraParameters
     glm::vec3 up;
     glm::vec3 position;
     glm::vec2 rotation;
+    glm::vec4 viewport;
 
     glm::quat RotationAsQuaternion() const
     {
@@ -40,20 +41,21 @@ struct CameraParameters
         // Compute camera parameters
         glm::vec3 center = position + RotationAsQuaternion()*glm::vec3(0,0,-1);
 
-        // Build frustum for culling the terrain
-        Frustum cameraFrustum;
-        cameraFrustum.SetCameraProperties(yFov + (25.f/180.f * glm::pi<float>()), aspect, 0.1f, 70000.f);
-        cameraFrustum.SetCameraOrientation(position, center, up);
-
-        // Extract planes
-        for(int i = 0; i < 6; i++)
-            cameraFrustum.ExtractPlane(i, shaderParameters.frustumPlanes[i]);
-
         // Compute OpenGL matrices
         shaderParameters.CameraPosition = position;
-        shaderParameters.P              = glm::perspective(yFov, aspect, 0.1f, 70000.f);
+        shaderParameters.viewport       = viewport;
         shaderParameters.V              = glm::lookAt(position, center, up);
+        shaderParameters.P              = glm::perspective(yFov, aspect, 0.1f, 70000.f);
         shaderParameters.VP             = shaderParameters.P * shaderParameters.V;
+
+        // Extract frustum planes from view projection matrix (increase vertical fov a bit)
+        glm::mat4 cullVP = glm::perspective(yFov+(2.5f/18.f * glm::pi<float>()), aspect, 0.1f, 70000.f) * shaderParameters.V;
+        shaderParameters.frustumPlanes[0] = row(cullVP, 3) + row(cullVP, 0); // left
+        shaderParameters.frustumPlanes[1] = row(cullVP, 3) - row(cullVP, 0); // right
+        shaderParameters.frustumPlanes[2] = row(cullVP, 3) + row(cullVP, 1); // bottom
+        shaderParameters.frustumPlanes[3] = row(cullVP, 3) - row(cullVP, 1); // top
+        shaderParameters.frustumPlanes[4] = row(cullVP, 3) + row(cullVP, 2); // far
+        shaderParameters.frustumPlanes[5] = row(cullVP, 3) - row(cullVP, 2); // near
 
         // Bind the UBO
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, buffer);

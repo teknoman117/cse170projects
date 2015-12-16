@@ -15,7 +15,9 @@ layout (std140, binding=0) uniform CameraParameters
     mat4 VP;
 
     vec3 CameraPosition;
+    
     vec4 frustumPlanes[6];
+    vec4 viewport;
 };
 
 layout (location = 0) out vec4 lightingContribution;
