@@ -118,26 +118,31 @@ float snoise(vec2 v)
 
 vec3 GetVertexAtGridLocation(vec2 location, ivec2 areaSize, vec2 pixelSize)
 {
+    vec2 blend = location / vec2(areaSize - 1);
+    vec3 p     = mix(mix(nw, ne, blend.x), mix(sw, se, blend.x), blend.y);
+    vec2 uv    = (location * pixelSize) + (pixelSize / 2.0);
+    
+    p.y = texture(heightmap, uv).r;
+    return p;
+}
+
+float fbm(vec2 p)
+{
+    float total = 0.0;
     float octaves = 9;
     float lacunarity = 2.0;
     float gain = 1 / lacunarity;
     float frequency = 1.0/16.0;
     float amplitude = 2*gain*gain; 
 
-    vec2 blend = location / vec2(areaSize - 1);
-    vec3 p     = mix(mix(nw, ne, blend.x), mix(sw, se, blend.x), blend.y);
-    vec2 uv    = (location * pixelSize) + (pixelSize / 2.0);
-    
-    // TODO - fractals
-    p.y = texture(heightmap, uv).r;
     for(int i = 0; i < octaves; i++)
     {
-        p.y += snoise(p.xz * vec2(frequency,frequency)) * amplitude;
+        total += snoise(p * vec2(frequency,frequency)) * amplitude;
         frequency *= lacunarity;
         amplitude *= gain;
     }
 
-    return p;
+    return total;
 }
 
 void main ()
@@ -156,10 +161,17 @@ void main ()
     vec3 L12   = GetVertexAtGridLocation(location+vec2(pSize.x, 0),  dataSize, pixelSize);
     vec3 L10   = GetVertexAtGridLocation(location+vec2(-pSize.x, 0), dataSize, pixelSize);
 
+    L21.y += fbm(L21.xz);
+    L01.y += fbm(L01.xz);
+    L12.y += fbm(L12.xz);
+    L10.y += fbm(L10.xz);
+
     // Compute the normal
     vec3 dx = L12 - L10;
     vec3 dz = L01 - L21;
     vec3 N = normalize(cross(dx,dz));
+
+    L11 = L11 + N*fbm(L11.xz);
 
     // Compute output
     Out.position = L11;
