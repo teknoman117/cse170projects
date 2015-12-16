@@ -1,57 +1,43 @@
-#version 410
+#version 420
+#extension GL_ARB_enhanced_layouts : enable
 
-//layout (location = 0) in vec3 vPosition;
-//layout (location = 1) in vec3 vNormal;
-layout (location = 0) in uint dummy;
-
-uniform sampler2D heightmap;
-
-smooth out vec3 Position;
-smooth out vec3 Normal;
-
-uniform mat4 M;
-uniform mat4 VP;
-
-uniform vec3 ne;
-uniform vec3 nw;
-uniform vec3 se;
-uniform vec3 sw;
-
-uniform ivec2 dataSize;
-
-vec3 GetVertexAtGridLocation(vec2 location, ivec2 gridSize, vec2 pixelSize)
+layout (std140, binding=0) uniform CameraParameters
 {
-    vec2 blend = location / vec2(gridSize - 1);
-    vec3 p     = mix(mix(nw, ne, blend.x), mix(sw, se, blend.x), blend.y);
-    vec2 uv    = (location * pixelSize) + (pixelSize / 2.0);
-    
-    // TODO - fractals
-    p.y = texture(heightmap, uv).r;
+    mat4 V;
+    mat4 P;
+    mat4 VP;
 
-    return p;
-}
+    vec3 CameraPosition;
+    vec4 frustumPlanes[6];
+};
 
+layout (std140, binding=1) uniform TerrainParameters
+{
+    ivec2 rasterSize;
+    ivec2 dataSize;
+    ivec2 gridSize;
+    ivec2 chunkSize;
+
+    vec3 ne;
+    vec3 nw;
+    vec3 se;
+    vec3 sw;
+
+    float triSize;
+};
+
+layout (location = 0) in vec2 height;
+
+layout (location = 1) out block 
+{
+    float minHeight;
+    float maxHeight;
+} Out;
+
+// Pass through the grid coordinates of the vertex and the maximum height
 void main ()
 {
-    // Compute some constant data
-    vec2 location   = vec2(gl_VertexID % dataSize.x, gl_VertexID / dataSize.x);
-    vec2 rasterSize = vec2(textureSize(heightmap,0));
-    vec2 pixelSize  = 1.0 / rasterSize;
-
-    vec3 L11 = GetVertexAtGridLocation(location+vec2( 0, 0), dataSize, pixelSize);
-    vec3 L01 = GetVertexAtGridLocation(location+vec2( 0,-1), dataSize, pixelSize);
-    vec3 L21 = GetVertexAtGridLocation(location+vec2( 0, 1), dataSize, pixelSize);
-    vec3 L10 = GetVertexAtGridLocation(location+vec2(-1, 0), dataSize, pixelSize);
-    vec3 L12 = GetVertexAtGridLocation(location+vec2( 1, 0), dataSize, pixelSize);
-
-    vec3 dx = normalize(L12-L10);
-    vec3 dy = normalize(L01-L21);
-
-    vec4 n = M * vec4(cross(dx,dy), 1);
-    vec4 p = M * vec4(L11,          1);
-
-    Position = p.xyz;
-    Normal   = n.xyz; 
-
-    gl_Position = VP * p;
+    Out.minHeight = height.x;
+    Out.maxHeight = height.y;
+    gl_Position = vec4((gl_InstanceID % gridSize.x) * chunkSize.x, 0, (gl_InstanceID / gridSize.x) * chunkSize.y, 1);
 }

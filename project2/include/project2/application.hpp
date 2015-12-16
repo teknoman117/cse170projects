@@ -6,6 +6,7 @@
 #include <project2/texture.hpp>
 #include <project2/cubemap.hpp>
 #include <project2/renderpipeline.hpp>
+#include <project2/cameraparameters.hpp>
 
 #include <project2/objects/glfullscreenquad.hpp>
 #include <project2/objects/glsphere.hpp>
@@ -15,19 +16,14 @@
 
 class Application
 {
-    SDL_Window     *window;
-    SDL_GLContext&  context;
-    
-    GLint           width;
-    GLint           height;
-    float           aspect;
-    float           timeOfDay;
+    SDL_Window      *window;
+    SDL_GLContext&   context;
 
-    glm::vec2       viewRotation;
-    glm::vec3       viewPosition;
+    CameraParameters camera;
 
-    bool            wireframe;
-    bool            flying;
+    float            timeOfDay;
+    bool             wireframe;
+    bool             flying;
     
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;

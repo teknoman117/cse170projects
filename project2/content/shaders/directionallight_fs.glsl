@@ -1,4 +1,4 @@
-#version 410
+#version 420
 
 uniform sampler2D gBufferDiffuseSpecular;
 uniform sampler2D gBufferNormals;
@@ -7,7 +7,16 @@ uniform sampler2D gBufferPosition;
 uniform vec3 LightColor;
 uniform vec3 LightIntensity;
 uniform vec3 LightDirection;
-uniform vec3 CameraPosition;
+
+layout (std140, binding=0) uniform CameraParameters
+{
+    mat4 V;
+    mat4 P;
+    mat4 VP;
+
+    vec3 CameraPosition;
+    vec4 frustumPlanes[6];
+};
 
 layout (location = 0) out vec4 lightingContribution;
 

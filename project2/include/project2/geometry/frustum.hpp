@@ -3,6 +3,7 @@
 
 #include <project2/common.hpp>
 #include <project2/geometry/aabox.hpp>
+#include <project2/program.hpp>
 
 class Frustum
 {
@@ -24,6 +25,14 @@ class Frustum
 		float distance(glm::vec3 p) const
 		{
 			return dot(normal, p - point);
+		}
+
+		void equation(glm::vec4& eq) const
+		{
+			eq.x = normal.x;
+			eq.y = normal.y;
+			eq.z = normal.z;
+			eq.w = -dot(normal, point);
 		}
 	};
 
@@ -49,6 +58,8 @@ public:
 
 	void SetCameraProperties(float yFov, float aspect, float nearD, float farD);
 	void SetCameraOrientation(const glm::vec3& position, const glm::vec3& target, const glm::vec3& globalUp);
+
+	void ExtractPlane(int plane, glm::vec4& eq) const;
 
 	CullResult Compare(const AABox &box) const;
 };

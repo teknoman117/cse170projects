@@ -1,19 +1,46 @@
-#version 410
-
-smooth in vec3 Position;
-smooth in vec3 Normal;
-
-layout (location = 0) out vec4 gBufferDiffuseSpecular;
-layout (location = 1) out vec3 gBufferNormals;
-layout (location = 2) out vec3 gBufferPosition;
-
-uniform float SpecularExponent;
-uniform vec3  CameraPosition;
+#version 420
+#extension GL_ARB_enhanced_layouts : enable
 
 uniform sampler2D verticalTexture;
 uniform sampler2D verticalTextureNormals;
 uniform sampler2D horizontalTexture;
 uniform sampler2D horizontalTextureNormals;
+
+layout (std140, binding=0) uniform CameraParameters
+{
+    mat4 V;
+    mat4 P;
+    mat4 VP;
+
+    vec3 CameraPosition;
+    vec4 frustumPlanes[6];
+};
+
+layout (std140, binding=1) uniform TerrainParameters
+{
+    ivec2 rasterSize;
+    ivec2 dataSize;
+    ivec2 gridSize;
+    ivec2 chunkSize;
+
+    vec3 ne;
+    vec3 nw;
+    vec3 se;
+    vec3 sw;
+
+    float triSize;
+};
+
+layout (location = 1) in block 
+{
+    vec3 position;
+    vec3 normal;
+} In;
+
+layout (location = 0) out vec4 gBufferDiffuseSpecular;
+layout (location = 1) out vec3 gBufferNormals;
+layout (location = 2) out vec3 gBufferPosition;
+
 
 mat3 inverse3x3( mat3 M )
 {
@@ -67,15 +94,15 @@ vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
 
 void main()
 {
-    vec3 blendWeights = abs(Normal);
+    vec3 blendWeights = abs(In.normal);
     //blendWeights = blendWeights * vec3(1.0,0.9,1.0);
     blendWeights = max(blendWeights, vec3(0,0,0));
     blendWeights /= (blendWeights.x + blendWeights.y + blendWeights.z);
 
     const float textureScale = 0.5;
-    vec2 coord1 = Position.yz * textureScale;
-    vec2 coord2 = Position.zx * textureScale;
-    vec2 coord3 = Position.xy * textureScale;
+    vec2 coord1 = In.position.yz * textureScale;
+    vec2 coord2 = In.position.zx * textureScale;
+    vec2 coord3 = In.position.xy * textureScale;
 
     vec4 color1 = texture(verticalTexture, coord1);
     vec4 color2 = texture(horizontalTexture, coord2);
@@ -97,14 +124,16 @@ void main()
                        bump3.xyz * blendWeights.z;
     
 
-    gBufferDiffuseSpecular = vec4(DiffuseColor, SpecularExponent);
-    gBufferNormals         = normalize(Normal + BlendedBump);
-    gBufferPosition        = Position;
+    //gBufferDiffuseSpecular = vec4(DiffuseColor, SpecularExponent);
+    //gBufferNormals         = normalize(In.normal + BlendedBump);
+    gBufferDiffuseSpecular = vec4(DiffuseColor, 32);
+    gBufferNormals         = In.normal;
+    gBufferPosition        = In.position;
 
-    /*vec3 N = perturb_normal(Normal, normalize(Position - CameraPosition), Position.xz / 2);
-    vec3 D = texture(horizontalTexture, Position.xz / 2).rgb;
+    /*vec3 N = perturb_normal(In.normal, normalize(In.position - CameraPosition), In.position.xz / 2);
+    vec3 D = texture(horizontalTexture, In.position.xz / 2).rgb;
 
     gBufferDiffuseSpecular = vec4(D, SpecularExponent);
     gBufferNormals = N;
-    gBufferPosition = Position;*/
+    gBufferPosition = In.position;*/
 }

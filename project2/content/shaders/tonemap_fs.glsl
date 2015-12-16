@@ -3,7 +3,7 @@
  * http://frictionalgames.blogspot.com/2012/09/tech-feature-hdr-lightning.html
  */
 
-#version 410
+#version 420
 
 uniform sampler2D renderHDR;
 uniform sampler2D luminosity;

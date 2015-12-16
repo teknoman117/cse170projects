@@ -1,4 +1,4 @@
-#version 410
+#version 420
 #extension GL_NV_shadow_samplers_cube : enable
 
 uniform samplerCube uTexture;

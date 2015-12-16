@@ -70,6 +70,11 @@ void Frustum::SetCameraOrientation(const glm::vec3& position, const glm::vec3& t
 	};
 }
 
+void Frustum::ExtractPlane(int p, vec4& eq) const
+{
+	planes[p].equation(eq);
+}
+
 Frustum::CullResult Frustum::Compare(const AABox &box) const
 {
 	Frustum::CullResult result = INSIDE;

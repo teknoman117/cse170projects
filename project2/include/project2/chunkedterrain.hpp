@@ -3,11 +3,7 @@
 
 #include <project2/objects/globject.hpp>
 #include <project2/program.hpp>
-#include <project2/persistentbuffer.hpp>
 #include <project2/texture.hpp>
-
-#include <project2/geometry/aabox.hpp>
-#include <project2/geometry/frustum.hpp>
 
 #include <vector>
 
@@ -20,43 +16,35 @@
  */
 class ChunkedTerrain : public GLObject
 {
-    struct Vertex
+    // Parameters we can pass to the shader
+    struct TerrainShaderParameters
     {
-        glm::vec3 position;
-    };
+        glm::ivec2 rasterSize;
+        glm::ivec2 dataSize;
+        glm::ivec2 gridSize;
+        glm::ivec2 chunkSize;
 
-    struct Chunk
-    {
-        std::vector<GLuint> indices;
-        AABox               bounds;
+        glm::vec3 ne;
+        glm::vec3 nw;
+        glm::vec3 se;
+        glm::vec3 sw;
 
-        // Build the chunk
-        void Build(const std::vector<Vertex>& data, size_t dataWidth, size_t dataHeight, size_t x, size_t y);
-    };
-
-    size_t dataWidth;
-    size_t dataHeight;
-
-    size_t chunkGridWidth;
-    size_t chunkGridHeight;
-
-    std::vector<PersistentBuffer<GLuint>> commandBuffers;
+        float triSize;
+    } shaderParameters;
     
     std::shared_ptr<Texture> heightmap;
-    std::vector<Vertex>      vertices;
-    std::vector<Chunk>       chunks;
+    std::vector<float>       raster;
 
     // Corners, cardinal directions, boundary normals, midpoint
     glm::dvec3 ne, nw, se, sw;
     glm::dvec3 n,  w,  s,  e;
     glm::dvec3 nn, wn, sn, en;
     glm::dvec3 midpoint;
-
-    // Quaternion describing rotation into flattened plane
     glm::dquat projector;
 
     // Compute all the projection data from defined input
-    void ComputeBounds(size_t width, size_t height, glm::dvec2 resolution, glm::dvec2 corner);
+    void      ComputeBounds(glm::ivec2 size, glm::dvec2 resolution, glm::dvec2 corner);
+    glm::vec3 ComputeVertexPosition(size_t x, size_t y);
 
 public:
     /**
@@ -67,12 +55,12 @@ public:
      * @param resolution the per pixel resolution in degrees
      * @param corner the northwest coordinate of the raster
      */
-    ChunkedTerrain(const std::string& path, size_t width, size_t height, glm::dvec2 resolution, glm::dvec2 corner);
+    ChunkedTerrain(const std::string& path, glm::ivec2 rasterSize, glm::dvec2 resolution, glm::dvec2 corner);
     virtual ~ChunkedTerrain();
 
-    void      Draw(const Frustum& cameraFrustum, const std::shared_ptr<Program>& program);
+    void      Draw(const std::shared_ptr<Program>& program);
 
-    glm::vec3 GetLocationOfCoordinate(glm::dvec2 coordinate);
+    glm::vec3 GetLocationOfWGS84Coordinate(glm::dvec2 coordinate);
     float     GetElevationAt(glm::vec3 location);
 };
 

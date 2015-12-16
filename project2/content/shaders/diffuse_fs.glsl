@@ -1,4 +1,4 @@
-#version 410
+#version 420
 
 smooth in vec3 Position;
 smooth in vec3 Normal;

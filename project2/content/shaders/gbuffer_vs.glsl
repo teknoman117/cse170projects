@@ -1,4 +1,14 @@
-#version 410
+#version 420
+
+layout (std140, binding=0) uniform CameraParameters
+{
+    mat4 V;
+    mat4 P;
+    mat4 VP;
+
+    vec3 CameraPosition;
+    vec4 frustumPlanes[6];
+};
 
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec3 vNormal;
@@ -7,7 +17,6 @@ smooth out vec3 Position;
 smooth out vec3 Normal;
 
 uniform mat4 M;
-uniform mat4 VP;
 
 void main ()
 {
