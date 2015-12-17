@@ -59,7 +59,7 @@ public:
      * @param resolution the per pixel resolution in degrees
      * @param corner the northwest coordinate of the raster
      */
-    ChunkedTerrain(const std::string& path, glm::ivec2 rasterSize, glm::dvec2 resolution, glm::dvec2 corner);
+    ChunkedTerrain(const std::string& path, glm::ivec2 rasterSize, glm::ivec2 chunkSize, glm::dvec2 resolution, glm::dvec2 corner);
     virtual ~ChunkedTerrain();
 
     void      Draw(const std::shared_ptr<Program>& program);

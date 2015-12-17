@@ -29,20 +29,15 @@ namespace
  * @param resolution the per pixel resolution in degrees
  * @param nwCoordinate the northwest coordinate of the raster
  */
-ChunkedTerrain::ChunkedTerrain(const std::string& path, ivec2 rasterSize, dvec2 resolution, dvec2 corner)
+ChunkedTerrain::ChunkedTerrain(const std::string& path, ivec2 rasterSize, glm::ivec2 chunkSize, dvec2 resolution, dvec2 corner)
     : GLObject(2)
 {
     // Compute the chunk grid properties
     shaderParameters.rasterSize = rasterSize;
-    shaderParameters.chunkSize  = ivec2(8,8);
+    shaderParameters.chunkSize  = chunkSize;
     shaderParameters.gridSize   = (rasterSize-1) / shaderParameters.chunkSize;
     shaderParameters.dataSize   = shaderParameters.gridSize*shaderParameters.chunkSize + 1;
     shaderParameters.triSize    = 5.f;
-
-    std::cout << "raster: " << shaderParameters.rasterSize.x << " " << shaderParameters.rasterSize.y << std::endl;
-    std::cout << "chunk: " << shaderParameters.chunkSize.x << " " << shaderParameters.chunkSize.y << std::endl;
-    std::cout << "grid: " << shaderParameters.gridSize.x << " " << shaderParameters.gridSize.y << std::endl;
-    std::cout << "data: " << shaderParameters.dataSize.x << " " << shaderParameters.dataSize.y << std::endl;
 
     // Compute the projection parameters
     ComputeBounds(shaderParameters.dataSize, resolution, corner);
@@ -218,11 +213,6 @@ void ChunkedTerrain::ComputeBounds(ivec2 size, glm::dvec2 resolution, glm::dvec2
     en = normalize(dvec3(-t.z,0,t.x));
     if(dot(en,e)<0)
         en = normalize(dvec3(t.z,0,-t.x));
-
-    std::cout << "ne " << ne.x << " " << ne.y << " " << ne.z << std::endl;
-    std::cout << "nw " << nw.x << " " << nw.y << " " << nw.z << std::endl;
-    std::cout << "se " << se.x << " " << se.y << " " << se.z << std::endl;
-    std::cout << "sw " << sw.x << " " << sw.y << " " << sw.z << std::endl;
 
     shaderParameters.ne = ne;
     shaderParameters.nw = nw;

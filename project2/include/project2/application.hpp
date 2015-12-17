@@ -16,6 +16,18 @@
 
 class Application
 {
+public:
+    struct Options
+    {
+        std::string rasterFilename;
+        glm::ivec2  rasterSize;
+        glm::ivec2  chunkSize;
+        glm::dvec2  resolution;
+        glm::dvec2  corner;
+        glm::dvec2  starting;
+    };
+
+private:
     SDL_Window      *window;
     SDL_GLContext&   context;
 
@@ -37,7 +49,7 @@ class Application
     std::unique_ptr<Cubemap>        skyboxTexture;
     
 public:
-    Application(SDL_Window *window, SDL_GLContext& context);
+    Application(SDL_Window *window, SDL_GLContext& context, const Application::Options& options);
     ~Application();
     
     bool OnDisplay(float frameTime, float frameDelta);

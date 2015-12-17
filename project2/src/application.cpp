@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 HoodooNet. All rights reserved.
 //
 
-//#define __BIGTERRAIN
-
 #include <sstream>
 #include <iomanip>
 #include <cmath>
@@ -17,7 +15,7 @@
 #include <project2/directories.hpp>
 #include <project2/shader.hpp>
 
-Application::Application(SDL_Window *_window, SDL_GLContext& _context)
+Application::Application(SDL_Window *_window, SDL_GLContext& _context, const Application::Options& options)
     : window(_window), context(_context)
 {
     SDL_GetWindowSize(window, &camera.width, &camera.height);
@@ -57,38 +55,14 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context)
     std::unique_ptr<Cubemap> cubemap(new Cubemap(GetApplicationResourcesDirectory() + "/content/skybox/skybox"));
     skyboxTexture = std::move(cubemap);
 
-#ifndef __BIGTERRAIN
+    // Load terrain
     std::unique_ptr<ChunkedTerrain> t(
-        new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/terrain_2705_2705.raw", 
-                           glm::ivec2(2705, 2705), 
-                           glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
-                           glm::dvec2(glm::pi<double>()*(-121.5/180.0), glm::pi<double>()*(40.65/180.0))
-        )
+        new ChunkedTerrain(options.rasterFilename, options.rasterSize,  options.chunkSize, options.resolution, options.corner)
     );
     chunkedTerrain = std::move(t);
 
     // Initialize view position
-    glm::vec3 p = chunkedTerrain->GetLocationOfWGS84Coordinate(glm::dvec2(
-        glm::pi<double>()*(-121.4044/180.0), 
-        glm::pi<double>()*(40.5824/180.0))
-    );
-#else
-    std::unique_ptr<ChunkedTerrain> t(
-        new ChunkedTerrain(GetApplicationResourcesDirectory() + "/content/terrain_5009_5009.raw", 
-                           glm::ivec2(5009, 5009), 
-                           glm::dvec2((1.0/10800.0) * (glm::pi<double>()/180.0), (1.0/10800.0) * (glm::pi<double>()/180.0)),
-                           glm::dvec2(glm::pi<double>()*(-122.0/180.0), glm::pi<double>()*(41.0/180.0))
-        )
-    );
-    chunkedTerrain = std::move(t);
-
-    // Initialize view position
-    glm::vec3 p = chunkedTerrain->GetLocationOfWGS84Coordinate(glm::dvec2(
-        glm::pi<double>()*(-121.9/180.0), 
-        glm::pi<double>()*(40.9/180.0))
-    );
-#endif
-
+    glm::vec3 p = chunkedTerrain->GetLocationOfWGS84Coordinate(options.starting);
     camera.position = glm::vec3(p.x, chunkedTerrain->GetElevationAt(p), p.z);
     camera.rotation = glm::vec2(0,glm::pi<float>());
 
@@ -191,9 +165,9 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             glUniform1i(programs["terrain"]->GetUniform("horizontalTextureNormals"), 3);
             glUniform1i(programs["terrain"]->GetUniform("verticalTextureNormals"),   4);
 
-            //glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
             chunkedTerrain->Draw(programs["terrain"]);
-            //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
         renderer.EndGBufferPass();
 

@@ -1,13 +1,41 @@
 #include <chrono>
+#include <unistd.h>
 
 #include <project2/common.hpp>
 #include <project2/application.hpp>
+
+void help(const char *programName)
+{
+    std::cout << "Usage information" << std::endl;
+    std::cout << programName << " <raster path> <raster width> <raster height> <chunk width> <chunk height> ";
+    std::cout << "<resolution lat> <resolution long> <nw corner lat> <nw corner long> ";
+    std::cout << "<starting lat> <starting long>" << std::endl;
+
+}
 
 int main(int argc, char *argv[])
 {
     // Setup clock to track shit
     std::chrono::high_resolution_clock             applicationClock;
     std::chrono::high_resolution_clock::time_point applicationStart = applicationClock.now();
+
+    // Process command line arguments
+    if(argc < 12)
+    {
+        help(argv[0]);
+        return 1;
+    }
+
+    // Setup parameters
+    struct Application::Options options =
+    {
+        .rasterFilename = std::string(argv[1]),
+        .rasterSize = glm::ivec2(atoi(argv[2]), atoi(argv[3])),
+        .chunkSize = glm::ivec2(atoi(argv[4]), atoi(argv[5])),
+        .resolution = glm::dvec2(1.0 / atof(argv[7]), 1.0 / atof(argv[6])) * (glm::pi<double>()/180.0),
+        .corner = glm::dvec2(atof(argv[9]), atof(argv[8])) * (glm::pi<double>()/180.0),
+        .starting = glm::dvec2(atof(argv[11]), atof(argv[10])) * (glm::pi<double>()/180.0),
+    };
     
     // Setup SDL
     SDL_Window *mainwindow;
@@ -66,7 +94,7 @@ int main(int argc, char *argv[])
     SDL_GL_SetSwapInterval(1);
     glClearColor(0.f, 0.f, 0.f, 1.f);
     
-    Application *app = new Application(mainwindow, maincontext);
+    Application *app = new Application(mainwindow, maincontext, options);
     
     // Record simulation starting times, report start time
     std::chrono::high_resolution_clock::time_point simulationStart = applicationClock.now();

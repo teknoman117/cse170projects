@@ -31,6 +31,7 @@ void main()
 	// Tonemap
 	vec4 colorHDR = texelFetch(renderHDR, ivec2(gl_FragCoord.xy), 0);
 	vec3 colorTonemapped = Uncharted2Tonemap(colorHDR.rgb);
+	//vec3 colorTonemapped = 1.0 - exp(-1.0 * colorHDR.rgb);
 
 	// Gamma correct
 	vec3 correction = vec3(correctionFactor, correctionFactor, correctionFactor);

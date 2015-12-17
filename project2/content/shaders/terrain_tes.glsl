@@ -1,18 +1,6 @@
 #version 420
 #extension GL_ARB_enhanced_layouts : enable
 
-/*#define X_NOISE_GEN      1619
-#define Y_NOISE_GEN      31337
-#define Z_NOISE_GEN      6971
-#define SEED_NOISE_GEN   1013
-#define SHIFT_NOISE_GEN  6
-
-#define DEFAULT_PERLIN_FREQUENCY 1.0
-#define DEFAULT_PERLIN_LACUNARITY 2.0
-#define DEFAULT_PERLIN_OCTAVE_COUNT 8
-#define DEFAULT_PERLIN_PERSISTENCE 0.5
-#define DEFAULT_PERLIN_SEED 80*/
-
 layout(quads, equal_spacing, cw) in;
 
 uniform sampler2D heightmap;
@@ -67,6 +55,7 @@ vec3 permute(vec3 x) {
   return mod289(((x*34.0)+1.0)*x);
 }
 
+// borrowed from https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
 float snoise(vec2 v)
 {
     const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
