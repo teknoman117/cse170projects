@@ -1,0 +1,128 @@
+1. What was your project topic?
+
+Our project's topic was "3D Visualization of Large Digital Elevation Models"
+
+2. If this was a group project, what was your part in the project?
+
+There were two people in my group, Nathaniel R. Lewis (myself) and Zachary Canann.  I took on the larger part as I had more experience with these things.
+I developed the terrain level of detail system, which uses data chunking, frustum culling, and tessellation shaders.  I developed the core renderer,
+which is a deferred renderer, and lastly developed the system for loading the DEMs and projecting them from any arbitrary orientation on Earth onto the xz
+plane in OpenGL.
+
+3. If this was a group project, what were the parts of the other members?
+
+Zachary Canann's role was to develop the camera pathing system, which uses hermite splines to smooth data retrived from the Google Directions API.  He
+developed the loader for Google's polyline data and used my projection system to obtain simulation space coordinates of the points on the route.
+The camera can follow this path.  He also developed the joystick interface of the application.  The presentation will be done using a Sony Dualshock 4 
+over Bluetooth.
+
+4. Describe briefly the main goals you wanted to achieve in your project:
+
+The goal was to render a realistic landscape from any arbitrary digital elevation model and some environmental hints.  The hidden goal here was to do it
+*efficiently.*  Great care was taken to handle the large data sets, as we're talking about 460 MiB of heightmaps in the raw elevation model.
+
+5. Describe the main difficulties encountered:
+
+Not previously understanding how exactly tessellation shaders worked.  Nvidia's GameWorks samples helped a lot in this regard.
+Never having implemented a functioning deferred renderer.
+Coming up with a good way of storing the elevation data as to not run out of video ram.
+
+6. What was the hardest part to implement in your project?
+
+The terrain was by and large the hardest part to implement.  In order to represent the target digital elevation model (11k x 11k pixels) at the desired
+resolution would require about 15 billion unique triangles.  This is *way* beyond the capabilities of any current GPU to do in realtime.  So a level of 
+detail system had to be devised.  Since I have a flagship GPU (GeForce GTX 980), some corners could be cut for the sake of simplicity in a school project,
+however the results are anything but.  I subdivided the digital elevation model in a user definable set of chunks (generally 8x8)  which reduces the
+drawing workload.  The GPU is told to draw every chunk through an instance rendering call.  It then performs frustum culling against each chunk of the DEM,
+discarding invisible chunks early.  The on screen area is evaluated for each chunk is calculated which is used to define an LOD level for the chunk.  I
+use tessellation shaders to either leave the chunk as a simple quad up to a 64x64 grid of quads.  At this point each vertex's position is the "grid position"
+or the coordinate inside the DEM.  The tessellation evaluation shader computes the real position of each vertex using the projection information computed
+at application start from the DEM's properties.  Since a fully subdivided chunk has 8x the resolution of the DEM itself, I then apply fractal brownian motion 
+to give the chunk a lot more detail.  The advantage is two fold, orbital radar doesn't have very precise measurements, it tends to loose sharp features.  The
+fBm gives the terrain a more natural feel.  With an 8x8 chunk on a 11kx11k DEM, the GeForce GTX 980 is capable of an interactive resolution between 45 and 60
+fps.  This is a LOT better than my initial implementation which used persistently mapped buffers with the CPU uploading new indices each time for precomputed
+coordinates.  All coordinates and normals are computed on the GPU on the fly, saving a significant amount of VRAM.  The 11kx11k DEM takes 500 MiB for the r32f 
+texture representing the heightmap along with another ~300 MiB of other per chunk information.
+
+7. What was missing to complete the project to your satisfaction?
+
+A hierarchical LOD scheme for the terrain.  Even with the LOD system and chunking we use, there is still FAR more detail put on the screen than could possibly
+be seen.  I chose the chunking + tessellation because it was fairly simple to deal with, but it stresses one of the most powerful GPUs on the planet for our
+elevation model size.  The problem with hierarchical LOD is it has a lot of CPU side management of resources, as GPUs stuggle with tree structures since they
+can't schedule work for themselves.  I probably was overcomplicating things a bit, but i was trying to think of a way to solve hierarchical LOD mostly on the 
+GPU using multidrawindirect and compute shaders.  Problem was i couldn't figure out how to get rid of atomics for computing the indices into the buffers. I'll
+mull on it over Christmas.  Nvidia's bindless buffer tech seems promising, because it means i can use pointers inside of shaders on the GPU.  If I use an nd-tree
+structure to define my hierarchical LOD structure, I could possibly collapse layers of the tree into "superblocks" which could be processed by a single thread
+block on the GPU.  I could use compute indirect buffers to allow a compute shader to determine the next proper invocation.  this rules the process down to a 
+few synchronous queries.
+
+8. Project development timeline: how much time did you need to implement each part?
+
+Planning - 7 days
+Deferred Renderer - 4 days
+Terrain Loading - 1 day
+Terrain LOD (initial implementation) - 4 days
+Terrain LOD (tessellation implementation) - 2 days
+Joystick Controls - 1 days
+Camera Pathing - 3 days
+
+
+9. Which external tools/help did you use in your project?
+
+-- used --
+Simple Direct Media Layer (SDL) 2.0.3
+OpenGL Mathematics Library (GLM) 0.9.7.1-1
+OpenGL Extension Wrangler (GLEW) 1.13
+
+-- reference material --
+ogldev.atspace.co.uk tutorials on deferred rendering + Apple Metal sample on DR
+Nvidia GameWorks SDK sample on terrain tessellation.  Some of my implementation details
+are borrowed from their logic.
+
+10. If this was a group project, do you think each member satisfactorily contributed to the project?
+
+I have no complaints about the contributions by my other team member.
+
+11. Give here any additional comments about your project:
+
+'Twas fun
+
+12. CSE170 Evaluation
+a. Comparing to other upper-division CSE courses you have taken at UCM, use the 1-7 scale below for answering the questions below:
+    1 (very easy/not much) 2 3 4 (appropriate) 5 6 7 (very difficult/too much)
+    i.   4 (*my* opinion, but then again i'm smart and have experience, but not as hard as OS or Networks)
+    ii.  4
+    iii. 6
+    iv.  1
+    v.   4
+    vi.  4
+    vii. over 9000 because i like to make cool things and not just slip by on the requirements
+
+b. Do you think the course has a good balance between lectures and projects?
+Certainly a good balance between lectures and projects
+
+c. Which parts of the course you liked most?
+The projects, but i love doing cool projects.  The more freedom I have to more creative I get
+
+d. Which parts should be included or better explained/explored?
+Lecturing technique as a whole
+
+e. Which parts were most difficult to understand?
+I didn't have *any* difficulty understanding the content whatsoever
+
+f. Which parts were easier to understand?
+Again, i had no issues with the material.
+
+g. Please give here any comments/suggestions for improving the course: 
+So, for me, the lecturing style of CSE 170 was perfectly fine.  I can learn from this lecture format.  However, I know a lot of 
+people disliked the lecturing style.  The felt they left lectures without a practical understanding of the material covered.  
+There were very few examples of how the math could be applied (things like splines), or how one might go about resolving the 
+higher level descriptions of algorithms into OpenGL for the labs.  While I understand that part of this responsibility is on the 
+student, I believe that many were at a disadvantage due to the vast difference in lab work and lecturing.  Lectures were pure theory,
+whereas the labs were pure implementation with a framework barely touched on in class.  Lighting was well covered though, it was
+explained very simply.  For instance in Operating Systems or Computer Architecture, the lectures are spent partly on theory and 
+knowledge, but a lot of time is spent discussing implementations (case studies).  In Architecture, Kelvin would talk about some 
+technique (say, out of order execution) and then go into how some architecture actually implemented it.  That architecture wouldn't
+be on the exam, but it helps to learn how someone did it.  I don't believe the majority of college students are at the level where
+they are able architect a system purely from theoretical description of the algorithm.
+

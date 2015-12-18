@@ -45,6 +45,7 @@ private:
     bool             tessellationEnabled;
     bool             shadingEnabled;
     bool             fractalsEnabled;
+    bool             pathLineEnabled;
 
     bool             following;
     size_t           currentPosition;

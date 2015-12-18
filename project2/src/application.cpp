@@ -104,6 +104,7 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
     shadingEnabled = true;
     tessellationEnabled = true;
     fractalsEnabled = true;
+    pathLineEnabled = false;
 
     // allocate pipeline buffers
     OnResize(camera.width, camera.height);
@@ -139,14 +140,14 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     else if(state[SDL_SCANCODE_F])
         moveDirection.y = -1.f;
 
-    if(state[SDL_SCANCODE_PAGEUP])
+    if(state[SDL_SCANCODE_PAGEUP] || (joystick && ::SDL_JoystickGetButton(joystick, 5)))
         timeOfDay += 1.0 * frameDelta;
-    else if(state[SDL_SCANCODE_PAGEDOWN])
+    else if(state[SDL_SCANCODE_PAGEDOWN] || (joystick && ::SDL_JoystickGetButton(joystick, 4)))
         timeOfDay -= 1.0 * frameDelta;
 
-    if(state[SDL_SCANCODE_HOME])
+    if(state[SDL_SCANCODE_HOME] || (joystick && ::SDL_JoystickGetButton(joystick, 7)))
         animationSpeed += 50.0f * frameDelta;
-    else if(state[SDL_SCANCODE_END])
+    else if(state[SDL_SCANCODE_END] || (joystick && ::SDL_JoystickGetButton(joystick, 6)))
         animationSpeed = glm::max<float>(0.0f, animationSpeed - 50.f * frameDelta);
 
     // Apply controls from a joystick
@@ -215,7 +216,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     // jogging or sprinting
     else if(!flying)
     {
-        moveDirection *= (state[SDL_SCANCODE_LSHIFT] ? 6.7056f : 2.68224f);
+        moveDirection *= (state[SDL_SCANCODE_LSHIFT] || (joystick && ::SDL_JoystickGetButton(joystick, 10)) ? 6.7056f : 2.68224f);
 
         // Update position in the current view direction
         camera.position += (glm::angleAxis(camera.rotation.y, glm::vec3(0.f,1.f,0.f)) * moveDirection) * frameDelta;
@@ -225,7 +226,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     // flying camera
     else
     {
-        moveDirection *= (state[SDL_SCANCODE_LSHIFT] ? 240.0f : 30.f);
+        moveDirection *= (state[SDL_SCANCODE_LSHIFT] || (joystick && ::SDL_JoystickGetButton(joystick, 10)) ? 240.0f : 30.f);
 
         glm::vec3 forward = camera.RotationAsQuaternion()*glm::vec3(0,0,1);
         glm::vec3 right   = cross(forward, camera.up);    
@@ -279,7 +280,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
             // Path line
-            if(pathLine)
+            if(pathLine && pathLineEnabled)
             {
                 programs["diffuse"]->Bind();
                 glUniform3f(programs["diffuse"]->GetUniform("DiffuseColor"), 10.f, 10.f, 10.f);
@@ -344,6 +345,7 @@ bool Application::OnEvent(SDL_Event event)
 {
     if(event.type == SDL_KEYDOWN)
     {
+        // ------------------ KEYBOARD CONTROLS --------------------------
         if(event.key.keysym.sym == SDLK_ESCAPE)
         {
             SDL_SetRelativeMouseMode(SDL_FALSE);
@@ -362,11 +364,15 @@ bool Application::OnEvent(SDL_Event event)
             following = false;
             flying = true;
         }
-        else if(event.key.keysym.sym == SDLK_p && cameraPath.size())
+        else if((event.key.keysym.sym == SDLK_p) && cameraPath.size())
         {
             following = true;
             currentPosition = 0;
             animationTime = 0.f;
+        }
+        else if(event.key.keysym.sym == SDLK_v)
+        {
+            pathLineEnabled = !pathLineEnabled;
         }
         else if(event.key.keysym.sym == SDLK_b)
         {
@@ -379,6 +385,52 @@ bool Application::OnEvent(SDL_Event event)
         else if(event.key.keysym.sym == SDLK_m)
         {
             shadingEnabled = !shadingEnabled;
+        }
+    }
+
+    else if(event.type == SDL_JOYBUTTONDOWN)
+    {
+        // ------------ JOYSTICK BUTTONS --------------
+        if(event.jbutton.button == 12)
+        {
+            wireframe = !wireframe;
+        }
+        else if(event.jbutton.button == 0)
+        {
+            following = false;
+            flying =  false;
+        }
+        else if(event.jbutton.button == 1)
+        {
+            following = false;
+            flying = true;
+        }
+        else if((event.jbutton.button == 2) && cameraPath.size())
+        {
+            following = true;
+            currentPosition = 0;
+            animationTime = 0.f;
+        }
+    }
+
+    else if(event.type == SDL_JOYHATMOTION)
+    {
+        // ------------- JOYSTICK AXES -------------------
+        if(event.jhat.value == 8)
+        {
+            fractalsEnabled = !fractalsEnabled;
+        }
+        else if(event.jhat.value == 4)
+        {
+            tessellationEnabled = !tessellationEnabled;
+        }
+        else if(event.jhat.value == 2)
+        {
+            shadingEnabled = !shadingEnabled;
+        }
+        else if(event.jhat.value == 1)
+        {
+            pathLineEnabled = !pathLineEnabled;
         }
     }
 
