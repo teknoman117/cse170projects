@@ -44,6 +44,7 @@ private:
     bool             following;
     size_t           currentPosition;
     float            animationTime;
+    float            animationSpeed;
 
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;

@@ -33,7 +33,7 @@ class ChunkedTerrain : public GLObject
         glm::vec3 sw;
         float padd;
 
-        float triSize;
+        glm::vec4 triSize;
     } shaderParameters;
     
     std::shared_ptr<Texture> heightmap;

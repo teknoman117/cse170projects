@@ -69,6 +69,7 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
     camera.rotation = glm::vec2(0,glm::pi<float>());
 
     timeOfDay = 2;
+    animationSpeed = 10;
 
     // If a camera path was provided
     if(options.pathFilename != "")
@@ -76,14 +77,16 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
         std::vector<glm::dvec2> coordinates;
         std::vector<glm::vec3>  vertices;
 
-        DecodePolylineFromFile(coordinates, options.pathFilename);
+        size_t count = DecodePolylineFromFile(coordinates, options.pathFilename);
 
-        for(std::vector<glm::dvec2>::iterator coord = coordinates.begin(); coord != coordinates.end() && coord != coordinates.begin()+100; coord++)
+        for(std::vector<glm::dvec2>::iterator coord = coordinates.begin(); coord != coordinates.end() /*&& coord != coordinates.begin()+100*/; coord++)
         {
             glm::vec3 p = chunkedTerrain->GetLocationOfWGS84Coordinate(*coord * (glm::pi<double>() / 180.0));
             p.y = chunkedTerrain->GetElevationAt(p) + 5.f;
             vertices.push_back(p);
         }
+
+        std::cout << "processed " << vertices.size() << " vertices" << std::endl;
 
         cameraPath = std::move(vertices);
         //evaluate_bezier(vertices.size()*6, cameraPath, vertices);
@@ -131,11 +134,16 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     else if(state[SDL_SCANCODE_PAGEDOWN])
         timeOfDay -= 1.0 * frameDelta;
 
+    if(state[SDL_SCANCODE_HOME])
+        animationSpeed += 50.0f * frameDelta;
+    else if(state[SDL_SCANCODE_END])
+        animationSpeed = glm::max<float>(0.0f, animationSpeed - 50.f * frameDelta);
+
     
     // spline following camera
     if(following)
     {
-        animationTime += frameDelta;
+        animationTime += frameDelta * (animationSpeed / distance(cameraPath[currentPosition], cameraPath[currentPosition+1]));
 
         // Handle next frame / end logic
         if(animationTime > 1.0)

@@ -37,7 +37,7 @@ ChunkedTerrain::ChunkedTerrain(const std::string& path, ivec2 rasterSize, glm::i
     shaderParameters.chunkSize  = chunkSize;
     shaderParameters.gridSize   = (rasterSize-1) / shaderParameters.chunkSize;
     shaderParameters.dataSize   = shaderParameters.gridSize*shaderParameters.chunkSize + 1;
-    shaderParameters.triSize    = 5.f;
+    shaderParameters.triSize    = vec4(2.f, 2.f, 2.f, 2.f);
 
     // Compute the projection parameters
     ComputeBounds(shaderParameters.dataSize, resolution, corner);

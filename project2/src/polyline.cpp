@@ -56,15 +56,17 @@ size_t DecodePolylineFromFile(std::vector<glm::dvec2>& coordinates, const std::s
         throw std::runtime_error("Unable to open specified path");
     }
     
-    polylineFile.seekg ( 0, std::ios::end );
-    size_t polylineSize = polylineFile.tellg();
-    polylineFile.seekg ( 0, std::ios::beg );
-    
     std::string polyline;
-    polyline.resize(polylineSize);
-    polylineFile.read ( &polyline[0], polylineSize );
-    polylineFile.close();
+    std::vector<dvec2> segments;
+    coordinates.resize(0);
 
-    return DecodePolyline(coordinates, polyline);
+    while(std::getline(polylineFile, polyline))
+    {
+        size_t count = DecodePolyline(segments, polyline);
+        std::cout << "processed " << count << " points from: " << polyline << std::endl;
+        coordinates.insert(coordinates.end(), segments.begin(), segments.end()-1);
+    }
+
+    return coordinates.size();
 }
 

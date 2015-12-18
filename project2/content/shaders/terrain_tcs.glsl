@@ -71,10 +71,10 @@ vec2 worldToScreen(vec3 p)
 }
 
 // calculate edge tessellation level from two edge vertices in screen space
-float calcEdgeTessellation(vec2 s0, vec2 s1)
+float calcEdgeTessellation(vec2 s0, vec2 s1, float s)
 {
     float d = distance(s0, s1);
-    return clamp(d / 2, 1, 64);
+    return clamp(d / s, 1, 64);
 }
 
 vec2 eyeToScreen(vec4 p)
@@ -87,14 +87,14 @@ vec2 eyeToScreen(vec4 p)
 }
 
 // calculate tessellation level by fitting sphere to edge
-float calcEdgeTessellationSphere(vec3 w0, vec3 w1, float diameter)
+float calcEdgeTessellationSphere(vec3 w0, vec3 w1, float diameter, float s)
 {
     vec3 centre = (w0 + w1) * 0.5;
     vec4 view0 = V * vec4(centre, 1.0);
     vec4 view1 = view0 + vec4(diameter, 0, 0, 0);
     vec2 s0 = eyeToScreen(view0);
     vec2 s1 = eyeToScreen(view1);
-    return calcEdgeTessellation(s0, s1);
+    return calcEdgeTessellation(s0, s1, s);
 }
 
 void main ()
@@ -132,10 +132,10 @@ void main ()
         v3.y = averageHeight;
 
         float sphereD = chunkSize.x*2;
-        gl_TessLevelOuter[0] = calcEdgeTessellationSphere(v3, v0, sphereD);
-        gl_TessLevelOuter[1] = calcEdgeTessellationSphere(v0, v1, sphereD);
-        gl_TessLevelOuter[2] = calcEdgeTessellationSphere(v1, v2, sphereD);
-        gl_TessLevelOuter[3] = calcEdgeTessellationSphere(v2, v3, sphereD);
+        gl_TessLevelOuter[0] = calcEdgeTessellationSphere(v3, v0, sphereD, 2);
+        gl_TessLevelOuter[1] = calcEdgeTessellationSphere(v0, v1, sphereD, 2);
+        gl_TessLevelOuter[2] = calcEdgeTessellationSphere(v1, v2, sphereD, 2);
+        gl_TessLevelOuter[3] = calcEdgeTessellationSphere(v2, v3, sphereD, 2);
 
         //gl_TessLevelOuter[0] = 2;
         //gl_TessLevelOuter[1] = 2;
