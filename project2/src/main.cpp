@@ -9,7 +9,7 @@ void help(const char *programName)
     std::cout << "Usage information" << std::endl;
     std::cout << programName << " <raster path> <raster width> <raster height> <chunk width> <chunk height> ";
     std::cout << "<resolution lat> <resolution long> <nw corner lat> <nw corner long> ";
-    std::cout << "<starting lat> <starting long>" << std::endl;
+    std::cout << "<starting lat> <starting long> [<camerapath>]" << std::endl;
 
 }
 
@@ -30,12 +30,18 @@ int main(int argc, char *argv[])
     struct Application::Options options =
     {
         .rasterFilename = std::string(argv[1]),
+        .pathFilename = "",
         .rasterSize = glm::ivec2(atoi(argv[2]), atoi(argv[3])),
         .chunkSize = glm::ivec2(atoi(argv[4]), atoi(argv[5])),
         .resolution = glm::dvec2(1.0 / atof(argv[7]), 1.0 / atof(argv[6])) * (glm::pi<double>()/180.0),
         .corner = glm::dvec2(atof(argv[9]), atof(argv[8])) * (glm::pi<double>()/180.0),
         .starting = glm::dvec2(atof(argv[11]), atof(argv[10])) * (glm::pi<double>()/180.0),
     };
+
+    if(argc >= 13)
+    {
+        options.pathFilename = std::string(argv[12]);
+    }
     
     // Setup SDL
     SDL_Window *mainwindow;

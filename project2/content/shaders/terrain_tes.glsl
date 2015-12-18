@@ -144,23 +144,30 @@ void main ()
     // Compute the surrounding points (based on tessellation level)
     vec2 pSize = chunkSizef / In[0].tessLevelInner;
 
+    // Get the base vertex positions
     vec3 L11   = GetVertexAtGridLocation(location+vec2(0, 0),        dataSize, pixelSize);
     vec3 L21   = GetVertexAtGridLocation(location+vec2(0, pSize.y),  dataSize, pixelSize);
     vec3 L01   = GetVertexAtGridLocation(location+vec2(0, -pSize.y), dataSize, pixelSize);
     vec3 L12   = GetVertexAtGridLocation(location+vec2(pSize.x, 0),  dataSize, pixelSize);
     vec3 L10   = GetVertexAtGridLocation(location+vec2(-pSize.x, 0), dataSize, pixelSize);
 
-    L21.y += fbm(L21.xz);
-    L01.y += fbm(L01.xz);
-    L12.y += fbm(L12.xz);
-    L10.y += fbm(L10.xz);
-
     // Compute the normal
     vec3 dx = L12 - L10;
     vec3 dz = L01 - L21;
     vec3 N = normalize(cross(dx,dz));
 
-    L11 = L11 + N*fbm(L11.xz);
+    // Offset the surrounding points along that normal
+    L21 += N*fbm(L21.xz);
+    L01 += N*fbm(L01.xz);
+    L12 += N*fbm(L12.xz);
+    L10 += N*fbm(L10.xz);
+
+    // Compute the normal (again)
+    dx = L12 - L10;
+    dz = L01 - L21;
+    N = normalize(cross(dx,dz));
+
+    L11 += N*fbm(L11.xz);
 
     // Compute output
     Out.position = L11;
