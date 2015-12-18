@@ -11,8 +11,11 @@
 #include <project2/objects/glfullscreenquad.hpp>
 #include <project2/objects/glsphere.hpp>
 #include <project2/objects/glcube.hpp>
+#include <project2/objects/glline.hpp>
 
 #include <project2/chunkedterrain.hpp>
+
+#include <vector>
 
 class Application
 {
@@ -20,6 +23,7 @@ public:
     struct Options
     {
         std::string rasterFilename;
+        std::string pathFilename;
         glm::ivec2  rasterSize;
         glm::ivec2  chunkSize;
         glm::dvec2  resolution;
@@ -36,7 +40,11 @@ private:
     float            timeOfDay;
     bool             wireframe;
     bool             flying;
-    
+
+    bool             following;
+    size_t           currentPosition;
+    float            animationTime;
+
     std::map<std::string, std::shared_ptr<Program>> programs;
     std::map<std::string, std::shared_ptr<Texture>> textures;
 
@@ -47,6 +55,8 @@ private:
     std::unique_ptr<ChunkedTerrain> chunkedTerrain;
     std::unique_ptr<GLCube>         skybox;
     std::unique_ptr<Cubemap>        skyboxTexture;
+    std::unique_ptr<GLLine>         pathLine;
+    std::vector<glm::vec3>          cameraPath;
     
 public:
     Application(SDL_Window *window, SDL_GLContext& context, const Application::Options& options);

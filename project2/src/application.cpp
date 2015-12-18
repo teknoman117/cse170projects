@@ -14,6 +14,8 @@
 #include <project2/application.hpp>
 #include <project2/directories.hpp>
 #include <project2/shader.hpp>
+#include <project2/polyline.hpp>
+#include <project2/curve_eval.hpp>
 
 Application::Application(SDL_Window *_window, SDL_GLContext& _context, const Application::Options& options)
     : window(_window), context(_context)
@@ -68,6 +70,28 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
 
     timeOfDay = 2;
 
+    // If a camera path was provided
+    if(options.pathFilename != "")
+    {
+        std::vector<glm::dvec2> coordinates;
+        std::vector<glm::vec3>  vertices;
+
+        DecodePolylineFromFile(coordinates, options.pathFilename);
+
+        for(std::vector<glm::dvec2>::iterator coord = coordinates.begin(); coord != coordinates.end() && coord != coordinates.begin()+100; coord++)
+        {
+            glm::vec3 p = chunkedTerrain->GetLocationOfWGS84Coordinate(*coord * (glm::pi<double>() / 180.0));
+            p.y = chunkedTerrain->GetElevationAt(p) + 5.f;
+            vertices.push_back(p);
+        }
+
+        cameraPath = std::move(vertices);
+        //evaluate_bezier(vertices.size()*6, cameraPath, vertices);
+
+        std::unique_ptr<GLLine> line(new GLLine(cameraPath));
+        pathLine = std::move(line);
+    }
+
     // allocate pipeline buffers
     OnResize(camera.width, camera.height);
 }
@@ -107,8 +131,36 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     else if(state[SDL_SCANCODE_PAGEDOWN])
         timeOfDay -= 1.0 * frameDelta;
 
+    
+    // spline following camera
+    if(following)
+    {
+        animationTime += frameDelta;
+
+        // Handle next frame / end logic
+        if(animationTime > 1.0)
+        {
+            int overage = floor(animationTime);
+            currentPosition += overage;
+            animationTime -= overage;
+
+            if(currentPosition >= cameraPath.size()-1)
+            {
+                following = false;
+                animationTime = 0.f;
+                currentPosition = 0;
+            }
+        }
+        
+        // If we are still following (didn't bail)
+        if(following)
+        {
+            camera.position = mix(cameraPath[currentPosition], cameraPath[currentPosition+1], animationTime);
+        }
+    }
+
     // jogging or sprinting
-    if(!flying)
+    else if(!flying)
     {
         moveDirection *= (state[SDL_SCANCODE_LSHIFT] ? 6.7056f : 2.68224f);
 
@@ -135,6 +187,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             camera.position.y = h + 1.8f;
     }
 
+    // Update camera uniform buffer
     camera.Update();
 
     // Start rendering
@@ -168,6 +221,17 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
             chunkedTerrain->Draw(programs["terrain"]);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            // Path line
+            if(pathLine && following)
+            {
+                programs["diffuse"]->Bind();
+                glUniform3f(programs["diffuse"]->GetUniform("DiffuseColor"), 10.f, 10.f, 10.f);
+                glUniform1f(programs["diffuse"]->GetUniform("SpecularExponent"), 32.f);
+                glm::mat4 nulltransform;
+                glUniformMatrix4fv(programs["diffuse"]->GetUniform("M"), 1, GL_FALSE, glm::value_ptr(nulltransform));
+                pathLine->Draw();
+            }
         }
         renderer.EndGBufferPass();
 
@@ -232,9 +296,21 @@ bool Application::OnEvent(SDL_Event event)
         {
             wireframe = !wireframe;
         }
-        else if(event.key.keysym.sym == SDLK_p)
+        else if(event.key.keysym.sym == SDLK_i)
         {
-            flying = !flying;
+            following = false;
+            flying =  false;
+        }
+        else if(event.key.keysym.sym == SDLK_o)
+        {
+            following = false;
+            flying = true;
+        }
+        else if(event.key.keysym.sym == SDLK_p && cameraPath.size())
+        {
+            following = true;
+            currentPosition = 0;
+            animationTime = 0.f;
         }
     }
 
