@@ -30,6 +30,8 @@ layout (std140, binding=1) uniform TerrainParameters
     float triSize;
 };
 
+uniform bool tessellationEnabled;
+
 layout (location = 1) in block 
 {
     float minHeight;
@@ -131,16 +133,21 @@ void main ()
         v2.y = averageHeight;
         v3.y = averageHeight;
 
-        float sphereD = chunkSize.x*2;
-        gl_TessLevelOuter[0] = calcEdgeTessellationSphere(v3, v0, sphereD, 2);
-        gl_TessLevelOuter[1] = calcEdgeTessellationSphere(v0, v1, sphereD, 2);
-        gl_TessLevelOuter[2] = calcEdgeTessellationSphere(v1, v2, sphereD, 2);
-        gl_TessLevelOuter[3] = calcEdgeTessellationSphere(v2, v3, sphereD, 2);
-
-        //gl_TessLevelOuter[0] = 2;
-        //gl_TessLevelOuter[1] = 2;
-        //gl_TessLevelOuter[2] = 2;
-        //gl_TessLevelOuter[3] = 2;
+        if(tessellationEnabled)
+        {
+            float sphereD = chunkSize.x*2;
+            gl_TessLevelOuter[0] = calcEdgeTessellationSphere(v3, v0, sphereD, 2);
+            gl_TessLevelOuter[1] = calcEdgeTessellationSphere(v0, v1, sphereD, 2);
+            gl_TessLevelOuter[2] = calcEdgeTessellationSphere(v1, v2, sphereD, 2);
+            gl_TessLevelOuter[3] = calcEdgeTessellationSphere(v2, v3, sphereD, 2);
+        } 
+        else
+        {
+            gl_TessLevelOuter[0] = 1;
+            gl_TessLevelOuter[1] = 1;
+            gl_TessLevelOuter[2] = 1;
+            gl_TessLevelOuter[3] = 1;
+        }
 
         gl_TessLevelInner[0] = 0.5 * (gl_TessLevelOuter[1] + gl_TessLevelOuter[3]);
         gl_TessLevelInner[1] = 0.5 * (gl_TessLevelOuter[0] + gl_TessLevelOuter[2]);

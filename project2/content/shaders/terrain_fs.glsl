@@ -5,6 +5,7 @@ uniform sampler2D verticalTexture;
 uniform sampler2D verticalTextureNormals;
 uniform sampler2D horizontalTexture;
 uniform sampler2D horizontalTextureNormals;
+uniform bool      shadingEnabled;
 
 layout (std140, binding=0) uniform CameraParameters
 {
@@ -96,46 +97,53 @@ vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
 
 void main()
 {
-    vec3 blendWeights = abs(In.normal);
-    //blendWeights = blendWeights * vec3(1.0,0.9,1.0);
-    blendWeights = max(blendWeights, vec3(0,0,0));
-    blendWeights /= (blendWeights.x + blendWeights.y + blendWeights.z);
+    if(shadingEnabled)
+    {
+        vec3 blendWeights = abs(In.normal);
+        //blendWeights = blendWeights * vec3(1.0,0.9,1.0);
+        blendWeights = max(blendWeights, vec3(0,0,0));
+        blendWeights /= (blendWeights.x + blendWeights.y + blendWeights.z);
 
-    const float textureScale = 0.5;
-    vec2 coord1 = In.position.yz * textureScale;
-    vec2 coord2 = In.position.zx * textureScale;
-    vec2 coord3 = In.position.xy * textureScale;
+        const float textureScale = 0.5;
+        vec2 coord1 = In.position.yz * textureScale;
+        vec2 coord2 = In.position.zx * textureScale;
+        vec2 coord3 = In.position.xy * textureScale;
 
-    vec4 color1 = texture(verticalTexture, coord1);
-    vec4 color2 = texture(horizontalTexture, coord2);
-    vec4 color3 = texture(verticalTexture, coord3);
+        vec4 color1 = texture(verticalTexture, coord1);
+        vec4 color2 = texture(horizontalTexture, coord2);
+        vec4 color3 = texture(verticalTexture, coord3);
 
-    vec2 bumpFetch1 = texture(verticalTextureNormals, coord1).xy - 0.5;
-    vec2 bumpFetch2 = texture(horizontalTextureNormals, coord2).xy - 0.5;
-    vec2 bumpFetch3 = texture(verticalTextureNormals, coord3).xy - 0.5;
+        vec2 bumpFetch1 = texture(verticalTextureNormals, coord1).xy - 0.5;
+        vec2 bumpFetch2 = texture(horizontalTextureNormals, coord2).xy - 0.5;
+        vec2 bumpFetch3 = texture(verticalTextureNormals, coord3).xy - 0.5;
 
-    vec3 bump1 = vec3(0, bumpFetch1);
-    vec3 bump2 = vec3(bumpFetch2.y, 0, bumpFetch2.x);
-    vec3 bump3 = vec3(bumpFetch3, 0);
+        vec3 bump1 = vec3(0, bumpFetch1);
+        vec3 bump2 = vec3(bumpFetch2.y, 0, bumpFetch2.x);
+        vec3 bump3 = vec3(bumpFetch3, 0);
 
-    vec3 DiffuseColor = color1.rgb * blendWeights.x +
-                        color2.rgb * blendWeights.y +
-                        color3.rgb * blendWeights.z;
-    vec3 BlendedBump = bump1.xyz * blendWeights.x +
-                       bump2.xyz * blendWeights.y +
-                       bump3.xyz * blendWeights.z;
-    
+        vec3 DiffuseColor = color1.rgb * blendWeights.x +
+                            color2.rgb * blendWeights.y +
+                            color3.rgb * blendWeights.z;
+        vec3 BlendedBump = bump1.xyz * blendWeights.x +
+                           bump2.xyz * blendWeights.y +
+                           bump3.xyz * blendWeights.z;
+        
+        //gBufferNormals         = normalize(In.normal + BlendedBump);
+        gBufferDiffuseSpecular = vec4(DiffuseColor, 32);
+        gBufferNormals         = In.normal;
+        gBufferPosition        = In.position;
 
-    //gBufferDiffuseSpecular = vec4(DiffuseColor, SpecularExponent);
-    //gBufferNormals         = normalize(In.normal + BlendedBump);
-    gBufferDiffuseSpecular = vec4(DiffuseColor, 32);
-    gBufferNormals         = In.normal;
-    gBufferPosition        = In.position;
+        /*vec3 N = perturb_normal(In.normal, normalize(In.position - CameraPosition), In.position.xz / 2);
+        vec3 D = texture(horizontalTexture, In.position.xz / 2).rgb;
 
-    /*vec3 N = perturb_normal(In.normal, normalize(In.position - CameraPosition), In.position.xz / 2);
-    vec3 D = texture(horizontalTexture, In.position.xz / 2).rgb;
-
-    gBufferDiffuseSpecular = vec4(D, SpecularExponent);
-    gBufferNormals = N;
-    gBufferPosition = In.position;*/
+        gBufferDiffuseSpecular = vec4(D, SpecularExponent);
+        gBufferNormals = N;
+        gBufferPosition = In.position;*/
+    }
+    else
+    {
+        gBufferDiffuseSpecular = vec4(10, 10, 10, 32);
+        gBufferNormals         = In.normal;
+        gBufferPosition        = In.position;
+    }
 }

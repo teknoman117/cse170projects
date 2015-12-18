@@ -22,6 +22,12 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
 {
     SDL_GetWindowSize(window, &camera.width, &camera.height);
     
+    if (SDL_NumJoysticks() > 0)
+    {
+        joystick = SDL_JoystickOpen(0);
+        SDL_JoystickEventState(SDL_ENABLE);
+    }
+
     // Shaders
     std::shared_ptr<Shader>  gbuffer_vs = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/gbuffer_vs.glsl", GL_VERTEX_SHADER  );
     std::shared_ptr<Shader>  diffuse_fs = std::make_shared<Shader>(GetApplicationResourcesDirectory() + "/content/shaders/diffuse_fs.glsl", GL_FRAGMENT_SHADER);
@@ -68,16 +74,13 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
     camera.position = glm::vec3(p.x, chunkedTerrain->GetElevationAt(p), p.z);
     camera.rotation = glm::vec2(0,glm::pi<float>());
 
-    timeOfDay = 2;
-    animationSpeed = 10;
-
     // If a camera path was provided
     if(options.pathFilename != "")
     {
         std::vector<glm::dvec2> coordinates;
         std::vector<glm::vec3>  vertices;
 
-        size_t count = DecodePolylineFromFile(coordinates, options.pathFilename);
+        DecodePolylineFromFile(coordinates, options.pathFilename);
 
         for(std::vector<glm::dvec2>::iterator coord = coordinates.begin(); coord != coordinates.end() /*&& coord != coordinates.begin()+100*/; coord++)
         {
@@ -88,12 +91,19 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
 
         std::cout << "processed " << vertices.size() << " vertices" << std::endl;
 
-        cameraPath = std::move(vertices);
+        //cameraPath = std::move(vertices);
         //evaluate_bezier(vertices.size()*6, cameraPath, vertices);
+        evaluate_hermite_splines(6, cameraPath, vertices);
 
         std::unique_ptr<GLLine> line(new GLLine(cameraPath));
         pathLine = std::move(line);
     }
+
+    timeOfDay = 2;
+    animationSpeed = 10;
+    shadingEnabled = true;
+    tessellationEnabled = true;
+    fractalsEnabled = true;
 
     // allocate pipeline buffers
     OnResize(camera.width, camera.height);
@@ -139,7 +149,42 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
     else if(state[SDL_SCANCODE_END])
         animationSpeed = glm::max<float>(0.0f, animationSpeed - 50.f * frameDelta);
 
-    
+    // Apply controls from a joystick
+    if (joystick != NULL)
+    {
+        const float threshold = 0.25f;
+        const float joyStickNoramlizationFactor = 32768.0f;
+        const float cameraSpeed = -138.75f;
+
+        // SDL returns a short between its min and max vals.
+        float movementX = SDL_JoystickGetAxis(joystick, 0) / joyStickNoramlizationFactor;
+        float movementZ = SDL_JoystickGetAxis(joystick, 1) / joyStickNoramlizationFactor;
+
+        // Override with control inputs if above a certain threshold
+        if (movementX < -threshold || movementX > threshold)
+        {
+            moveDirection.x = movementX;
+        }
+        if (movementZ < -threshold || movementZ > threshold)
+        {
+            moveDirection.z = movementZ;
+        }
+
+        float cameraMovementX = SDL_JoystickGetAxis(joystick, 2) / joyStickNoramlizationFactor;
+        float cameraMovementZ = SDL_JoystickGetAxis(joystick, 5) / joyStickNoramlizationFactor;
+
+        if (cameraMovementX < -threshold || cameraMovementX > threshold)
+        {
+            camera.rotation.y += cameraMovementX * (cameraSpeed * frameDelta) * glm::pi<float>() / 180.f;
+        }
+        if (cameraMovementZ < -threshold || cameraMovementZ > threshold)
+        {
+            camera.rotation.x += cameraMovementZ * (cameraSpeed * frameDelta) * glm::pi<float>() / 180.f;
+        }
+
+        camera.rotation.x = glm::clamp(camera.rotation.x, -85.0f * glm::pi<float>() / 180.f, 85.0f * glm::pi<float>() / 180.f);
+    }
+
     // spline following camera
     if(following)
     {
@@ -225,13 +270,16 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             glUniform1i(programs["terrain"]->GetUniform("verticalTexture"),          2);
             glUniform1i(programs["terrain"]->GetUniform("horizontalTextureNormals"), 3);
             glUniform1i(programs["terrain"]->GetUniform("verticalTextureNormals"),   4);
+            glUniform1i(programs["terrain"]->GetUniform("shadingEnabled"),           shadingEnabled);
+            glUniform1i(programs["terrain"]->GetUniform("tessellationEnabled"),      tessellationEnabled);
+            glUniform1i(programs["terrain"]->GetUniform("fractalsEnabled"),          fractalsEnabled);
 
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
             chunkedTerrain->Draw(programs["terrain"]);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
             // Path line
-            if(pathLine && following)
+            if(pathLine)
             {
                 programs["diffuse"]->Bind();
                 glUniform3f(programs["diffuse"]->GetUniform("DiffuseColor"), 10.f, 10.f, 10.f);
@@ -319,6 +367,18 @@ bool Application::OnEvent(SDL_Event event)
             following = true;
             currentPosition = 0;
             animationTime = 0.f;
+        }
+        else if(event.key.keysym.sym == SDLK_b)
+        {
+            fractalsEnabled = !fractalsEnabled;
+        }
+        else if(event.key.keysym.sym == SDLK_n)
+        {
+            tessellationEnabled = !tessellationEnabled;
+        }
+        else if(event.key.keysym.sym == SDLK_m)
+        {
+            shadingEnabled = !shadingEnabled;
         }
     }
 

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     // Setup SDL
     SDL_Window *mainwindow;
     SDL_GLContext maincontext;
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
     {
         std::cerr << "[FATAL] SDL: Unable to initialize" << std::endl;
         return 1;

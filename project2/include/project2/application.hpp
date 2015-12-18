@@ -34,12 +34,17 @@ public:
 private:
     SDL_Window      *window;
     SDL_GLContext&   context;
+    SDL_Joystick    *joystick;
 
     CameraParameters camera;
 
     float            timeOfDay;
     bool             wireframe;
     bool             flying;
+    
+    bool             tessellationEnabled;
+    bool             shadingEnabled;
+    bool             fractalsEnabled;
 
     bool             following;
     size_t           currentPosition;

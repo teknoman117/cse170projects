@@ -4,6 +4,7 @@
 layout(quads, equal_spacing, cw) in;
 
 uniform sampler2D heightmap;
+uniform bool      fractalsEnabled;
 
 layout (std140, binding=0) uniform CameraParameters
 {
@@ -156,18 +157,21 @@ void main ()
     vec3 dz = L01 - L21;
     vec3 N = normalize(cross(dx,dz));
 
-    // Offset the surrounding points along that normal
-    L21 += N*fbm(L21.xz);
-    L01 += N*fbm(L01.xz);
-    L12 += N*fbm(L12.xz);
-    L10 += N*fbm(L10.xz);
+    if(fractalsEnabled)
+    {
+        // Offset the surrounding points along that normal
+        L21 += N*fbm(L21.xz);
+        L01 += N*fbm(L01.xz);
+        L12 += N*fbm(L12.xz);
+        L10 += N*fbm(L10.xz);
 
-    // Compute the normal (again)
-    dx = L12 - L10;
-    dz = L01 - L21;
-    N = normalize(cross(dx,dz));
+        // Compute the normal (again)
+        dx = L12 - L10;
+        dz = L01 - L21;
+        N = normalize(cross(dx,dz));
 
-    L11 += N*fbm(L11.xz);
+        L11 += N*fbm(L11.xz);
+    }
 
     // Compute output
     Out.position = L11;
