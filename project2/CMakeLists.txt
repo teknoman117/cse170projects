@@ -139,8 +139,10 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     target_link_libraries(Project2 ${GLEW_LIBRARY})
 
     # Discover the include path for the OpenGL Mathematics Library
-    find_path(GLM_INCLUDE_DIR NAMES glm/glm.hpp)
-    include_directories(${GLM_INCLUDE_DIR})
+    #find_path(GLM_INCLUDE_DIR NAMES glm/glm.hpp)
+    #include_directories(${GLM_INCLUDE_DIR})
+    # Pull in the OpenGL Mathematics Library
+    include_directories("dependencies/common")
 
     # Make a define, only used with Linux.  Also, make sure we use c++11
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__LINUX__ -fopenmp")

@@ -26,6 +26,9 @@ Application::Application(SDL_Window *_window, SDL_GLContext& _context, const App
     {
         joystick = SDL_JoystickOpen(0);
         SDL_JoystickEventState(SDL_ENABLE);
+    } else
+    {
+        joystick = nullptr;
     }
 
     // Shaders
@@ -296,6 +299,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
         // --------------- LIGHT DRAWING PHASE -----------------------------
         renderer.BeginLightPass();
         {
+            renderer.PushTimer("Sun");
             // Light direction in view space
             // Compute the position of a light
             glm::vec3 ld = glm::angleAxis(-glm::pi<float>()*35.0f / 180.0f, glm::vec3(1,0,0)) * 
@@ -317,6 +321,7 @@ bool Application::OnDisplay(float frameTime, float frameDelta)
             renderer.BeginGlobalLightRender();
             directionalLight.Draw();
             renderer.EndGlobalLightRender();
+            renderer.PopTimer();
         }
         renderer.EndLightPass();
     }

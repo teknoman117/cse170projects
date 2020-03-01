@@ -6,8 +6,6 @@
 
 using glm::mat4;
 
-//#define __DEBUG__
-
 namespace
 {
     GLuint numberOfMipLevels(GLuint w, GLuint h)
@@ -83,6 +81,7 @@ void RenderPipeline::BeginGBufferPass()
 
 void RenderPipeline::EndGBufferPass()
 {
+    glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
     PopTimer();
 }
 
@@ -161,6 +160,7 @@ void RenderPipeline::EndRendering()
     {
         // --------------------- SCENE LUMINOSITY --------------------------
         // downsample image until we can do parallel reduction
+        PushTimer("Downsample");
         downsample4x->Bind();
         gBufferLightAccumulation->Bind(GL_TEXTURE0);
         glUniform1i(downsample4x->GetUniform("sourceImage"), 0);
@@ -180,14 +180,16 @@ void RenderPipeline::EndRendering()
 
             currentLevel+=2;
         }
+        PopTimer();
 
         // parallel reduction
+        PushTimer("Reduce");
         downsample4x_reduce->Bind();
         glUniform1i(downsample4x_reduce->GetUniform("sourceImage"), 0);
         glUniform1i(downsample4x_reduce->GetUniform("sourceLevel"), currentLevel);
         glBindImageTexture(1, sceneLuminosity->GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
         glDispatchCompute(sceneLuminosity->GetWidth(), sceneLuminosity->GetHeight(), 1);
-
+        PopTimer();
         // need to figure out how to control running average from a shader perspective
 
         // ---------------- BLOOM ----------------------------
@@ -223,14 +225,14 @@ void RenderPipeline::EndRendering()
 
 void RenderPipeline::PushTimer(const std::string& name)
 {
-#ifdef __DEBUG__
+#ifndef NDEBUG
     timerStack.PushTimer(name);
 #endif
 }
 
 void RenderPipeline::PopTimer()
 {
-#ifdef __DEBUG__
+#ifndef DEBUG
     timerStack.PopTimer();
 #endif
 }
