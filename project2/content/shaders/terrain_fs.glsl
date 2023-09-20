@@ -88,7 +88,7 @@ vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
 {
     // assume N, the interpolated vertex normal and 
     // V, the view vector (vertex to eye)
-    vec3 map = texture2D( horizontalTextureNormals, texcoord ).xyz;
+    vec3 map = texture( horizontalTextureNormals, texcoord ).xyz;
     map = map * 255./127. - 128./127.;
     map.y = -map.y;
     mat3 TBN = cotangent_frame( N, -V, texcoord );
